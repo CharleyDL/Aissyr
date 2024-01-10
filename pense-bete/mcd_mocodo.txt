@@ -1,0 +1,30 @@
+--------------------------------------------
+## - MCD Dataset data de base
+============================================
+
+::
+:
+SHOW, 11> TABLET_REF, 11> IMAGE_TABLET_REF
+IMAGE_TABLET_REF: name_tablet[VARCHAR(50)], picture[BLOB]
+:
+
+VIEW_REF: id_view [INT]  , name_view [VARCHAR(50)]
+REVEAL, 1N TABLET_REF, 1N VIEW_REF
+TABLET_REF: name_tablet [VARCHAR(50)]
+DF, 11 TABLET_REF, 1N> COLLECTION_REF
+COLLECTION_REF: id_collection [INT]  , name_collection [VARCHAR(50)]
+
+DF, 11 SEGMENT_REF, 1N> VIEW_REF
+DF, 1N> TABLET_REF, 11 SEGMENT_REF
+DF, 1N> TABLET_REF, 11 ANNOTATION_REF
+:
+:
+
+:
+SEGMENT_REF: segment_idx [INT], bbox_segment [VARCHAR(50)], scale [INT], assigned [BOOLEAN]
+ANNOTATION_REF: id_annotation [INT], bbox [VARCHAR(100)], relative_bbox [VARCHAR(100)]
+IDENTIFY, 1N ANNOTATION_REF, 0N MZL_REF
+MZL_REF: mzl_number [INT], train_label [INT], name_glyph [VARCHAR(50)], glyph [VARCHAR(100)], glyph_phonetic [VARCHAR(5000)]
+
+
+---------------------------------------------
