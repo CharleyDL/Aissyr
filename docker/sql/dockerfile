@@ -1,2 +1,9 @@
-FROM mysql:lastest
+FROM postgres:latest
 
+WORKDIR /home
+
+COPY db_dataset.sql .
+COPY db_inference.sql .
+
+ENV POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+EXPOSE 5432
