@@ -1,0 +1,30 @@
++==============================+
++         PENSE-BETE           +
++==============================+
+
+-- Etape pour lancer la postgres et coder sous python --
+
+1. Créer un fichier .env avec les variables d'environnements pour la sécurité
+pour éviter de les passer en clair dans le docker-compose.
+
+-> Doit contenir :
+FOLDER_PATH
+POSTGRES_DB
+POSTGRES_USER
+POSTGRES_PASSWORD
+POSTGRES_ROOT_PASSWORD
+POSTGRES_PORT
+PGADMIN_DEFAULT_EMAIL
+PGADMIN_DEFAULT_PASSWORD
+
+
+2. Lancer le docker-compose et se connecter à pgAdmin pour vérifier si la DB est bien présente
+- Name : nom pour la base de donnée dans pgAdmin
+- host : nom du service postgres dans le docker-compose
+- Username : donner dans .env
+- password : idem 
+
+
+3. Pour coder installation de postgres : brew install postgresql
+
+4. Dans l'environnement virtuel : pip install psycopg2
