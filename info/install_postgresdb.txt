@@ -28,3 +28,5 @@ PGADMIN_DEFAULT_PASSWORD
 3. Pour coder installation de postgres : brew install postgresql
 
 4. Dans l'environnement virtuel : pip install psycopg2
+
+5. Créer un fichier config.py pour y mettre les infos de connection

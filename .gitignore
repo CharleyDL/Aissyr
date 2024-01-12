@@ -11,5 +11,6 @@ env/
 postgres_data/
 front/
 
-# Environment File DOCKER
+# Config File with sensitive information
 .env
+config.py
