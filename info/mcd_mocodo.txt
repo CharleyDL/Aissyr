@@ -15,7 +15,7 @@ DF, 11 TABLET_REF, 1N> COLLECTION_REF
 
 :
 DF, 1N> SEGMENT_REF, 11 ANNOTATION_REF
-SEGMENT_REF: segment_idx [INT], bbox_segment [VARCHAR(50)], scale [INT], assigned [BOOLEAN]
+SEGMENT_REF: segment_idx [INT], bbox_segment [VARCHAR(50)], scale [INT]
 DF, 1N> TABLET_REF, 11 SEGMENT_REF
 COLLECTION_REF: id_collection [INT]  , name_collection [VARCHAR(50)]
 

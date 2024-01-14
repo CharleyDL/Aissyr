@@ -24,7 +24,6 @@ CREATE TABLE IF NOT EXISTS segment_ref (
   segment_idx  INT PRIMARY KEY,
   bbox_segment VARCHAR(50),
   scale        INT,
-  assigned     BOOLEAN,
   id_view      INT NOT NULL,
   id_tablet    INT NOT NULL,
   FOREIGN KEY (id_tablet) REFERENCES tablet_ref (id_tablet),

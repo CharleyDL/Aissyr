@@ -51,7 +51,7 @@ def connect_test():
 def df_annotation(df: pd.DataFrame) -> None:
     """Apply clean strategy to get the real insert df"""
 
-    ## - Delete row with segm_idx -1 and tablets P336663b, K09237Vs
+    ## - Delete rows with segm_idx -1 and tablets P336663b, K09237Vs
     df.drop(df[(df['segm_idx'] != -1) 
                & ((df['tablet_CDLI'] == "P336663b") 
                   | (df['tablet_CDLI'] == "K09237Vs"))].index, inplace=True)
@@ -62,9 +62,14 @@ def df_annotation(df: pd.DataFrame) -> None:
 
 
 def df_segment(df: pd.DataFrame) -> None:
-    
+    """Apply clean strategu to get real insert df"""
 
-    print("SEGMENT")
+    ## - Delete rows with none view_desc
+    df.drop(df[df['view_desc'].isnull()].index, inplace=True)
+
+    ## - Reindex the df
+    df.reset_index(drop=True, inplace=True)
+    print(df)
 
 
 def load_dataset(csv_path: str) -> None:
