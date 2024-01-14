@@ -8,6 +8,8 @@
 # ==============================================================================
 
 ## - General libraries
+import base64
+import glob
 import os
 import pandas as pd
 import psycopg2
@@ -17,25 +19,26 @@ import config
 
 
 CONFIG = config.get_db_config()
-PATH = config.get_path()
+CSV_FOLDER_PATH = config.get_csv_path()
+IMAGE_FOLDER_PATH = config.get_img_path()
 
 
-def connect_test():
+def postgres_execute_query(query: str, data) -> None:
     """test de connection sur la db"""
 
     try:
         db = psycopg2.connect(**CONFIG)
         cursor = db.cursor()
 
-        postgre_query = """
-                           SELECT table_name 
-                             FROM information_schema.tables 
-                            WHERE table_schema='public';
-                        """
-        cursor.execute(postgre_query)
+        # postgre_query = """
+        #                    SELECT table_name 
+        #                      FROM information_schema.tables 
+        #                     WHERE table_schema='public';
+        #                 """
+        cursor.execute(query)
         result = cursor.fetchall()
 
-        print(result)
+        print("Insertion Done")
 
     except (Exception, psycopg2.Error) as error:
         print(f"Failed : {error}")
@@ -45,6 +48,19 @@ def connect_test():
             cursor.close()
             db.close()
             print("PostgreSQL connection is closed")
+
+
+
+
+
+def insert_annotation(df: pd.DataFrame) -> None:
+    ## - insert tablet (id_tablet(auto_increment), tablet_name, image)
+    tablet_name = df['tablet_CDLI'].unique()
+
+    for tablet in tablet_name:
+        ## - Get the corresponding image
+        get_image(tablet, IMAGE_FOLDER_PATH)
+
 
 
 
@@ -58,18 +74,20 @@ def df_annotation(df: pd.DataFrame) -> None:
 
     ## - Reindex the df
     df.reset_index(drop=True, inplace=True)
-    print(df)
+    # print(df)
+
+    insert_annotation(df)
 
 
 def df_segment(df: pd.DataFrame) -> None:
     """Apply clean strategu to get real insert df"""
 
-    ## - Delete rows with none view_desc
+    ## - Delete rows with no value in view_desc
     df.drop(df[df['view_desc'].isnull()].index, inplace=True)
 
     ## - Reindex the df
     df.reset_index(drop=True, inplace=True)
-    print(df)
+    # print(df)
 
 
 def load_dataset(csv_path: str) -> None:
@@ -83,9 +101,33 @@ def load_dataset(csv_path: str) -> None:
     else: print("File not supported")
 
 
+def get_image(ref_name: str, img_folder_path: dict) -> base64:
+    """
+    Retrieve and encode an image associated.
+
+    Parameters:
+    - ref_name (str): The name of the tablet to retrieve the image for.
+
+    Returns:
+    - str: Base64-encoded string representation of the binary image data.
+    """
+
+    ## - Get Image Path
+    for path in img_folder_path:
+        img_path = glob.glob(f'{path}{tablet_name}*')
+        if img_path: break
+
+    ## - Convert Image to binaryData for BYTEA data type in db
+    with open(img_path[0], 'rb') as img:
+        img_data = img.read()
+    binary_img = base64.b64encode(img_data).decode('utf-8')
+
+    return binary_img
+
+
 def get_files_path(dir_path: dict) -> list:
     """
-    Get a list of file paths from specified directories.
+    Get a list of all file paths from specified directories.
 
     Parameters:
     -----------
