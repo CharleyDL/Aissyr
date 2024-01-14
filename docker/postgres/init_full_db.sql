@@ -1,19 +1,19 @@
 -- VIEW_REF
 CREATE TABLE IF NOT EXISTS view_ref (
   id_view   INT PRIMARY KEY,
-  name_view VARCHAR(50)
+  view_name VARCHAR(50)
 );
 
 -- COLLECTION_REF
 CREATE TABLE IF NOT EXISTS collection_ref (
   id_collection INT PRIMARY KEY,
-  name_collection VARCHAR(50)
+  collection_name VARCHAR(50)
 );
 
 -- TABLET_REF
 CREATE TABLE IF NOT EXISTS tablet_ref (
   id_tablet     INT PRIMARY KEY,
-  name_tablet   VARCHAR(50),
+  tablet_name   VARCHAR(50),
   picture       BYTEA,
   id_collection INT NOT NULL,
   FOREIGN KEY (id_collection) REFERENCES collection_ref (id_collection)
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS segment_ref (
 CREATE TABLE IF NOT EXISTS mzl_ref (
   mzl_number     INT PRIMARY KEY,
   train_label    INT,
-  name_glyph     VARCHAR(50),
+  glyph_name     VARCHAR(50),
   glyph          VARCHAR(100),
   glyph_phonetic VARCHAR(5000)
 );
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS identify (
 -- TABLET_INFRN
 CREATE TABLE IF NOT EXISTS tablet_infrn (
   id_inference INT NOT NULL,
-  name_tablet  VARCHAR(50),
+  tablet_name  VARCHAR(50),
   picture      BYTEA,
   date         DATE,
   PRIMARY KEY (id_inference)

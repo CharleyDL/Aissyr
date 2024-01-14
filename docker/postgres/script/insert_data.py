@@ -16,51 +16,61 @@ import psycopg2
 
 ## - Personal libraries
 import config
+import postgres_utils
 
 
-CONFIG = config.get_db_config()
+
 CSV_FOLDER_PATH = config.get_csv_path()
 IMAGE_FOLDER_PATH = config.get_img_path()
-
-
-def postgres_execute_query(query: str, data) -> None:
-    """test de connection sur la db"""
-
-    try:
-        db = psycopg2.connect(**CONFIG)
-        cursor = db.cursor()
-
-        # postgre_query = """
-        #                    SELECT table_name 
-        #                      FROM information_schema.tables 
-        #                     WHERE table_schema='public';
-        #                 """
-        cursor.execute(query)
-        result = cursor.fetchall()
-
-        print("Insertion Done")
-
-    except (Exception, psycopg2.Error) as error:
-        print(f"Failed : {error}")
-
-    finally:
-        if db:
-            cursor.close()
-            db.close()
-            print("PostgreSQL connection is closed")
 
 
 
 
 
 def insert_annotation(df: pd.DataFrame) -> None:
-    ## - insert tablet (id_tablet(auto_increment), tablet_name, image)
+    ## - insert tablet (id_tablet(auto_increment), tablet_name, image) in tablet_ref table
     tablet_name = df['tablet_CDLI'].unique()
 
     for tablet in tablet_name:
         ## - Get the corresponding image
-        get_image(tablet, IMAGE_FOLDER_PATH)
+        img_encode = get_image(tablet, IMAGE_FOLDER_PATH)
 
+        query = f"""
+                INSERT INTO tablet_ref (tablet_name, picture)
+                VALUES ({tablet}, {img_encode})
+                ON CONFLICT ({tablet})
+                DO NOTHING;
+                """
+
+        postgres_execute_insert_query(query)
+
+    ## - insert collection in collection_ref table
+    collection_name = df['collection'].unique()
+
+    for collection in collection_name:
+        query = f"""
+                INSERT INTO collection_ref (collection_name)
+                VALUES ({collection})
+                ON CONFLICT ({collection})
+                DO NOTHING;
+                """
+
+        postgres_execute_insert_query(query)
+
+    ## - insert view
+    view_name = df['view_name'].unique()
+
+    for view in view_name:
+        query = f"""
+                INSERT INTO view_ref (view_name)
+                VALUES ({view})
+                ON CONFLICT ({view})
+                DO NOTHING;
+                """
+
+        postgres_execute_insert_query(query)
+
+    ## - 
 
 
 
@@ -106,15 +116,21 @@ def get_image(ref_name: str, img_folder_path: dict) -> base64:
     Retrieve and encode an image associated.
 
     Parameters:
-    - ref_name (str): The name of the tablet to retrieve the image for.
+    - ref_name (str, required): Reference name to retrieve the image for.
+    - img_folder_path (dict, required): the folder image path 
 
     Returns:
     - str: Base64-encoded string representation of the binary image data.
+
+    >>> directories = {"a": '/path/to/img_folder_a', "b": '/path/to/img_folder_b'}
+    >>> img_encode = get_image("my_pic", directories)
+    >>> print(img_encode)
+    "jl1eKA2FfNnjx5cnKBPzL8V/8AnJPy95J8q/....."
     """
 
     ## - Get Image Path
-    for path in img_folder_path:
-        img_path = glob.glob(f'{path}{tablet_name}*')
+    for path in img_folder_path.values():
+        img_path = glob.glob(f'{path}{ref_name}*')
         if img_path: break
 
     ## - Convert Image to binaryData for BYTEA data type in db
@@ -156,7 +172,7 @@ def get_files_path(dir_path: dict) -> list:
 
 
 if __name__ == '__main__':
-    files = get_files_path(PATH)
+    files = get_files_path(CSV_FOLDER_PATH)
 
     for file in files:
         load_dataset(file)

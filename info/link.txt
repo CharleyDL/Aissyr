@@ -1,3 +1,10 @@
+-- Scientific Paper:
+
+https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0243039
+
+
+_______________________________________
+
 -- Single Shot detection
 
 https://www.kaggle.com/code/abedi756/ssd-single-shot-detection
