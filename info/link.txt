@@ -1,0 +1,3 @@
+-- Single Shot detection
+
+https://www.kaggle.com/code/abedi756/ssd-single-shot-detection
