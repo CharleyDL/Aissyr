@@ -1,27 +1,27 @@
 -- VIEW_REF
 CREATE TABLE IF NOT EXISTS view_ref (
-  id_view   INT PRIMARY KEY,
-  view_name VARCHAR(50)
+  id_view   SERIAL PRIMARY KEY,
+  view_name VARCHAR(50) UNIQUE
 );
 
 -- COLLECTION_REF
 CREATE TABLE IF NOT EXISTS collection_ref (
-  id_collection INT PRIMARY KEY,
-  collection_name VARCHAR(50)
+  id_collection SERIAL PRIMARY KEY,
+  collection_name VARCHAR(50) UNIQUE
 );
 
 -- TABLET_REF
 CREATE TABLE IF NOT EXISTS tablet_ref (
-  id_tablet     INT PRIMARY KEY,
-  tablet_name   VARCHAR(50),
-  picture       BYTEA,
+  id_tablet     SERIAL PRIMARY KEY,
+  tablet_name   VARCHAR(50) UNIQUE,
+  picture       BYTEA UNIQUE,
   id_collection INT NOT NULL,
   FOREIGN KEY (id_collection) REFERENCES collection_ref (id_collection)
 );
 
 -- SEGMENT_REF
 CREATE TABLE IF NOT EXISTS segment_ref (
-  segment_idx  INT PRIMARY KEY,
+  segment_idx  INT PRIMARY KEY UNIQUE,
   bbox_segment VARCHAR(50),
   scale        INT,
   id_view      INT NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS segment_ref (
 
 -- MZL_REF
 CREATE TABLE IF NOT EXISTS mzl_ref (
-  mzl_number     INT PRIMARY KEY,
+  mzl_number     INT PRIMARY KEY UNIQUE,
   train_label    INT,
   glyph_name     VARCHAR(50),
   glyph          VARCHAR(100),
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS mzl_ref (
 
 -- ANNOTATION_REF
 CREATE TABLE IF NOT EXISTS annotation_ref (
-  id_annotation INT PRIMARY KEY,
+  id_annotation SERIAL PRIMARY KEY,
   bbox          VARCHAR(100),
   relative_bbox VARCHAR(100),
   mzl_number    INT NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS identify (
 
 -- TABLET_INFRN
 CREATE TABLE IF NOT EXISTS tablet_infrn (
-  id_inference INT NOT NULL,
+  id_inference SERIAL NOT NULL,
   tablet_name  VARCHAR(50),
   picture      BYTEA,
   date         DATE,
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS tablet_infrn (
 
 -- INFRN_RESULT
 CREATE TABLE IF NOT EXISTS infrn_result (
-  id_infrn_result INT NOT NULL,
+  id_infrn_result SERIAL NOT NULL,
   bbox            VARCHAR(100),
   id_inference    INT NOT NULL,
   mzl_number      INT NOT NULL,

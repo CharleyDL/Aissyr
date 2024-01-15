@@ -16,61 +16,29 @@ import psycopg2
 
 ## - Personal libraries
 import config
-import postgres_utils
+import postgres_insert_utils as piu
 
 
 
 CSV_FOLDER_PATH = config.get_csv_path()
-IMAGE_FOLDER_PATH = config.get_img_path()
+
 
 
 
 
 
 def insert_annotation(df: pd.DataFrame) -> None:
-    ## - insert tablet (id_tablet(auto_increment), tablet_name, image) in tablet_ref table
-    tablet_name = df['tablet_CDLI'].unique()
+    ## - insert view_ref
+    piu.insert_view_ref(df)
 
-    for tablet in tablet_name:
-        ## - Get the corresponding image
-        img_encode = get_image(tablet, IMAGE_FOLDER_PATH)
+    ## - insert collection_ref
+    piu.insert_collection_ref(df)
 
-        query = f"""
-                INSERT INTO tablet_ref (tablet_name, picture)
-                VALUES ({tablet}, {img_encode})
-                ON CONFLICT ({tablet})
-                DO NOTHING;
-                """
+    ## - insert tablet_ref
+    # piu.insert_table_ref(df)
 
-        postgres_execute_insert_query(query)
 
-    ## - insert collection in collection_ref table
-    collection_name = df['collection'].unique()
 
-    for collection in collection_name:
-        query = f"""
-                INSERT INTO collection_ref (collection_name)
-                VALUES ({collection})
-                ON CONFLICT ({collection})
-                DO NOTHING;
-                """
-
-        postgres_execute_insert_query(query)
-
-    ## - insert view
-    view_name = df['view_name'].unique()
-
-    for view in view_name:
-        query = f"""
-                INSERT INTO view_ref (view_name)
-                VALUES ({view})
-                ON CONFLICT ({view})
-                DO NOTHING;
-                """
-
-        postgres_execute_insert_query(query)
-
-    ## - 
 
 
 
