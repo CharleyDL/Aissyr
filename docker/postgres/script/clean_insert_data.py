@@ -31,14 +31,16 @@ def insert_annotation(df: pd.DataFrame) -> None:
     ## - insert view_ref
     piu.insert_view_ref(df)
 
-    ## - insert collection_ref
+    ## - insert collection in collection_ref table
     piu.insert_collection_ref(df)
 
     ## - insert tablet_ref
-    # piu.insert_table_ref(df)
+    piu.insert_tablet_ref(df)
 
 
-
+def insert_segment(df: pd.DataFrame) -> None:
+    ## - insert segment_ref
+    piu.insert_segment_ref(df)
 
 
 
@@ -46,26 +48,30 @@ def df_annotation(df: pd.DataFrame) -> None:
     """Apply clean strategy to get the real insert df"""
 
     ## - Delete rows with segm_idx -1 and tablets P336663b, K09237Vs
-    df.drop(df[(df['segm_idx'] != -1) 
-               & ((df['tablet_CDLI'] == "P336663b") 
-                  | (df['tablet_CDLI'] == "K09237Vs"))].index, inplace=True)
+    df.drop(df[(df['segm_idx'] == -1)].index, inplace=True)
+    df.drop(df[(df['tablet_CDLI'] == "P336663b") 
+               | (df['tablet_CDLI'] == "K09237Vs")].index, inplace=True)
 
     ## - Reindex the df
     df.reset_index(drop=True, inplace=True)
     # print(df)
 
-    insert_annotation(df)
+    # insert_annotation(df)
 
 
 def df_segment(df: pd.DataFrame) -> None:
-    """Apply clean strategu to get real insert df"""
+    """Apply clean strategy to get real insert df"""
 
-    ## - Delete rows with no value in view_desc
+    ## - Delete rows with no value in view_desc and P336663b / K09237V tablets
     df.drop(df[df['view_desc'].isnull()].index, inplace=True)
+    df.drop(df[(df['tablet_CDLI'] == "P336663b") 
+               | (df['tablet_CDLI'] == "K09237Vs")].index, inplace=True)
 
     ## - Reindex the df
     df.reset_index(drop=True, inplace=True)
     # print(df)
+
+    insert_segment(df)
 
 
 def load_dataset(csv_path: str) -> None:

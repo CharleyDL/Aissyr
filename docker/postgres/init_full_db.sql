@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS collection_ref (
 -- TABLET_REF
 CREATE TABLE IF NOT EXISTS tablet_ref (
   id_tablet     SERIAL PRIMARY KEY,
-  tablet_name   VARCHAR(50) UNIQUE,
-  picture       BYTEA UNIQUE,
+  tablet_name   VARCHAR(50) UNIQUE NOT NULL,
+  picture       BYTEA NOT NULL,
   id_collection INT NOT NULL,
   FOREIGN KEY (id_collection) REFERENCES collection_ref (id_collection)
 );
