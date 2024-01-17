@@ -6,7 +6,9 @@ import clean_insert_data as cid
 
 
 CONFIG = config.get_db_config()
+CSV_FOLDER_PATH = config.get_csv_path()
 IMAGE_FOLDER_PATH = config.get_img_path()
+CSV_FILES = cid.get_files_path(CSV_FOLDER_PATH)
 
 
 
@@ -71,7 +73,7 @@ def postgres_execute_search_query(table: str, target_col: str,
 
 
 def insert_view_ref(df: pd.DataFrame) -> None:
-    view_name = sorted(df['view_desc'].dropna().unique())
+    view_name = sorted(df['view_desc'].unique())
     # print(view_name)
 
     for view in view_name:
@@ -121,32 +123,43 @@ def insert_tablet_ref(df: pd.DataFrame) -> None:
 
 
 def insert_segment_ref(df: pd.DataFrame) -> None:
+    ## - DF qui est le bbox_annotation_train puis test
+    ## - Get segment_idx
     segm_idx = df['segm_idx'].unique()
 
     for segment in segm_idx:
-        ## - Get all information from df
-        bbox = df.loc[df['segm_idx'] == segment, 'bbox'].unique()
-        scale = df.loc[df['segm_idx'] == segment, 'scale'].unique()
-
-        ## - Get id_view and id_tablet from DB
-        view_ref = df.loc[df['segm_idx'] == segment, 'view_desc'].unique()
-        id_view = postgres_execute_search_query('view_ref', 'id_view', 
-                                                'view_name', str(view_ref[0]))
+        ## - Get id_collection, id_tablet and id_view from DB
+        collection_ref = df.loc[df['segm_idx'] == segment, 'collection'].unique()
+        id_collection = postgres_execute_search_query('collection_ref', 'id_collection', 
+                                                'collection_name', str(collection_ref[0]))
 
         tablet_ref = df.loc[df['segm_idx'] == segment, 'tablet_CDLI'].unique()
         id_tablet = postgres_execute_search_query('tablet_ref', 'id_tablet', 
                                                 'tablet_name', str(tablet_ref[0]))
 
+        view_ref = df.loc[df['segm_idx'] == segment, 'view_desc'].unique()
+        id_view = postgres_execute_search_query('view_ref', 'id_view', 
+                                                'view_name', str(view_ref[0]))
+
+
+        print(segment, id_collection[0], id_tablet[0], id_view[0])
+
+        ## - Get all information from df
+        # bbox = df.loc[df['segm_idx'] == segment, 'bbox'].unique()
+        # scale = df.loc[df['segm_idx'] == segment, 'scale'].unique()
+
+
+
         # print(segment, bbox[0], scale[0], id_view[0], id_tablet[0])
 
-        query = f"""
-                INSERT INTO segment_ref (segment_idx, bbox_segment, scale,
-                                         id_view, id_tablet)
-                VALUES ('{segment}', '{bbox[0]}', {scale[0]}, 
-                         {id_view[0]}, {id_tablet[0]})
-                ON CONFLICT (segment_idx)
-                DO NOTHING;
-                """
+        # query = f"""
+        #         INSERT INTO segment_ref (segment_idx, bbox_segment, scale,
+        #                                  id_view, id_tablet)
+        #         VALUES ('{segment}', '{bbox[0]}', {scale[0]}, 
+        #                  {id_view[0]}, {id_tablet[0]})
+        #         ON CONFLICT (segment_idx)
+        #         DO NOTHING;
+        #         """
 
 
 #   segment_idx

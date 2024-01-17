@@ -21,14 +21,15 @@ CREATE TABLE IF NOT EXISTS tablet_ref (
 
 -- SEGMENT_REF
 CREATE TABLE IF NOT EXISTS segment_ref (
-  id_segment   SERIAL PRIMARY KEY,
-  segment_idx  INT NOT NULL,
-  bbox_segment VARCHAR(50) NOT NULL,
-  scale        INT,
-  id_view      INT NOT NULL,
-  id_tablet    INT NOT NULL,
+  id_segment    SERIAL PRIMARY KEY,
+  segment_idx   INT NOT NULL,
+  bbox_segment  VARCHAR(50) NOT NULL,
+  scale         INT,
+  id_collection INT NOT NULL,
+  id_tablet     INT NOT NULL,
+  id_view       INT NOT NULL,
+  FOREIGN KEY (id_collection) REFERENCES collection_ref (id_collection),
   FOREIGN KEY (id_tablet) REFERENCES tablet_ref (id_tablet),
-  FOREIGN KEY (id_collection) REFERENCES collection_ref (id_collection)
   FOREIGN KEY (id_view) REFERENCES view_ref (id_view)
 );
 
@@ -47,8 +48,8 @@ CREATE TABLE IF NOT EXISTS annotation_ref (
   bbox          VARCHAR(100) NOT NULL,
   relative_bbox VARCHAR(100) NOT NULL,
   mzl_number    INT NOT NULL,
-  segment_idx   INT NOT NULL,
-  FOREIGN KEY (segment_idx) REFERENCES segment_ref (segment_idx),
+  id_segment    INT NOT NULL,
+  FOREIGN KEY (id_segment) REFERENCES segment_ref (id_segment),
   FOREIGN KEY (mzl_number) REFERENCES mzl_ref (mzl_number)
 );
 
