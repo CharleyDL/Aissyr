@@ -179,3 +179,4 @@ if __name__ == '__main__':
         ## - Filter to get only bbox_annotation file
         if any(substring in file for substring in ["bbox"]):
             load_dataset(file)
+        break

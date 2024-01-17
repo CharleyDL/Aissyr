@@ -73,7 +73,7 @@ def postgres_execute_search_query(table: str, target_col: str,
 
 
 def insert_view_ref(df: pd.DataFrame) -> None:
-    view_name = sorted(df['view_desc'].unique())
+    view_name = df['view_desc'].unique()
     # print(view_name)
 
     for view in view_name:
@@ -123,28 +123,37 @@ def insert_tablet_ref(df: pd.DataFrame) -> None:
 
 
 def insert_segment_ref(df: pd.DataFrame) -> None:
-    ## - DF qui est le bbox_annotation_train puis test
-    ## - Get segment_idx
-    segm_idx = df['segm_idx'].unique()
 
-    for segment in segm_idx:
+    ## - Get all segm_idx corresponding to a collection, 
+    ##   same segm_idx in diff collection  (e.g., 0 in 'train', 0 in 'saa09').
+    segm_idx = df[['segm_idx', 'collection']].drop_duplicates()
+
+    for index, row in segm_idx.iterrows():
+        segment = row['segm_idx']
+
         ## - Get id_collection, id_tablet and id_view from DB
-        collection_ref = df.loc[df['segm_idx'] == segment, 'collection'].unique()
+        collection_ref = row['collection']
         id_collection = postgres_execute_search_query('collection_ref', 'id_collection', 
-                                                'collection_name', str(collection_ref[0]))
+                                                      'collection_name', str(collection_ref))
 
-        tablet_ref = df.loc[df['segm_idx'] == segment, 'tablet_CDLI'].unique()
+        tablet_ref = df.loc[((df['segm_idx'] == segment)\
+                              & (df['collection'] == collection_ref)), 'tablet_CDLI'].unique()
         id_tablet = postgres_execute_search_query('tablet_ref', 'id_tablet', 
-                                                'tablet_name', str(tablet_ref[0]))
+                                                  'tablet_name', str(tablet_ref[0]))
 
-        view_ref = df.loc[df['segm_idx'] == segment, 'view_desc'].unique()
+        view_ref = df.loc[((df['segm_idx'] == segment) \
+                           & (df['collection'] == collection_ref)), 'view_desc'].unique()
         id_view = postgres_execute_search_query('view_ref', 'id_view', 
                                                 'view_name', str(view_ref[0]))
 
+        print(segment, id_collection[0], id_tablet[0], id_view[0], )
 
-        print(segment, id_collection[0], id_tablet[0], id_view[0])
+        ## - Get BBox ans Scale from tablet_segments csv
+        # for file in CSV_FILES:
+        #     if any(substring in file for substring in f"{collection_ref}"):
+        #         print(file)
 
-        ## - Get all information from df
+        # - Get all information from df
         # bbox = df.loc[df['segm_idx'] == segment, 'bbox'].unique()
         # scale = df.loc[df['segm_idx'] == segment, 'scale'].unique()
 
