@@ -29,18 +29,32 @@ CSV_FOLDER_PATH = config.get_csv_path()
 
 def insert_annotation(df: pd.DataFrame) -> None:
     ## - insert view_ref
-    piu.insert_view_ref(df)
+    # piu.insert_view_ref(df)
 
     ## - insert collection in collection_ref table
-    piu.insert_collection_ref(df)
+    # piu.insert_collection_ref(df)
 
     ## - insert tablet_ref
-    piu.insert_tablet_ref(df)
+    # piu.insert_tablet_ref(df)
+
+    ## - insert segment_ref
+    # - récupérer segment et la collection
+    segm_idx = df['segm_idx'].unique()
+    print(segm_idx)
+
+    # - ouvrir le table_segment correspondant à la collection
+
+    # - récupérer les infos en question pour envoyer dans l'insert
+
+
+
+    # df_segment()
 
 
 def insert_segment(df: pd.DataFrame) -> None:
     ## - insert segment_ref
-    piu.insert_segment_ref(df)
+    # piu.insert_segment_ref(df)
+    pass
 
 
 
@@ -56,7 +70,7 @@ def df_annotation(df: pd.DataFrame) -> None:
     df.reset_index(drop=True, inplace=True)
     # print(df)
 
-    # insert_annotation(df)
+    insert_annotation(df)
 
 
 def df_segment(df: pd.DataFrame) -> None:
@@ -71,7 +85,7 @@ def df_segment(df: pd.DataFrame) -> None:
     df.reset_index(drop=True, inplace=True)
     # print(df)
 
-    insert_segment(df)
+    # insert_segment(df)
 
 
 def load_dataset(csv_path: str) -> None:
@@ -81,8 +95,8 @@ def load_dataset(csv_path: str) -> None:
 
     ## - Verification to apply the right clean-insert strategy
     if "bbox_annotations" in csv_path: df_annotation(df)
-    elif "tablet_segments" in csv_path: df_segment(df)
-    else: print("File not supported")
+    # elif "tablet_segments" in csv_path: df_segment(df)
+    # else: print("File not supported")
 
 
 def get_image(ref_name: str, img_folder_path: dict) -> base64:
