@@ -12,6 +12,7 @@ CSV_FILES = cid.get_files_path(CSV_FOLDER_PATH)
 
 
 
+
 def postgres_execute_insert_query(query: str) -> None:
     try:
         db = psycopg2.connect(**CONFIG)
@@ -123,7 +124,6 @@ def insert_tablet_ref(df: pd.DataFrame) -> None:
 
 
 def insert_segment_ref(df: pd.DataFrame) -> None:
-
     ## - Get all segm_idx corresponding to a collection, 
     ##   same segm_idx in diff collection  (e.g., 0 in 'train', 0 in 'saa09').
     segm_idx = df[['segm_idx', 'collection']].drop_duplicates()
@@ -146,33 +146,21 @@ def insert_segment_ref(df: pd.DataFrame) -> None:
         id_view = postgres_execute_search_query('view_ref', 'id_view', 
                                                 'view_name', str(view_ref[0]))
 
-        print(segment, id_collection[0], id_tablet[0], id_view[0], )
-
         ## - Get BBox ans Scale from tablet_segments csv
-        # for file in CSV_FILES:
-        #     if any(substring in file for substring in f"{collection_ref}"):
-        #         print(file)
+        for file in CSV_FILES:
+            if any(substring in file for substring in [f"tablet_segments_{collection_ref}"]):
+                df_segment = pd.read_csv(file)
 
-        # - Get all information from df
-        # bbox = df.loc[df['segm_idx'] == segment, 'bbox'].unique()
-        # scale = df.loc[df['segm_idx'] == segment, 'scale'].unique()
+                bbox = df_segment.loc[df_segment['segm_idx'] == segment, 'bbox'].unique()
+                scale = df_segment.loc[df_segment['segm_idx'] == segment, 'scale'].unique()
 
+                print(segment, bbox[0], scale[0], id_collection[0], id_tablet[0], id_view[0])
 
+                query = f"""
+                        INSERT INTO segment_ref (segment_idx, bbox_segment, scale,
+                                                 id_collection, id_tablet, id_view)
+                        VALUES ('{segment}', '{bbox[0]}', {scale[0]}, 
+                                 {id_collection[0]}, {id_tablet[0]}, {id_view[0]})
+                        """
 
-        # print(segment, bbox[0], scale[0], id_view[0], id_tablet[0])
-
-        # query = f"""
-        #         INSERT INTO segment_ref (segment_idx, bbox_segment, scale,
-        #                                  id_view, id_tablet)
-        #         VALUES ('{segment}', '{bbox[0]}', {scale[0]}, 
-        #                  {id_view[0]}, {id_tablet[0]})
-        #         ON CONFLICT (segment_idx)
-        #         DO NOTHING;
-        #         """
-
-
-#   segment_idx
-#   bbox_segment 
-#   scale  
-#   id_view
-#   id_tablet
+                postgres_execute_insert_query(query)

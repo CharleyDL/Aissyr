@@ -12,12 +12,10 @@ import base64
 import glob
 import os
 import pandas as pd
-import psycopg2
 
 ## - Personal libraries
 import config
 import postgres_insert_utils as piu
-
 
 
 CSV_FOLDER_PATH = config.get_csv_path()
@@ -25,46 +23,18 @@ CSV_FOLDER_PATH = config.get_csv_path()
 
 
 
-
-
 def insert_annotation(df: pd.DataFrame) -> None:
     ## - insert view_ref in view_ref table
-    # piu.insert_view_ref(df)
+    piu.insert_view_ref(df)
 
     ## - insert collection in collection_ref table
-    # piu.insert_collection_ref(df)
+    piu.insert_collection_ref(df)
 
     ## - insert tablet_ref in tablet_ref table
-    # piu.insert_tablet_ref(df)
+    piu.insert_tablet_ref(df)
 
-    ##------------------------------------##
     ## - insert segment_ref in segment_ref table
     piu.insert_segment_ref(df)
-
-    ## - récupérer segment et la collection
-    # print(segm_idx)
-
-    # - ouvrir le table_segment correspondant à la collection
-
-    # - récupérer les infos en question pour envoyer dans l'insert
-
-
-
-    # df_segment()
-
-
-
-
-
-"""
-def insert_segment(df: pd.DataFrame) -> None:
-    ## - insert segment_ref
-    # piu.insert_segment_ref(df)
-    pass
-"""
-
-
-
 
 
 def df_annotation(df: pd.DataFrame) -> None:
@@ -80,21 +50,6 @@ def df_annotation(df: pd.DataFrame) -> None:
     # print(df)
 
     insert_annotation(df)
-
-
-def df_segment(df: pd.DataFrame) -> None:
-    """Apply clean strategy to get real insert df"""
-
-    ## - Delete rows with no value in view_desc and P336663b / K09237V tablets
-    df.drop(df[df['view_desc'].isnull()].index, inplace=True)
-    df.drop(df[(df['tablet_CDLI'] == "P336663b") 
-               | (df['tablet_CDLI'] == "K09237Vs")].index, inplace=True)
-
-    ## - Reindex the df
-    df.reset_index(drop=True, inplace=True)
-    # print(df)
-
-    # insert_segment(df)
 
 
 def get_files_path(dir_path: dict) -> list:
@@ -159,15 +114,12 @@ def get_image(ref_name: str, img_folder_path: dict) -> base64:
     return binary_img
 
 
-def load_dataset(csv_path: str) -> None:
-    """Load dataset to clean before import in db"""
-    print(csv_path)
+def load_dataframe(csv_path: str) -> pd.DataFrame:
+    """Load dataframe"""
+    # print(csv_path)
     df = pd.read_csv(csv_path)
 
-    ## - Verification to apply the right clean-insert strategy
-    if "bbox_annotations" in csv_path: df_annotation(df)
-    # elif "tablet_segments" in csv_path: df_segment(df)
-    # else: print("File not supported")
+    return df
 
 
 
@@ -176,7 +128,6 @@ if __name__ == '__main__':
     files = get_files_path(CSV_FOLDER_PATH)
 
     for file in files:
-        ## - Filter to get only bbox_annotation file
+        ## - Filter to get only bbox_annotations files
         if any(substring in file for substring in ["bbox"]):
-            load_dataset(file)
-        break
+            df = load_dataframe(file)
