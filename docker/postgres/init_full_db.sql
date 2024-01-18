@@ -1,3 +1,11 @@
+/*******************************************************************************
+Create Date:        Friday 12 Jan. 2024
+Created by:         Charley ∆. Lebarbier
+Description:        Initialize the PostgreSQL Database to insert dataset schema 
+                    for AI training and save inferences from the webapp
+Call by:            [docker-compose.yml]
+*******************************************************************************/
+
 -- VIEW_REF
 CREATE TABLE IF NOT EXISTS view_ref (
   id_view   SERIAL PRIMARY KEY,

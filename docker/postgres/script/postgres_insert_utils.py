@@ -1,6 +1,19 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# ==============================================================================
+# Created By   : Charley ∆. Lebarbier
+# Date Created : Friday 12 Jan. 2024
+# ==============================================================================
+# Functions to insert in Postgres DB the data from different csv
+# Script defines functions to insert data from different CSV files into
+# PostgreSQL tables : view_ref, collection_ref, tablet_ref, and segment_ref 
+# tables.
+# ==============================================================================
+
 import pandas as pd
 import psycopg2
 
+## - Personal librairies
 import config
 import clean_insert_data as cid
 
@@ -14,6 +27,13 @@ CSV_FILES = cid.get_files_path(CSV_FOLDER_PATH)
 
 
 def postgres_execute_insert_query(query: str) -> None:
+    """
+    Execute an INSERT query in a PostgreSQL database.
+
+    Parameter:
+    -----------
+    query (str, required): The SQL query to be executed.
+    """
     try:
         db = psycopg2.connect(**CONFIG)
         cursor = db.cursor()
@@ -39,14 +59,19 @@ def postgres_execute_search_query(table: str, target_col: str,
 
     Parameters:
     -----------
-    - table_name (str, required): Table name to search in.
-    - target_col (str, required): Column from which to retrieve data.
-    - ref_col (str, required): Column to use as a reference for the search.
-    - ref_value (str, required): Value to search in the reference column.
+    table (str, required): Table name to search in.
+    target_col (str, required): Column from which to retrieve data.
+    ref_col (str, required): Column to use as a reference for the search.
+    ref_value (str, required): Value to search in the reference column.
 
-    Returns:
+    Return:
     --------
-    None
+    tuple: Query result
+
+    Example:
+    --------
+    >>> postgres_execute_search_query('my_table', 'my_column', 'id', '123')
+    ('result',)
     """
     try:
         db = psycopg2.connect(**CONFIG)
@@ -75,7 +100,6 @@ def postgres_execute_search_query(table: str, target_col: str,
 
 def insert_view_ref(df: pd.DataFrame) -> None:
     view_name = df['view_desc'].unique()
-    # print(view_name)
 
     for view in view_name:
         query = f"""
@@ -89,7 +113,6 @@ def insert_view_ref(df: pd.DataFrame) -> None:
 
 def insert_collection_ref(df: pd.DataFrame) -> None:
     collection_name = sorted(df['collection'].dropna().unique())
-    # print(collection_name)
 
     for collection in collection_name:
         query = f"""
@@ -153,8 +176,6 @@ def insert_segment_ref(df: pd.DataFrame) -> None:
 
                 bbox = df_segment.loc[df_segment['segm_idx'] == segment, 'bbox'].unique()
                 scale = df_segment.loc[df_segment['segm_idx'] == segment, 'scale'].unique()
-
-                print(segment, bbox[0], scale[0], id_collection[0], id_tablet[0], id_view[0])
 
                 query = f"""
                         INSERT INTO segment_ref (segment_idx, bbox_segment, scale,

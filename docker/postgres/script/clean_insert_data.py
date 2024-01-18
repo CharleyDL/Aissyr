@@ -4,16 +4,18 @@
 # Created By   : Charley ∆. Lebarbier
 # Date Created : Friday 12 Jan. 2024
 # ==============================================================================
-# Script to clean dataset and insert data into Postgres DB
+# Script to clean 'bbox_annotations' dataset and insert its data into a 
+# PostgreSQL database. MAIN TASKS : Loading CSV files, applying data cleaning 
+# strategies, and send data for importation to 'postgres_insert_utils' 
+# (piu) script.
 # ==============================================================================
 
-## - General libraries
 import base64
 import glob
 import os
 import pandas as pd
 
-## - Personal libraries
+## - Personal librairies
 import config
 import postgres_insert_utils as piu
 
@@ -24,30 +26,37 @@ CSV_FOLDER_PATH = config.get_csv_path()
 
 
 def insert_annotation(df: pd.DataFrame) -> None:
-    ## - insert view_ref in view_ref table
+    """
+    Insert 'bbox_annotations' data into PostgreSQL tables :
+    view_ref, collection_ref, tablet_ref, and segment_ref.
+
+    Parameter:
+    -----------
+    df (DataFrame, required): DataFrame containing 'bbox_annotations' data
+    """
     piu.insert_view_ref(df)
-
-    ## - insert collection in collection_ref table
     piu.insert_collection_ref(df)
-
-    ## - insert tablet_ref in tablet_ref table
     piu.insert_tablet_ref(df)
-
-    ## - insert segment_ref in segment_ref table
     piu.insert_segment_ref(df)
 
 
 def df_annotation(df: pd.DataFrame) -> None:
-    """Apply clean strategy to get the real insert df"""
+    """
+    Apply cleaning strategies to the 'bbox_annotations' DataFrame before 
+    insertion.
+
+    Parameter:
+    -----------
+    df (pd.DataFrame, required): DataFrame containing 'bbox_annotations' 
+    data needed to be cleaned and inserted into the Postgres Database.
+    """
 
     ## - Delete rows with segm_idx -1 and tablets P336663b, K09237Vs
     df.drop(df[(df['segm_idx'] == -1)].index, inplace=True)
     df.drop(df[(df['tablet_CDLI'] == "P336663b") 
                | (df['tablet_CDLI'] == "K09237Vs")].index, inplace=True)
 
-    ## - Reindex the df
     df.reset_index(drop=True, inplace=True)
-    # print(df)
 
     insert_annotation(df)
 
@@ -56,13 +65,15 @@ def get_files_path(dir_path: dict) -> list:
     """
     Get a list of all file paths from specified directories.
 
-    Parameters:
+    Parameter:
     -----------
-    dir_path (dict): A dictionary containing directory names as keys and their paths as values.
+    dir_path (dict, required): A dictionary containing directory names 
+    as keys and their paths as values.
 
-    Returns:
+    Return:
     --------
-    list: A list containing the full paths of all files in the specified directories.
+    list: A list containing the full paths of all files from specific 
+    directories.
 
     Example:
     --------
@@ -114,14 +125,6 @@ def get_image(ref_name: str, img_folder_path: dict) -> base64:
     return binary_img
 
 
-def load_dataframe(csv_path: str) -> pd.DataFrame:
-    """Load dataframe"""
-    # print(csv_path)
-    df = pd.read_csv(csv_path)
-
-    return df
-
-
 
 
 if __name__ == '__main__':
@@ -130,4 +133,5 @@ if __name__ == '__main__':
     for file in files:
         ## - Filter to get only bbox_annotations files
         if any(substring in file for substring in ["bbox"]):
-            df = load_dataframe(file)
+            df = pd.read_csv(file)
+            df_annotation(df)
