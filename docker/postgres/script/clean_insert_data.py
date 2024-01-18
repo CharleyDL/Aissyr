@@ -40,6 +40,11 @@ def insert_annotation(df: pd.DataFrame) -> None:
     piu.insert_segment_ref(df)
 
 
+def insert_mzl() -> None:
+    pass
+
+
+
 def df_annotation(df: pd.DataFrame) -> None:
     """
     Apply cleaning strategies to the 'bbox_annotations' DataFrame before 

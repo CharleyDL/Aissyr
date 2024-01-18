@@ -185,3 +185,7 @@ def insert_segment_ref(df: pd.DataFrame) -> None:
                         """
 
                 postgres_execute_insert_query(query)
+
+
+def insert_mzl_ref() -> None:
+    pass

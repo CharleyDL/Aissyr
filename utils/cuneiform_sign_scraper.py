@@ -56,11 +56,12 @@ def get_glyph(html_content: str, data_dict: dict) -> None:
 
 
 def get_phonetics(html_content: str, data_dict: dict) -> None:
-    ## - Get all content of the page because phonetic have two parts of which 
-    ## - one without tag
     all_content = html_content.find('div', class_='signs__sign').text.strip()
-    glyph_phonetics = re.findall(r'\b(?!MZL\b)[a-zA-Z₀₁₂₃₄₅₆₇₈₉]+\b',
-                                 all_content)
+    glyph_phonetics = re.findall(r'\((.*?)\)', all_content)
+
+    ## - old version - don't find all phonetic
+    # glyph_phonetics = re.findall(r'\b(?!MZL\b)[a-zA-Z₀₁₂₃₄₅₆₇₈₉]+\b', all_content)
+
     data_dict['phonetic'] = glyph_phonetics
 
 
