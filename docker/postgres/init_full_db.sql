@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS segment_ref (
   id_segment    SERIAL PRIMARY KEY,
   segment_idx   INT NOT NULL,
   bbox_segment  VARCHAR(50) NOT NULL,
-  scale         FLOAT,
+  scale         DOUBLE PRECISION,
   id_collection INT NOT NULL,
   id_tablet     INT NOT NULL,
   id_view       INT NOT NULL,
