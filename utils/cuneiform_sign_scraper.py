@@ -37,6 +37,8 @@ PATH_JSON_SAVE = "data/neo_assyrien_info.json"
 mzl_not_found = []
 
 
+
+
 def dict_to_json(dict_to_convert: dict, output_file_path: str) -> None:
     with open(output_file_path, "w", encoding='utf-8') as outfile:
         json.dump(dict_to_convert, outfile, indent=4, ensure_ascii=False)
@@ -58,10 +60,6 @@ def get_glyph(html_content: str, data_dict: dict) -> None:
 def get_phonetics(html_content: str, data_dict: dict) -> None:
     all_content = html_content.find('div', class_='signs__sign').text.strip()
     glyph_phonetics = re.findall(r'\((.*?)\)', all_content)
-
-    ## - old version - don't find all phonetic
-    # glyph_phonetics = re.findall(r'\b(?!MZL\b)[a-zA-Z₀₁₂₃₄₅₆₇₈₉]+\b', all_content)
-
     data_dict['phonetic'] = glyph_phonetics
 
 
