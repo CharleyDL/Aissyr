@@ -8,7 +8,7 @@ DF, 11 SEGMENT_REF, 1N> VIEW_REF
 MZL_REF: mzl_number [INT], train_label [INT], glyph_name [VARCHAR(50)], glyph [VARCHAR(100)], glyph_phonetic [VARCHAR(5000)]
 IDENTIFY_REF, 11 ANNOTATION_REF, 0N MZL_REF
 
-TABLET_REF: id_tablet[INT], tablet_name[VARCHAR(50)], picture[BYTEA]
+TABLET_REF: id_tablet[INT], tablet_name[VARCHAR(50)], set_split[VARCHAR(50)], picture[BYTEA]
 DF, 1N> TABLET_REF, 11 SEGMENT_REF
 SEGMENT_REF: id_segment[INT], segment_idx [INT], bbox_segment [VARCHAR(50)], scale [INT]
 DF, 1N> SEGMENT_REF, 11 ANNOTATION_REF
@@ -58,7 +58,7 @@ DF, 11 SEGMENT_REF, 1N> VIEW_REF
 MZL_REF: mzl_number [INT], train_label [INT], glyph_name [VARCHAR(50)], glyph [VARCHAR(100)], glyph_phonetic [VARCHAR(5000)]
 IDENTIFY_REF, 11 ANNOTATION_REF, 0N MZL_REF
 
-TABLET_REF: id_tablet[INT], tablet_name[VARCHAR(50)], picture[BYTEA]
+TABLET_REF: id_tablet[INT], tablet_name[VARCHAR(50)], set_split[VARCHAR(50)], picture[BYTEA]
 DF, 1N> TABLET_REF, 11 SEGMENT_REF
 SEGMENT_REF: id_segment[INT], segment_idx [INT], bbox_segment [VARCHAR(50)], scale [INT]
 DF, 1N> SEGMENT_REF, 11 ANNOTATION_REF

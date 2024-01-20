@@ -32,7 +32,7 @@ chrome_options.add_argument("--headless")
 
 
 URL_EBL = "https://www.ebl.uni-muenchen.de/signs?listsName=MZL&listsNumber={}"
-PATH_JSON_SAVE = "data/neo_assyrien_info.json"
+PATH_JSON_SAVE = "data/neo_assyrian_info.json"
 
 mzl_not_found = []
 
@@ -60,6 +60,8 @@ def get_glyph(html_content: str, data_dict: dict) -> None:
 def get_phonetics(html_content: str, data_dict: dict) -> None:
     all_content = html_content.find('div', class_='signs__sign').text.strip()
     glyph_phonetics = re.findall(r'\((.*?)\)', all_content)
+    glyph_phonetics = [f'{phonetic}' for element in glyph_phonetics\
+                                    for phonetic in element.split(', ')]
     data_dict['phonetic'] = glyph_phonetics
 
 

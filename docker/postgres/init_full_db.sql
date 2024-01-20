@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS collection_ref (
 CREATE TABLE IF NOT EXISTS tablet_ref (
   id_tablet     SERIAL PRIMARY KEY,
   tablet_name   VARCHAR(50) UNIQUE NOT NULL,
+  set_split     VARCHAR(50) NOT NULL,
   picture       BYTEA NOT NULL,
   id_collection INT NOT NULL,
   FOREIGN KEY (id_collection) REFERENCES collection_ref (id_collection)
@@ -44,7 +45,7 @@ CREATE TABLE IF NOT EXISTS segment_ref (
 -- MZL_REF
 CREATE TABLE IF NOT EXISTS mzl_ref (
   mzl_number     INT PRIMARY KEY UNIQUE,
-  train_label    INT NOT NULL,
+  train_label    INT,
   glyph_name     VARCHAR(50),
   glyph          VARCHAR(100),
   glyph_phonetic VARCHAR(5000)
@@ -57,8 +58,8 @@ CREATE TABLE IF NOT EXISTS annotation_ref (
   relative_bbox VARCHAR(100) NOT NULL,
   mzl_number    INT NOT NULL,
   id_segment    INT NOT NULL,
-  FOREIGN KEY (id_segment) REFERENCES segment_ref (id_segment),
   FOREIGN KEY (mzl_number) REFERENCES mzl_ref (mzl_number)
+  FOREIGN KEY (id_segment) REFERENCES segment_ref (id_segment),
 );
 
 -- REVEAL
@@ -66,8 +67,8 @@ CREATE TABLE IF NOT EXISTS reveal (
   id_tablet INT NOT NULL,
   id_view   INT NOT NULL,
   PRIMARY KEY (id_tablet, id_view),
-  FOREIGN KEY (id_view) REFERENCES view_ref (id_view),
   FOREIGN KEY (id_tablet) REFERENCES tablet_ref (id_tablet)
+  FOREIGN KEY (id_view) REFERENCES view_ref (id_view),
 );
 
 -- IDENTIFY
@@ -95,6 +96,6 @@ CREATE TABLE IF NOT EXISTS infrn_result (
   id_inference    INT NOT NULL,
   mzl_number      INT NOT NULL,
   PRIMARY KEY (id_infrn_result),
-  FOREIGN KEY (mzl_number) REFERENCES mzl_ref (mzl_number),
   FOREIGN KEY (id_inference) REFERENCES tablet_infrn (id_inference)
+  FOREIGN KEY (mzl_number) REFERENCES mzl_ref (mzl_number),
 );

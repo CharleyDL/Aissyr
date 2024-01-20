@@ -49,38 +49,24 @@ def postgres_execute_insert_query(query: str) -> None:
         if db:
             cursor.close()
             db.close()
-            print("PostgreSQL connection is closed")
+            # print("PostgreSQL connection is closed")
 
 
-def postgres_execute_search_query(table: str, target_col: str, 
-                                  ref_col: str, ref_value: str) -> tuple:
+def postgres_execute_search_query(query: str) -> tuple:
     """
     Execute a search query in a PostgreSQL database.
 
     Parameters:
     -----------
-    table (str, required): Table name to search in.
-    target_col (str, required): Column from which to retrieve data.
-    ref_col (str, required): Column to use as a reference for the search.
-    ref_value (str, required): Value to search in the reference column.
+    query (str, required): The SQL query to be executed.
 
     Return:
     --------
     tuple: Query result
-
-    Example:
-    --------
-    >>> postgres_execute_search_query('my_table', 'my_column', 'id', '123')
-    ('result',)
     """
     try:
         db = psycopg2.connect(**CONFIG)
         cursor = db.cursor()
-
-        query = f"""
-                SELECT {target_col} FROM {table}
-                WHERE {ref_col} = '{ref_value}';
-                """
         cursor.execute(query)
         result = cursor.fetchone()
 
@@ -124,7 +110,7 @@ def insert_collection_ref(df: pd.DataFrame) -> None:
         postgres_execute_insert_query(query)
 
 
-def insert_tablet_ref(df: pd.DataFrame) -> None:
+def insert_tablet_ref(df: pd.DataFrame, set_split) -> None:
     tablet_name = df['tablet_CDLI'].unique()
 
     for tablet in tablet_name:
@@ -133,12 +119,17 @@ def insert_tablet_ref(df: pd.DataFrame) -> None:
 
         ## - Retrieve id_collection to insert
         coll_ref = df.loc[df['tablet_CDLI'] == tablet, 'collection'].unique()
-        id_collection = postgres_execute_search_query('collection_ref', 'id_collection',
-                                                      'collection_name', str(coll_ref[0]))
+        search_query = f"""
+                        SELECT id_collection FROM collection_ref
+                         WHERE collection_name = '{str(coll_ref[0])}';
+                        """
+        id_collection = postgres_execute_search_query(search_query)
 
         query = f"""
-                INSERT INTO tablet_ref (tablet_name, picture, id_collection)
-                VALUES ('{tablet}', '{img_encode}', {id_collection[0]})
+                INSERT INTO tablet_ref (tablet_name, set_split, 
+                                        picture, id_collection)
+                VALUES ('{tablet}', '{set_split}', 
+                        '{img_encode}', {id_collection[0]})
                 ON CONFLICT (tablet_name)
                 DO NOTHING;
                 """
@@ -156,36 +147,110 @@ def insert_segment_ref(df: pd.DataFrame) -> None:
 
         ## - Get id_collection, id_tablet and id_view from DB
         collection_ref = row['collection']
-        id_collection = postgres_execute_search_query('collection_ref', 'id_collection', 
-                                                      'collection_name', str(collection_ref))
+        coll_search_query = f"""
+                             SELECT id_collection FROM collection_ref
+                              WHERE collection_name = '{str(collection_ref)}';
+                             """
+        id_collection = postgres_execute_search_query(coll_search_query)
 
         tablet_ref = df.loc[((df['segm_idx'] == segment)\
-                              & (df['collection'] == collection_ref)), 'tablet_CDLI'].unique()
-        id_tablet = postgres_execute_search_query('tablet_ref', 'id_tablet', 
-                                                  'tablet_name', str(tablet_ref[0]))
+            & (df['collection'] == collection_ref)), 'tablet_CDLI'].unique()
+        tab_search_query = f"""
+                            SELECT id_tablet FROM tablet_ref
+                             WHERE tablet_name = '{str(tablet_ref[0])}';
+                            """
+        id_tablet = postgres_execute_search_query(tab_search_query)
 
-        view_ref = df.loc[((df['segm_idx'] == segment) \
-                           & (df['collection'] == collection_ref)), 'view_desc'].unique()
-        id_view = postgres_execute_search_query('view_ref', 'id_view', 
-                                                'view_name', str(view_ref[0]))
+        view_ref = df.loc[((df['segm_idx'] == segment)\
+            & (df['collection'] == collection_ref)), 'view_desc'].unique()
+        view_search_query = f"""
+                             SELECT id_view FROM view_ref
+                              WHERE view_name = '{str(view_ref[0])}';
+                             """
+        id_view = postgres_execute_search_query(view_search_query)
 
         ## - Get BBox ans Scale from tablet_segments csv
         for file in CSV_FILES:
-            if any(substring in file for substring in [f"tablet_segments_{collection_ref}"]):
+            if any(substring in file for substring in\
+                  [f"tablet_segments_{collection_ref}"]):
+ 
                 df_segment = pd.read_csv(file)
 
-                bbox = df_segment.loc[df_segment['segm_idx'] == segment, 'bbox'].unique()
-                scale = df_segment.loc[df_segment['segm_idx'] == segment, 'scale'].unique()
+                bbox = df_segment.loc[df_segment['segm_idx']\
+                                       == segment, 'bbox'].unique()
+                scale = df_segment.loc[df_segment['segm_idx']\
+                                        == segment, 'scale'].unique()
 
                 query = f"""
-                        INSERT INTO segment_ref (segment_idx, bbox_segment, scale,
-                                                 id_collection, id_tablet, id_view)
+                        INSERT INTO segment_ref (segment_idx, bbox_segment, 
+                                                scale, id_collection, 
+                                                id_tablet, id_view)
                         VALUES ('{segment}', '{bbox[0]}', {scale[0]}, 
-                                 {id_collection[0]}, {id_tablet[0]}, {id_view[0]})
+                                 {id_collection[0]}, {id_tablet[0]}, 
+                                 {id_view[0]})
                         """
 
                 postgres_execute_insert_query(query)
 
 
-def insert_mzl_ref() -> None:
+def insert_mzl_ref(mzl_dict: dict) -> None:
+    ## - Get the train_label if exist
+    for file in CSV_FILES:
+        if any(substring in file for substring in [f"bbox"]):
+            df_bbox = pd.read_csv(file)
+            control_df = df_bbox[df_bbox['mzl_label']\
+                                  == mzl_dict['mzl_number']].head(1)
+
+            if not control_df.empty:
+                train_label = control_df['train_label'].values[0]
+            else : 
+                train_label = None
+            break
+
+    ## - Complete dict when no information on some glyph (ex: 48, 58...)
+    if 'name' not in mzl_dict: mzl_dict['name'] = None
+    if 'glyph' not in mzl_dict: mzl_dict['glyph'] = None
+    if 'phonetic' not in mzl_dict: mzl_dict['phonetic'] = None
+
+    query = f"""
+             INSERT INTO mzl_ref (mzl_number, train_label, 
+                                  glyph_name, glyph, glyph_phonetic)
+             VALUES ({mzl_dict['mzl_number']}, {train_label}, 
+                     '{mzl_dict['name']}', '{mzl_dict['glyph']}', 
+                     '{mzl_dict['phonetic']}')
+             """
+
+    # print(query)
+
+    postgres_execute_insert_query(query)
+
+
+def insert_annotation_ref(df):
+    for index, row in df.iterrows():
+        print(row)
+
+        ## - Get id_segment from DB,
+        segment_search_query = f"""
+                SELECT sr.id_segment FROM segment_ref sr
+                  JOIN collection_ref cr ON sr.id_collection = cr.id_collection
+                 WHERE cr.collection_name = '{row['collection']}'
+                   AND sr.segment_idx = {row['segm_idx']};
+        """
+        id_segment = postgres_execute_search_query(segment_search_query)
+
+        query = f"""
+                 INSERT INTO annotation_ref(bbox, relative_bbox,
+                                            mzl_number, id_segment)
+                      VALUES ({row['bbox']}, {row['relative_bbox']}, 
+                              {row['mzl_label']}, {id_segment[0]})
+                 """
+
+        # postgres_execute_insert_query(query)
+
+
+def insert_reveal():
+    pass
+
+
+def insert_identify():
     pass

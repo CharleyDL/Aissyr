@@ -12,6 +12,7 @@
 
 import base64
 import glob
+import json
 import os
 import pandas as pd
 
@@ -21,11 +22,14 @@ import postgres_insert_utils as piu
 
 
 CSV_FOLDER_PATH = config.get_csv_path()
+# JSON_FILES = config.get_json_path()
+
+# with open(JSON_FILES['mzl_ref']) as mzl_json:
+#     MZL_DATA = json.load(mzl_json)
 
 
 
-
-def insert_annotation(df: pd.DataFrame) -> None:
+def insert_bbox_annotations_file(df: pd.DataFrame, label_file) -> None:
     """
     Insert 'bbox_annotations' data into PostgreSQL tables :
     view_ref, collection_ref, tablet_ref, and segment_ref.
@@ -33,19 +37,20 @@ def insert_annotation(df: pd.DataFrame) -> None:
     Parameter:
     -----------
     df (DataFrame, required): DataFrame containing 'bbox_annotations' data
+    label_file (str, required): Define if file is the train or test set
     """
-    piu.insert_view_ref(df)
-    piu.insert_collection_ref(df)
-    piu.insert_tablet_ref(df)
-    piu.insert_segment_ref(df)
+    # piu.insert_view_ref(df)
+    # piu.insert_collection_ref(df)
+    # piu.insert_tablet_ref(df, label_file)
+    # piu.insert_segment_ref(df)
+
+    # for mzl_number in MZL_DATA:
+    #     piu.insert_mzl_ref(mzl_number)
+
+    piu.insert_annotation_ref(df)
 
 
-def insert_mzl() -> None:
-    pass
-
-
-
-def df_annotation(df: pd.DataFrame) -> None:
+def df_bbox_annotations(df: pd.DataFrame, label_file) -> None:
     """
     Apply cleaning strategies to the 'bbox_annotations' DataFrame before 
     insertion.
@@ -63,7 +68,7 @@ def df_annotation(df: pd.DataFrame) -> None:
 
     df.reset_index(drop=True, inplace=True)
 
-    insert_annotation(df)
+    insert_bbox_annotations_file(df, label_file)
 
 
 def get_files_path(dir_path: dict) -> list:
@@ -137,6 +142,9 @@ if __name__ == '__main__':
 
     for file in files:
         ## - Filter to get only bbox_annotations files
-        if any(substring in file for substring in ["bbox"]):
+        if any(substring in file for substring in ["bbox_annotations_"]):
             df = pd.read_csv(file)
-            df_annotation(df)
+            if (any(substring in file for substring in ["train"])):
+                df_bbox_annotations(df, "train")
+            else:
+                df_bbox_annotations(df, "test")
