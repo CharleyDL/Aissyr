@@ -127,6 +127,7 @@ def insert_tablet_ref(df: pd.DataFrame, set_split) -> None:
                         """
         id_collection = postgres_execute_search_query(search_query)
 
+        ## - Insert
         query = f"""
                 INSERT INTO tablet_ref (tablet_name, set_split, 
                                         picture, id_collection)
@@ -183,6 +184,7 @@ def insert_segment_ref(df: pd.DataFrame) -> None:
                 scale = df_segment.loc[df_segment['segm_idx']\
                                         == segment, 'scale'].unique()
 
+                ## - Insert
                 query = f"""
                         INSERT INTO segment_ref (segment_idx, bbox_segment, 
                                                 scale, id_collection, 
@@ -215,6 +217,7 @@ def insert_mzl_ref(mzl_dict: dict) -> None:
     if 'phonetic' not in mzl_dict or not mzl_dict['phonetic']:
         mzl_dict['phonetic'] = 'NULL'
 
+    ## - Insert
     query = f"""
             INSERT INTO mzl_ref (mzl_number, train_label, 
                                 glyph_name, glyph, glyph_phonetic)
@@ -238,6 +241,7 @@ def insert_annotation_ref(df):
         """
         id_segment = postgres_execute_search_query(segment_search_query)
 
+        ## - Insert
         query = f"""
                  INSERT INTO annotation_ref(bbox, relative_bbox,
                                             mzl_number, id_segment)
@@ -248,8 +252,34 @@ def insert_annotation_ref(df):
         postgres_execute_insert_query(query)
 
 
-def insert_reveal():
-    pass
+def insert_reveal(df):
+    ## - Get id_tablet
+    tablet_name = df['tablet_CDLI'].unique()
+    tablet_view = df[['tablet_CDLI', 'view_desc']].drop_duplicates()
+
+    for tablet in tablet_name:
+        tab_search_query = f"""
+            SELECT id_tablet FROM tablet_ref
+                WHERE tablet_name = '{tablet}';
+            """
+        id_tablet = postgres_execute_search_query(tab_search_query)
+
+        ## - Get id_view
+        for index, row in tqdm(tablet_view[tablet_view['tablet_CDLI']== tablet]\
+                               .iterrows(), total=tablet_view.shape[0]):
+            view_ref = row['view_desc']
+            view_search_query = f"""
+                                    SELECT id_view FROM view_ref
+                                    WHERE view_name = '{view_ref}';
+                                    """
+            id_view = postgres_execute_search_query(view_search_query)
+
+            ## - Insert
+            query = f"""
+                    INSERT INTO reveal(id_tablet, id_view)
+                        VALUES ({id_tablet[0]}, {id_view[0]})
+                    """
+            postgres_execute_insert_query(query)
 
 
 def insert_identify():
