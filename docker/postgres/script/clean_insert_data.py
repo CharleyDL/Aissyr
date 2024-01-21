@@ -20,12 +20,15 @@ import pandas as pd
 import config
 import postgres_insert_utils as piu
 
+from tqdm import tqdm
 
 CSV_FOLDER_PATH = config.get_csv_path()
-# JSON_FILES = config.get_json_path()
+JSON_FILES = config.get_json_path()
+JSON_INSERTED = False
 
-# with open(JSON_FILES['mzl_ref']) as mzl_json:
-#     MZL_DATA = json.load(mzl_json)
+with open(JSON_FILES['mzl_ref']) as mzl_json:
+    MZL_DATA = json.load(mzl_json)
+
 
 
 
@@ -39,14 +42,29 @@ def insert_bbox_annotations_file(df: pd.DataFrame, label_file) -> None:
     df (DataFrame, required): DataFrame containing 'bbox_annotations' data
     label_file (str, required): Define if file is the train or test set
     """
-    # piu.insert_view_ref(df)
-    # piu.insert_collection_ref(df)
-    # piu.insert_tablet_ref(df, label_file)
-    # piu.insert_segment_ref(df)
 
-    # for mzl_number in MZL_DATA:
-    #     piu.insert_mzl_ref(mzl_number)
+    global JSON_INSERTED
 
+    print("-- Insertion view_ref:")
+    piu.insert_view_ref(df)
+
+    print("-- Insertion collection_ref:")
+    piu.insert_collection_ref(df)
+
+    print("-- Insertion tablet_ref:")
+    piu.insert_tablet_ref(df, label_file)
+
+    print("-- Insertion segment_ref:")
+    piu.insert_segment_ref(df)
+
+    ## - Insert mzl_ref just one time
+    if not JSON_INSERTED:
+        print("-- Insertion mzl_ref:")
+        for mzl_number in tqdm(MZL_DATA):
+            piu.insert_mzl_ref(mzl_number)
+        JSON_INSERTED = True
+
+    print("-- Insertion annotation_ref:")
     piu.insert_annotation_ref(df)
 
 
@@ -54,17 +72,19 @@ def df_bbox_annotations(df: pd.DataFrame, label_file) -> None:
     """
     Apply cleaning strategies to the 'bbox_annotations' DataFrame before 
     insertion.
+    Currently : Delete rows with segm_idx -1, MZL out of bounds and tablets 
+    P336663b, K09237Vs
 
     Parameter:
     -----------
     df (pd.DataFrame, required): DataFrame containing 'bbox_annotations' 
     data needed to be cleaned and inserted into the Postgres Database.
     """
-
-    ## - Delete rows with segm_idx -1 and tablets P336663b, K09237Vs
     df.drop(df[(df['segm_idx'] == -1)].index, inplace=True)
+    df.drop(df[(df['mzl_label'] < 1)
+                & df['mzl_label'] > 907].index, inplace=True)
     df.drop(df[(df['tablet_CDLI'] == "P336663b") 
-               | (df['tablet_CDLI'] == "K09237Vs")].index, inplace=True)
+                | (df['tablet_CDLI'] == "K09237Vs")].index, inplace=True)
 
     df.reset_index(drop=True, inplace=True)
 
@@ -145,6 +165,8 @@ if __name__ == '__main__':
         if any(substring in file for substring in ["bbox_annotations_"]):
             df = pd.read_csv(file)
             if (any(substring in file for substring in ["train"])):
+                print("-- INSERT TRAIN --")
                 df_bbox_annotations(df, "train")
             else:
+                print("\n", "-- INSERT TEST --")
                 df_bbox_annotations(df, "test")

@@ -58,8 +58,8 @@ CREATE TABLE IF NOT EXISTS annotation_ref (
   relative_bbox VARCHAR(100) NOT NULL,
   mzl_number    INT NOT NULL,
   id_segment    INT NOT NULL,
-  FOREIGN KEY (mzl_number) REFERENCES mzl_ref (mzl_number)
-  FOREIGN KEY (id_segment) REFERENCES segment_ref (id_segment),
+  FOREIGN KEY (mzl_number) REFERENCES mzl_ref (mzl_number),
+  FOREIGN KEY (id_segment) REFERENCES segment_ref (id_segment)
 );
 
 -- REVEAL
@@ -67,8 +67,8 @@ CREATE TABLE IF NOT EXISTS reveal (
   id_tablet INT NOT NULL,
   id_view   INT NOT NULL,
   PRIMARY KEY (id_tablet, id_view),
-  FOREIGN KEY (id_tablet) REFERENCES tablet_ref (id_tablet)
-  FOREIGN KEY (id_view) REFERENCES view_ref (id_view),
+  FOREIGN KEY (id_tablet) REFERENCES tablet_ref (id_tablet),
+  FOREIGN KEY (id_view) REFERENCES view_ref (id_view)
 );
 
 -- IDENTIFY
@@ -96,6 +96,6 @@ CREATE TABLE IF NOT EXISTS infrn_result (
   id_inference    INT NOT NULL,
   mzl_number      INT NOT NULL,
   PRIMARY KEY (id_infrn_result),
-  FOREIGN KEY (id_inference) REFERENCES tablet_infrn (id_inference)
-  FOREIGN KEY (mzl_number) REFERENCES mzl_ref (mzl_number),
+  FOREIGN KEY (id_inference) REFERENCES tablet_infrn (id_inference),
+  FOREIGN KEY (mzl_number) REFERENCES mzl_ref (mzl_number)
 );

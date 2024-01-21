@@ -17,6 +17,8 @@ import psycopg2
 import config
 import clean_insert_data as cid
 
+from tqdm import tqdm
+
 
 CONFIG = config.get_db_config()
 CSV_FOLDER_PATH = config.get_csv_path()
@@ -40,7 +42,7 @@ def postgres_execute_insert_query(query: str) -> None:
         cursor.execute(query)
         db.commit()
 
-        print("Insertion Done")
+        # print("Insertion Done")
 
     except (Exception, psycopg2.Error) as error:
         print(f"Failed : {error}")
@@ -87,7 +89,7 @@ def postgres_execute_search_query(query: str) -> tuple:
 def insert_view_ref(df: pd.DataFrame) -> None:
     view_name = df['view_desc'].unique()
 
-    for view in view_name:
+    for view in tqdm(view_name):
         query = f"""
                 INSERT INTO view_ref (view_name)
                 VALUES ('{view}')
@@ -100,7 +102,7 @@ def insert_view_ref(df: pd.DataFrame) -> None:
 def insert_collection_ref(df: pd.DataFrame) -> None:
     collection_name = sorted(df['collection'].dropna().unique())
 
-    for collection in collection_name:
+    for collection in tqdm(collection_name):
         query = f"""
                 INSERT INTO collection_ref (collection_name)
                 VALUES ('{collection}')
@@ -113,7 +115,7 @@ def insert_collection_ref(df: pd.DataFrame) -> None:
 def insert_tablet_ref(df: pd.DataFrame, set_split) -> None:
     tablet_name = df['tablet_CDLI'].unique()
 
-    for tablet in tablet_name:
+    for tablet in tqdm(tablet_name):
         ## - Get encoding image to insert in BYTEA
         img_encode = cid.get_image(tablet, IMAGE_FOLDER_PATH)
 
@@ -142,7 +144,7 @@ def insert_segment_ref(df: pd.DataFrame) -> None:
     ##   same segm_idx in diff collection  (e.g., 0 in 'train', 0 in 'saa09').
     segm_idx = df[['segm_idx', 'collection']].drop_duplicates()
 
-    for index, row in segm_idx.iterrows():
+    for index, row in tqdm(segm_idx.iterrows(), total=segm_idx.shape[0]):
         segment = row['segm_idx']
 
         ## - Get id_collection, id_tablet and id_view from DB
@@ -204,31 +206,29 @@ def insert_mzl_ref(mzl_dict: dict) -> None:
             if not control_df.empty:
                 train_label = control_df['train_label'].values[0]
             else : 
-                train_label = None
+                train_label = 'NULL'
             break
 
     ## - Complete dict when no information on some glyph (ex: 48, 58...)
-    if 'name' not in mzl_dict: mzl_dict['name'] = None
-    if 'glyph' not in mzl_dict: mzl_dict['glyph'] = None
-    if 'phonetic' not in mzl_dict: mzl_dict['phonetic'] = None
+    if 'name' not in mzl_dict: mzl_dict['name'] = ''
+    if 'glyph' not in mzl_dict: mzl_dict['glyph'] = ''
+    if 'phonetic' not in mzl_dict or not mzl_dict['phonetic']:
+        mzl_dict['phonetic'] = 'NULL'
 
     query = f"""
-             INSERT INTO mzl_ref (mzl_number, train_label, 
-                                  glyph_name, glyph, glyph_phonetic)
-             VALUES ({mzl_dict['mzl_number']}, {train_label}, 
-                     '{mzl_dict['name']}', '{mzl_dict['glyph']}', 
-                     '{mzl_dict['phonetic']}')
-             """
-
-    # print(query)
+            INSERT INTO mzl_ref (mzl_number, train_label, 
+                                glyph_name, glyph, glyph_phonetic)
+                 VALUES ({mzl_dict['mzl_number']}, {train_label}, 
+                         '{mzl_dict['name']}', '{mzl_dict['glyph']}',
+                         {f"ARRAY {mzl_dict['phonetic']}"
+                          if mzl_dict['phonetic'] != 'NULL' else 'NULL'});
+            """
 
     postgres_execute_insert_query(query)
 
 
 def insert_annotation_ref(df):
-    for index, row in df.iterrows():
-        print(row)
-
+    for index, row in tqdm(df.iterrows(), total=df.shape[0]):
         ## - Get id_segment from DB,
         segment_search_query = f"""
                 SELECT sr.id_segment FROM segment_ref sr
@@ -241,11 +241,11 @@ def insert_annotation_ref(df):
         query = f"""
                  INSERT INTO annotation_ref(bbox, relative_bbox,
                                             mzl_number, id_segment)
-                      VALUES ({row['bbox']}, {row['relative_bbox']}, 
+                      VALUES ('{row['bbox']}', '{row['relative_bbox']}', 
                               {row['mzl_label']}, {id_segment[0]})
                  """
 
-        # postgres_execute_insert_query(query)
+        postgres_execute_insert_query(query)
 
 
 def insert_reveal():
