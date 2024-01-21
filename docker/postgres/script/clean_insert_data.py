@@ -82,7 +82,7 @@ def df_bbox_annotations(df: pd.DataFrame, label_file) -> None:
     """
     df.drop(df[(df['segm_idx'] == -1)].index, inplace=True)
     df.drop(df[(df['mzl_label'] < 1)
-                & df['mzl_label'] > 907].index, inplace=True)
+                | df['mzl_label'] > 907].index, inplace=True)
     df.drop(df[(df['tablet_CDLI'] == "P336663b") 
                 | (df['tablet_CDLI'] == "K09237Vs")].index, inplace=True)
 
