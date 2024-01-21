@@ -280,7 +280,3 @@ def insert_reveal(df):
                         VALUES ({id_tablet[0]}, {id_view[0]})
                     """
             postgres_execute_insert_query(query)
-
-
-def insert_identify():
-    pass

@@ -43,29 +43,29 @@ def insert_bbox_annotations_file(df: pd.DataFrame, label_file) -> None:
     label_file (str, required): Define if file is the train or test set
     """
 
-    # global JSON_INSERTED
+    global JSON_INSERTED
 
-    # print("-- Insertion view_ref:")
-    # piu.insert_view_ref(df)
+    print("-- Insertion view_ref:")
+    piu.insert_view_ref(df)
 
-    # print("-- Insertion collection_ref:")
-    # piu.insert_collection_ref(df)
+    print("-- Insertion collection_ref:")
+    piu.insert_collection_ref(df)
 
-    # print("-- Insertion tablet_ref:")
-    # piu.insert_tablet_ref(df, label_file)
+    print("-- Insertion tablet_ref:")
+    piu.insert_tablet_ref(df, label_file)
 
-    # print("-- Insertion segment_ref:")
-    # piu.insert_segment_ref(df)
+    print("-- Insertion segment_ref:")
+    piu.insert_segment_ref(df)
 
-    # ## - Insert mzl_ref just one time
-    # if not JSON_INSERTED:
-    #     print("-- Insertion mzl_ref:")
-    #     for mzl_number in tqdm(MZL_DATA):
-    #         piu.insert_mzl_ref(mzl_number)
-    #     JSON_INSERTED = True
+    ## - Insert mzl_ref just one time
+    if not JSON_INSERTED:
+        print("-- Insertion mzl_ref:")
+        for mzl_number in tqdm(MZL_DATA):
+            piu.insert_mzl_ref(mzl_number)
+        JSON_INSERTED = True
 
-    # print("-- Insertion annotation_ref:")
-    # piu.insert_annotation_ref(df)
+    print("-- Insertion annotation_ref:")
+    piu.insert_annotation_ref(df)
 
     print("-- Insertion reveal table:")
     piu.insert_reveal(df)

@@ -71,31 +71,19 @@ CREATE TABLE IF NOT EXISTS reveal (
   FOREIGN KEY (id_view) REFERENCES view_ref (id_view)
 );
 
--- IDENTIFY
-CREATE TABLE IF NOT EXISTS identify (
-  id_annotation INT NOT NULL,
-  mzl_number    INT NOT NULL,
-  PRIMARY KEY (id_annotation, mzl_number),
-  FOREIGN KEY (id_annotation) REFERENCES annotation_ref (id_annotation),
-  FOREIGN KEY (mzl_number) REFERENCES mzl_ref (mzl_number)
-);
-
 -- TABLET_INFRN
 CREATE TABLE IF NOT EXISTS tablet_infrn (
-  id_inference SERIAL NOT NULL,
+  id_inference SERIAL PRIMARY KEY,
   tablet_name  VARCHAR(50) NOT NULL,
   picture      BYTEA NOT NULL,
-  date         DATE NOT NULL,
-  PRIMARY KEY (id_inference)
+  date_infrn   DATE NOT NULL,
 );
 
--- INFRN_RESULT
-CREATE TABLE IF NOT EXISTS infrn_result (
-  id_infrn_result SERIAL NOT NULL,
+CREATE TABLE IF NOT EXISTS infrn_result  (
+  id_infrn_result SERIAL PRIMARY KEY,
   bbox            VARCHAR(100) NOT NULL,
   id_inference    INT NOT NULL,
   mzl_number      INT NOT NULL,
-  PRIMARY KEY (id_infrn_result),
-  FOREIGN KEY (id_inference) REFERENCES tablet_infrn (id_inference),
-  FOREIGN KEY (mzl_number) REFERENCES mzl_ref (mzl_number)
+  FOREIGN KEY (id_inference) REFERENCES TABLET_INFRN (id_inference),
+  FOREIGN KEY (mzl_number) REFERENCES MZL_REF (mzl_number)
 );

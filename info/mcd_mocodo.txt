@@ -6,7 +6,7 @@ REVEAL, 1N TABLET_REF, 1N VIEW_REF
 VIEW_REF: id_view [INT]  , view_name [VARCHAR(50)]
 DF, 11 SEGMENT_REF, 1N> VIEW_REF
 MZL_REF: mzl_number [INT], train_label [INT], glyph_name [VARCHAR(50)], glyph [VARCHAR(100)], glyph_phonetic [VARCHAR(5000)]
-IDENTIFY_REF, 11 ANNOTATION_REF, 0N MZL_REF
+DF, 11 ANNOTATION_REF, 0N MZL_REF
 
 TABLET_REF: id_tablet[INT], tablet_name[VARCHAR(50)], set_split[VARCHAR(50)], picture[BYTEA]
 DF, 1N> TABLET_REF, 11 SEGMENT_REF
@@ -28,10 +28,10 @@ DF, 11 SEGMENT_REF, 1N> COLLECTION_REF
 
 :
 TABLET_INFRN: id_inference [INT], tablet_name[VARCHAR(50)], picture[BYTEAN], date [VARCHAR(50)]
-COMPOSE, 1N> TABLET_INFRN, 11> INFRN_RESULT
+DF, 1N> TABLET_INFRN, 11> INFRN_RESULT
 
 MZL_REF: mzl_number [INT], train_label [INT], glyph_name [VARCHAR(50)], glyph [VARCHAR(100)], glyph_phonetic [VARCHAR(5000)]
-IDENTIFY, 11 INFRN_RESULT, 0N MZL_REF
+DF, 11 INFRN_RESULT, 0N MZL_REF
 INFRN_RESULT: id_infrn_result [INT], bbox [VARCHAR(100)]
 
 
@@ -56,7 +56,7 @@ REVEAL, 1N TABLET_REF, 1N VIEW_REF
 VIEW_REF: id_view [INT]  , view_name [VARCHAR(50)]
 DF, 11 SEGMENT_REF, 1N> VIEW_REF
 MZL_REF: mzl_number [INT], train_label [INT], glyph_name [VARCHAR(50)], glyph [VARCHAR(100)], glyph_phonetic [VARCHAR(5000)]
-IDENTIFY_REF, 11 ANNOTATION_REF, 0N MZL_REF
+DF, 11 ANNOTATION_REF, 0N MZL_REF
 
 TABLET_REF: id_tablet[INT], tablet_name[VARCHAR(50)], set_split[VARCHAR(50)], picture[BYTEA]
 DF, 1N> TABLET_REF, 11 SEGMENT_REF
