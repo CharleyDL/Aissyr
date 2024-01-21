@@ -232,6 +232,7 @@ def insert_mzl_ref(mzl_dict: dict) -> None:
 
 def insert_annotation_ref(df):
     for index, row in tqdm(df.iterrows(), total=df.shape[0]):
+
         ## - Get id_segment from DB,
         segment_search_query = f"""
                 SELECT sr.id_segment FROM segment_ref sr
@@ -248,7 +249,6 @@ def insert_annotation_ref(df):
                       VALUES ('{row['bbox']}', '{row['relative_bbox']}', 
                               {row['mzl_label']}, {id_segment[0]})
                  """
-
         postgres_execute_insert_query(query)
 
 
@@ -257,7 +257,7 @@ def insert_reveal(df):
     tablet_name = df['tablet_CDLI'].unique()
     tablet_view = df[['tablet_CDLI', 'view_desc']].drop_duplicates()
 
-    for tablet in tablet_name:
+    for tablet in tqdm(tablet_name):
         tab_search_query = f"""
             SELECT id_tablet FROM tablet_ref
                 WHERE tablet_name = '{tablet}';
@@ -265,8 +265,8 @@ def insert_reveal(df):
         id_tablet = postgres_execute_search_query(tab_search_query)
 
         ## - Get id_view
-        for index, row in tqdm(tablet_view[tablet_view['tablet_CDLI']== tablet]\
-                               .iterrows(), total=tablet_view.shape[0]):
+        for index, row in tablet_view[tablet_view['tablet_CDLI']\
+                                       == tablet].iterrows():
             view_ref = row['view_desc']
             view_search_query = f"""
                                     SELECT id_view FROM view_ref

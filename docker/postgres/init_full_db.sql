@@ -76,10 +76,10 @@ CREATE TABLE IF NOT EXISTS tablet_infrn (
   id_inference SERIAL PRIMARY KEY,
   tablet_name  VARCHAR(50) NOT NULL,
   picture      BYTEA NOT NULL,
-  date_infrn   DATE NOT NULL,
+  date_infrn   DATE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS infrn_result  (
+CREATE TABLE IF NOT EXISTS infrn_result (
   id_infrn_result SERIAL PRIMARY KEY,
   bbox            VARCHAR(100) NOT NULL,
   id_inference    INT NOT NULL,
