@@ -30,3 +30,8 @@ PGADMIN_DEFAULT_PASSWORD
 4. Dans l'environnement virtuel : pip install psycopg2
 
 5. Créer un fichier config.py pour y mettre les infos de connection
+
+6. lancer le script clean_insert_data.py
+
+7. Installer heroku cli : brew tap heroku/brew && brew install heroku
+

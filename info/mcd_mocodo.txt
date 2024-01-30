@@ -1,5 +1,5 @@
 --------------------------------------------
-## - MCD Dataset data de base
+## - MCD Dataset database
 ============================================
 
 REVEAL, 1N TABLET_REF, 1N VIEW_REF
@@ -37,7 +37,7 @@ INFRN_RESULT: id_infrn_result [INT], bbox [VARCHAR(100)]
 
 
 ---------------------------------------------
-## - MCD Full database
+## - MCD Full database (infrn + dataset)
 ============================================
 
 :
@@ -69,3 +69,16 @@ COLLECTION_REF: id_collection [INT]  , collection_name [VARCHAR(50)]
 DF, 11 SEGMENT_REF, 1N> COLLECTION_REF
 :
 :
+
+
+--------------------------------------------
+## - MCD Account database
+============================================
+
+ACCOUNT_HISTORY: id_account[INT], date_action[DATE], account_action[VARCHAR(100)]
+:
+ACCOUNT_PWD: id_account[INT], pwd_hash[BYTEA]
+
+DF, 11 ACCOUNT_USER, 11 ACCOUNT_HISTORY
+ACCOUNT_USER: id_account[INT], title[VARCHAR(10)], last_name[VARCHAR(100)], first_name[VARCHAR(100)], email[VARCHAR(100)]
+DF, 11 ACCOUNT_USER, 11 ACCOUNT_PWD
