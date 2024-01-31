@@ -96,7 +96,7 @@ def fetch_data_bbox_annotation(set_param: str) -> pd.DataFrame:
     return result
 
 
-def fetch__image(set_param: str):
+def fetch_image(set_param: str) -> pd.DataFrame:
     COLUMNS = ['tablet_CDLI', 'encoded_image']
 
     query = f"""
