@@ -92,7 +92,6 @@ def fetch_data_bbox_annotation(set_param: str) -> pd.DataFrame:
 
     result = pd.DataFrame(postgres_execute_search_query(query),
                           columns=COLUMNS)
-
     return result
 
 
@@ -109,5 +108,4 @@ def fetch_image(set_param: str) -> pd.DataFrame:
 
     result = pd.DataFrame(postgres_execute_search_query(query),
                           columns=COLUMNS)
-
     return result
