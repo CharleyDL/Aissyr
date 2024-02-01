@@ -100,10 +100,10 @@ def fetch_image(set_param: str) -> pd.DataFrame:
 
     query = f"""
             SELECT 
-                tr.tablet_name AS tablet_CDLI,
-                tr.picture AS image,
+                tr.tablet_name
+                tr.picture
             FROM tablet_ref tr
-            WHERE tr.set_split = {set_param}; -- 'train or test'
+            WHERE tr.set_split = '{set_param}';
             """
 
     result = pd.DataFrame(postgres_execute_search_query(query),
