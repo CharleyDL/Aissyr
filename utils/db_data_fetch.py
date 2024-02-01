@@ -96,15 +96,17 @@ def fetch_data_bbox_annotation(set_param: str) -> pd.DataFrame:
 
 
 def fetch_image(set_param: str) -> pd.DataFrame:
+    print(2)
     COLUMNS = ['tablet_CDLI', 'encoded_image']
 
     query = f"""
-                SELECT tr.tablet_name, tr.picture
+                SELECT 
+                    tr.tablet_name, 
+                    tr.picture
                   FROM tablet_ref tr
                  WHERE tr.set_split = '{set_param}';
-            """
-    print(query)
+             """
 
-    # result = pd.DataFrame(postgres_execute_search_query(query),
-    #                       columns=COLUMNS)
-    # return result
+    result = pd.DataFrame(postgres_execute_search_query(query),
+                          columns=COLUMNS)
+    return result
