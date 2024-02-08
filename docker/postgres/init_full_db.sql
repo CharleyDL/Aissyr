@@ -3,8 +3,15 @@ Create Date:        Friday 12 Jan. 2024
 Created by:         Charley ∆. Lebarbier
 Description:        Initialize the PostgreSQL Database to insert dataset schema 
                     for AI training and save inferences from the webapp
-Call by:            [docker-compose.yml]
+                    HEROKU DATACLIP, in /**/ comment at top and end, use to 
+                    create tables with write authorization.
+Call by:            [docker-compose.yml, heroku - manually usage]
 *******************************************************************************/
+
+/*
+begin;
+set transaction read write;
+*/
 
 -- VIEW_REF
 CREATE TABLE IF NOT EXISTS view_ref (
@@ -112,3 +119,6 @@ CREATE TABLE IF NOT EXISTS account_history (
   account_action  VARCHAR(100) NOT NULL,
   FOREIGN KEY (id_account) REFERENCES account_user (id_account)
 );
+
+
+/*COMMIT;*/
