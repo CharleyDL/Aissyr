@@ -75,18 +75,18 @@ def fetch_data_bbox_annotation(set_param: str) -> pd.DataFrame:
                'mzl_number', 'train_label']
 
     query = f"""
-            SELECT
-                tr.tablet_name AS tablet_CDLI,
-                sr.bbox_segment,
+            SELECT 
+                CONCAT(tablet_name, 
+                    CASE 
+                        WHEN vr.view_name = 'Obv' THEN '_o' 
+                        ELSE '_r' 
+                    END) AS tablet_name,
                 ar.relative_bbox AS bbox_glyph,
-                mr.mzl_number,
-                mr.train_label
-            FROM segment_ref sr
-            JOIN tablet_ref tr ON sr.id_tablet = tr.id_tablet
-            JOIN view_ref vr ON sr.id_view = vr.id_view
-            JOIN collection_ref cr ON sr.id_collection = cr.id_collection
+                ar.mzl_number AS mzl_label
+            FROM tablet_ref tr
+            JOIN segment_ref sr ON tr.id_tablet = sr.id_tablet
             JOIN annotation_ref ar ON sr.id_segment = ar.id_segment
-            JOIN mzl_ref mr ON ar.mzl_number = mr.mzl_number
+            JOIN view_ref vr ON sr.id_view = vr.id_view
             WHERE tr.set_split = '{set_param}';
             """
 
@@ -99,11 +99,18 @@ def fetch_image(set_param: str) -> pd.DataFrame:
     COLUMNS = ['tablet_CDLI', 'encoded_image']
 
     query = f"""
-                SELECT 
-                    tr.tablet_name, 
-                    tr.picture
-                  FROM tablet_ref tr
-                 WHERE tr.set_split = '{set_param}';
+            SELECT 
+                CONCAT(tr.tablet_name, 
+                    CASE 
+                        WHEN vr.view_name = 'Obv' THEN '_o' 
+                        ELSE '_r' 
+                    END) AS tablette_CDLI,
+                tr.picture AS tablet_picture,
+                sr.bbox_segment
+            FROM tablet_ref tr
+            JOIN segment_ref sr ON tr.id_tablet = sr.id_tablet
+            JOIN view_ref vr ON sr.id_view = vr.id_view
+            WHERE tr.set_split = '{set_param}';
              """
 
     result = pd.DataFrame(postgres_execute_search_query(query),
