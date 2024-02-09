@@ -3,7 +3,7 @@ SELECT
            CASE 
                WHEN vr.view_name = 'Obv' THEN '_o' 
                ELSE '_r' 
-           END) AS tablette_CDLI,
+           END) AS tablet_name,
     tr.picture AS tablet_picture,
     sr.bbox_segment
 FROM tablet_ref tr

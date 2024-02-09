@@ -71,8 +71,7 @@ def fetch_data_bbox_annotation(set_param: str) -> pd.DataFrame:
         - mzl_number (int): MZL number refering to the glyph detected in bbox
         - train_label (str): MZL training label.
     """
-    COLUMNS = ['tablet_CDLI', 'bbox_segment', 'bbox_glyph',
-               'mzl_number', 'train_label']
+    COLUMNS = ['tablet_name', 'bbox_glyph', 'mzl_label']
 
     query = f"""
             SELECT 
@@ -96,7 +95,7 @@ def fetch_data_bbox_annotation(set_param: str) -> pd.DataFrame:
 
 
 def fetch_image(set_param: str) -> pd.DataFrame:
-    COLUMNS = ['tablet_CDLI', 'encoded_image']
+    COLUMNS = ['tablet_name', 'tablet_picture', 'bbox_segment']
 
     query = f"""
             SELECT 
@@ -104,7 +103,7 @@ def fetch_image(set_param: str) -> pd.DataFrame:
                     CASE 
                         WHEN vr.view_name = 'Obv' THEN '_o' 
                         ELSE '_r' 
-                    END) AS tablette_CDLI,
+                    END) AS tablet_name,
                 tr.picture AS tablet_picture,
                 sr.bbox_segment
             FROM tablet_ref tr
