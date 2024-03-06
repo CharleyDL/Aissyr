@@ -48,7 +48,7 @@ def postgres_execute_search_query(query: str) -> tuple:
         if db:
             cursor.close()
             db.close()
-            # print("PostgreSQL connection is closed")
+            print("PostgreSQL connection is closed")
 
 
 def fetch_data_bbox_annotation(set_param: str) -> pd.DataFrame:
@@ -76,10 +76,10 @@ def fetch_data_bbox_annotation(set_param: str) -> pd.DataFrame:
     query = f"""
             SELECT 
                 CONCAT(tablet_name, 
-                    CASE 
-                        WHEN vr.view_name = 'Obv' THEN '_o' 
-                        ELSE '_r' 
-                    END) AS tablet_name,
+                       CASE 
+                           WHEN vr.view_name = 'Obv' THEN '_o' 
+                           ELSE '_r' 
+                       END) AS tablet_name,
                 ar.relative_bbox AS bbox_glyph,
                 ar.mzl_number AS mzl_label
             FROM tablet_ref tr
@@ -110,7 +110,7 @@ def fetch_image(set_param: str) -> pd.DataFrame:
             JOIN segment_ref sr ON tr.id_tablet = sr.id_tablet
             JOIN view_ref vr ON sr.id_view = vr.id_view
             WHERE tr.set_split = '{set_param}';
-             """
+            """
 
     result = pd.DataFrame(postgres_execute_search_query(query),
                           columns=COLUMNS)

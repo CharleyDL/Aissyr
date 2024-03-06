@@ -239,7 +239,7 @@ def insert_annotation_ref(df):
                   JOIN collection_ref cr ON sr.id_collection = cr.id_collection
                  WHERE cr.collection_name = '{row['collection']}'
                    AND sr.segment_idx = {row['segm_idx']};
-        """
+                """
         id_segment = postgres_execute_search_query(segment_search_query)
 
         ## - Insert
