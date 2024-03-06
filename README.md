@@ -16,6 +16,7 @@
   <p align="center">
     A WebApp to detect and transcript neo-assyrian glyphs !
     <br />
+    <br />
     <a href="https://github.com/CharleyDL/neo_aissyr"><strong>Explore the docs »</strong></a>
     <br />
     <br />
