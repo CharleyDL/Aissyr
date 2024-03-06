@@ -2,8 +2,7 @@
 
 <!-- PROJECT SHIELDS -->
 
-[![Forks][forks-shield]][forks-url]
-[![Issues][issues-shield]][issues-url]
+[![Github][github-shield]][github-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 <!-- PROJECT LOGO -->
@@ -158,14 +157,8 @@ See the [open issues](https://github.com/othneildrew/Best-README-Template/issues
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[forks-shield]: https://img.shields.io/github/forks/CharleyDL/neo_aissyr.svg?style=for-the-badge
-[forks-url]: https://github.com/CharleyDL/neo_aissyr/network/members
-[stars-shield]: https://img.shields.io/github/stars/CharleyDL/neo_aissyr.svg?style=for-the-badge
-[stars-url]: https://github.com/CharleyDL/neo_aissyr/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
-[issues-url]: https://github.com/CharleyDL/neo_aissyr/issues
-[license-shield]: https://img.shields.io/github/license/CharleyDL/neo_aissyr.svg?style=for-the-badge
-[license-url]: https://github.com/CharleyDL/neo_aissyr/blob/master/LICENSE.txt
+[github-shield]: https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
+[github-url]: https://github.com/CharleyDL
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/charleylebarbier
 [product-screenshot]: images/screenshot.png
