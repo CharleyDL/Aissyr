@@ -1,0 +1,19 @@
+-- Scientific Paper:
+
+https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0243039
+
+
+_______________________________________
+
+-- Single Shot detection
+
+https://www.kaggle.com/code/abedi756/ssd-single-shot-detection
+
+
+
+
+https://medium.com/@jordantwells/how-i-created-a-responsive-personal-website-with-django-and-bootstrap-in-a-week-9f1c102e8137
+https://dev.to/noruwa/folder-structure-for-modern-web-applications-4d11
+https://www.jetbrains.com/guide/django/tutorials/django-aws/project-explore/
+https://developer.mozilla.org/fr/docs/Learn/Server-side/Django/development_environment
+https://dev.to/hmlon/creating-a-landing-page-in-django-20pg
