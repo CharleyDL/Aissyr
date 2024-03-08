@@ -28,3 +28,4 @@ custom.yaml
 /notebook_model/data/train_tablets_image/
 /notebook_model/data/test.csv
 /notebook_model/data/train.csv
+/test/
