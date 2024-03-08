@@ -19,3 +19,12 @@ custom.yaml
 # Vscode
 .vscode/
 
+# Directories Data
+/notebook_model/data/
+/notebook_model/data/glyphs_image/
+/notebook_model/data/test_glyphs_image/
+/notebook_model/data/train_glyphs_image/
+/notebook_model/data/test_tablets_image/
+/notebook_model/data/train_tablets_image/
+/notebook_model/data/test.csv
+/notebook_model/data/train.csv
