@@ -1,5 +1,6 @@
 absl-py==2.1.0
 alembic==1.13.1
+altair==5.2.0
 anyio==4.2.0
 appdirs==1.4.4
 appnope==0.1.3
@@ -57,6 +58,8 @@ itsdangerous==2.1.2
 jedi==0.19.1
 Jinja2==3.1.3
 joblib==1.3.2
+jsonschema==4.21.1
+jsonschema-specifications==2023.12.1
 jupyter_client==8.6.0
 jupyter_core==5.5.1
 keras==2.15.0
@@ -97,6 +100,7 @@ py-cpuinfo==9.0.0
 pyarrow==14.0.2
 pyasn1==0.5.1
 pyasn1-modules==0.3.0
+pydeck==0.8.1b0
 Pygments==2.17.2
 PyJWT==2.8.0
 pyparsing==3.1.1
@@ -106,11 +110,13 @@ pytz==2023.3.post1
 PyYAML==6.0.1
 pyzmq==25.1.2
 querystring-parser==1.2.4
+referencing==0.34.0
 requests==2.31.0
 requests-oauthlib==1.3.1
 requests-toolbelt==1.0.0
 rfc3986==1.5.0
 rich==13.1.0
+rpds-py==0.18.0
 rptree==0.1.1
 rsa==4.9
 scikit-learn==1.4.0
@@ -125,6 +131,7 @@ soupsieve==2.5
 SQLAlchemy==2.0.25
 sqlparse==0.4.4
 stack-data==0.6.3
+streamlit==1.32.2
 sympy==1.12
 tabulate==0.9.0
 tenacity==8.2.3
@@ -136,6 +143,8 @@ tensorflow-io-gcs-filesystem==0.36.0
 termcolor==2.4.0
 thop==0.1.1.post2209072238
 threadpoolctl==3.2.0
+toml==0.10.2
+toolz==0.12.1
 torch==2.2.0
 torchvision==0.17.0
 tornado==6.4

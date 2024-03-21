@@ -102,15 +102,16 @@ CREATE TABLE IF NOT EXISTS account_user (
   title           VARCHAR(10),
   last_name       VARCHAR(100) NOT NULL,
   first_name      VARCHAR(100) NOT NULL,
-  email           VARCHAR(100) UNIQUE NOT NULL
+  email           VARCHAR(100) UNIQUE NOT NULL,
+  pwd_hash        BYTEA NOT NULL
 );
 
--- ACCOUNT_PWD
-CREATE TABLE IF NOT EXISTS account_pwd (
-  id_account      INT NOT NULL,
-  pwd_hash        BYTEA NOT NULL,
-  FOREIGN KEY (id_account) REFERENCES account_user (id_account)
-);
+-- -- ACCOUNT_PWD
+-- CREATE TABLE IF NOT EXISTS account_pwd (
+--   id_account      INT NOT NULL,
+--   pwd_hash        BYTEA NOT NULL,
+--   FOREIGN KEY (id_account) REFERENCES account_user (id_account)
+-- );
 
 -- ACCOUNT_HISTORY
 CREATE TABLE IF NOT EXISTS account_history (
