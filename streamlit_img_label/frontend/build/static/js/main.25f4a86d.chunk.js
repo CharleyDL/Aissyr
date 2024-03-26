@@ -259,14 +259,14 @@
                                     },
                                     "Reset"
                                 ),
-                                c.a.createElement(
-                                    "button",
-                                    {
-                                        className: "dark" === o ? m.a.dark : "",
-                                        onClick: y,
-                                    },
-                                    "Clear all"
-                                )
+                                // c.a.createElement(
+                                //     "button",
+                                //     {
+                                //         className: "dark" === o ? m.a.dark : "",
+                                //         onClick: y,
+                                //     },
+                                //     "Clear all"
+                                // )
                             )
                         )
                     )

@@ -235,12 +235,12 @@ const StreamlitImgLabel = (props: ComponentProps) => {
                 >
                     Reset
                 </button>
-                <button
+                {/* <button
                     className={mode === "dark" ? styles.dark : ""}
                     onClick={clearHandler}
                 >
                     Clear all
-                </button>
+                </button> */}
             </div>
         </>
     )
