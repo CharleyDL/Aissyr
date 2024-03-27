@@ -1,8 +1,6 @@
 import os
-import pytest
 
-
-class TestVitalElements:
+class TestRequiredElements:
 
     def test_folder_exists(self):
         required_folders = ['.streamlit', 'asset', 'pages', 
