@@ -20,9 +20,3 @@ jobs:
       - uses: streamlit/streamlit-app-action@v0.0.3
         with:
           app-path: Home.py
-      - if: always()
-        uses: pmeier/pytest-results-actions@v0.6.0
-        with:
-          path: test-results.xml
-          summary: true
-          display-options: fEX
