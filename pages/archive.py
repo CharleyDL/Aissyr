@@ -11,12 +11,16 @@ import utils.functions as fct
 
 ## ----------------------------- SETUP PAGE --------------------------------- ##
 
-st.page_link('pages/main_page.py', 
+st.set_page_config(page_title='AISSYR',
+                   page_icon='asset/fav32.png',
+                   layout='wide')
+
+
+## ------------------------------- HEADER  ---------------------------------- ##
+
+st.page_link('pages/main_page.py',
             label="Go back to Main Page",
             icon='⬅')
-
-
-## ------------------------------ PAGE CONTENT ------------------------------ ##
 
 st.header('ARCHIVE PAGE')
 st.markdown('----')

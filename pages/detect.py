@@ -12,14 +12,14 @@ import utils.functions as fct
 
 ## ----------------------------- SETUP PAGE --------------------------------- ##
 
-st.set_page_config(page_title='AISSYR', 
-                   page_icon='asset/fav32.png', 
+st.set_page_config(page_title='AISSYR',
+                   page_icon='asset/fav32.png',
                    layout='wide')
 
 
 ## ------------------------------- HEADER  ---------------------------------- ##
 
-st.page_link('pages/main_page.py', 
+st.page_link('pages/main_page.py',
             label="Go back to Main Page",
             icon='⬅')
 
@@ -33,7 +33,7 @@ with st.sidebar:
     st.markdown(
     """
     <style>
-        [data-testid=stImage]{  
+        [data-testid=stImage]{
             display: block;
             margin-left: auto;
             margin-right: auto;
@@ -53,15 +53,15 @@ with st.sidebar:
 
     fct.space()
 
-    st.page_link('pages/detect.py', 
+    st.page_link('pages/detect.py',
                  label="Detect Glyphs",
                  icon='🔍')
 
-    st.page_link('pages/annotation.py', 
+    st.page_link('pages/annotation.py',
                  label="Label Glyphs",
                  icon='🏷️')
 
-    st.page_link('pages/archive.py', 
+    st.page_link('pages/archive.py',
                  label="Archive",
                  icon='📚')
 
@@ -80,4 +80,4 @@ with st.sidebar:
 
 if uploaded_file is not None:
     # st.image(uploaded_file, use_column_width=True)
-    fct.init_detect(uploaded_file)
+    fct.detection(uploaded_file)

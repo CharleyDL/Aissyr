@@ -203,11 +203,11 @@ def extract_and_resize(image, output_size=(128, 128)):
 
 ## ------------------------------- DETECTION -------------------------------- ##
 
-@st.cache_resource()
-def load_model():
-    model_id = 'runs:/d104fc5e1dd8470a8dde5b0c7a760814/model'
-    loaded_model = mlflow.pyfunc.load_model(model_id)
-    return loaded_model
+# @st.cache_resource()
+# def load_model():
+#     model_id = 'runs:/d104fc5e1dd8470a8dde5b0c7a760814/model'
+#     loaded_model = mlflow.pyfunc.load_model(model_id)
+#     return loaded_model
 
 
 def detect_glyphs(img):
@@ -221,12 +221,10 @@ def detect_glyphs(img):
     # res = "𒀸𒀸 2"
     res = "𒀸𒀸𒀸 3"
 
-    
-
     return res
 
 
-def init_detect(img_path):
+def detection(img_path):
     if 'preview_imgs' not in st.session_state:
         st.session_state.preview_imgs = []
 
@@ -241,8 +239,8 @@ def init_detect(img_path):
     col1, col2 = st.columns(2)
     with col1:
         im = ImageManager(img_path)
-        resized_img = im.resizing_img()
         img = im.get_img()
+        resized_img = im.resizing_img()
         resized_rects = im.get_resized_rects()
         rects = st_img_label(resized_img, box_color="red", rects=resized_rects)
 
@@ -277,10 +275,6 @@ def init_detect(img_path):
                             """, unsafe_allow_html=True)
 
 
-
-
-
-
 ## ------------------------------- ANNOTATION ------------------------------- ##
 
 def annotate():
@@ -291,144 +285,45 @@ def annotate():
     #     st.session_state["annotation_files"].append(image_annotate_file_name)
     # next_annotate_file()
 
-def annotate(img_path):
+def annotation(img_path):
+    if 'preview_imgs' not in st.session_state:
+        st.session_state.preview_imgs = []
 
-    im = ImageManager(img_path)
-    img = im.get_img()
-    resized_img = im.resizing_img()
-    resized_rects = im.get_resized_rects()
-    rects = st_img_label(resized_img, box_color="red", rects=resized_rects)
+    if 'res_label' not in st.session_state:
+        st.session_state.res_detect = []
+
+    if 'zip_label' not in st.session_state:
+        st.session_state.zip_detect = []
 
     labels = fct.postgres_execute_get_mzl()
+    preview_imgs = []
 
-    st.button(label="Labeled", on_click=annotate)
+    col1, col2 = st.columns(2)
+    with col1:
+        im = ImageManager(img_path)
+        img = im.get_img()
+        resized_img = im.resizing_img()
+        resized_rects = im.get_resized_rects()
+        rects = st_img_label(resized_img, box_color="red", rects=resized_rects)
 
-    preview_imgs = im.init_annotation(rects)
+        label_button = st.button(label="Labeled")
 
-    for i, prev_img in enumerate(preview_imgs):
-        prev_img[0].thumbnail((200, 200))
-        col1, col2 = st.columns(2)
-        with col1:
-            col1.image(prev_img[0])
-        with col2:
+    with col2:
+        preview_imgs = im.init_annotation(rects)
+
+        rowImgDet = row(2, gap='medium')
+        # tmp_img = st.empty()
+
+        for i, prev_img in enumerate(preview_imgs):
+            resize_prev_img = extract_and_resize(prev_img[0])
+
+            rowImgDet.image(resize_prev_img)
+
             default_index = 0
             if prev_img[1]:
                 default_index = labels.index(prev_img[1])
 
-            select_label = col2.selectbox(
+            select_label = rowImgDet.selectbox(
                 "Label", labels, key=f"label_{i}", index=default_index
             )
             im.set_annotation(i, select_label)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## saving for init_detect
-
-    # with col2:
-    #     ## Test pour afficher à droite
-    #     st.session_state.preview_imgs = im.init_annotation(rects)
-
-    #     for i, prev_img in enumerate(st.session_state.preview_imgs):
-    #         resize_prev_img = extract_and_resize(prev_img[0])
-
-    #         col1, col2 = st.columns(2)
-    #         col1.image(resize_prev_img)
-
-    #         if detect_button:
-    #             print(f"state preview imgs : {st.session_state.preview_imgs}")
-
-    #             for pi in st.session_state.preview_imgs:
-    #                 st.session_state.res_detect.append(detect_glyphs(resize_prev_img))
-
-    #             col2.write(f"--- {st.session_state.res_detect[i]}")
-
-
-    # with col2:
-    #     preview_imgs = im.init_annotation(rects)
-
-    #     colImg, colDet = st.columns(2)
-    #     for i, prev_img in enumerate(preview_imgs):
-    #         resize_prev_img = extract_and_resize(prev_img[0])
-    #         print(f"resize_prev_img : {resize_prev_img}")
-    #         colImg.image(resize_prev_img)
-
-    #         if detect_button:
-    #             res = detect_glyphs(resize_prev_img)
-    #             st.session_state.preview_imgs.append(resize_prev_img)
-    #             st.session_state.res_detect.append(res)
-    #             st.session_state.zip_detect.append((resize_prev_img, res))
-
-    #             print(f"state preview imgs : {st.session_state.preview_imgs}")
-    #             print(f"state res detect : {st.session_state.res_detect}")
-    #             print(f"state zip : {st.session_state.zip_detect}")
-
-    #         # for detected_img, result in enumerate(st.session_state.zip_detect):
-    #         #     colDet.write(f"--- {result[i]}")
-            
-
-        ## version 1 fonctionnel moins bien
-    # with col2:
-    #     preview_imgs = im.init_annotation(rects)
-    #     rowImgDet = row(2, vertical_align='center', gap='medium')
-
-    #     # colImg, colDet = st.columns(2)
-    #     for i, prev_img in enumerate(preview_imgs):
-    #         resize_prev_img = extract_and_resize(prev_img[0])
-
-    #         # colImg.image(resize_prev_img)
-    #         rowImgDet.image(resize_prev_img)
-
-    #     if detect_button:
-    #         res = detect_glyphs(resize_prev_img)
-    #         print(f"resize : {resize_prev_img}")
-
-    #         st.session_state.preview_imgs.append(resize_prev_img)
-    #         st.session_state.res_detect.append(res)
-    #         st.session_state.zip_detect.append((resize_prev_img, res))
-
-    #         # rowImgDet.write(f"--- {res}")
-
-    #     for i, result in enumerate(st.session_state.zip_detect):
-    #         # print(i, result)
-    #         # colDet.write(f"--- {result[1]}")
-    #         rowImgDet.image(result[0])
-    #         rowImgDet.write(f"--- {result[1]}")
-
-
-    ## - Version 2 fonctionnel mais sans le temps reel
-    # with col2:
-    #     preview_imgs = im.init_annotation(rects)
-    #     rowImgDet = row(2, vertical_align='center', gap='medium')
-
-    #     for i, prev_img in enumerate(preview_imgs):
-    #         resize_prev_img = extract_and_resize(prev_img[0])
-
-    #     if detect_button:
-    #         res = detect_glyphs(resize_prev_img)
-    #         print(f"resize : {resize_prev_img}")
-
-    #         st.session_state.preview_imgs.append(resize_prev_img)
-    #         st.session_state.res_detect.append(res)
-    #         st.session_state.zip_detect.append((resize_prev_img, res))
-
-    #     for i, result in enumerate(st.session_state.zip_detect):
-    #         rowImgDet.image(result[0])
-    #         rowImgDet.write(f"--- {result[1]}")
