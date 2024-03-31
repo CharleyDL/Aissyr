@@ -7,8 +7,8 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="/asset/logo_landing.png">
-    <img src="images/logo.png" alt="Logo">
+  <a href="https://github.com/CharleyDL/neo_aissyr/">
+    <img src="asset/logo_aissyr_M.png" alt="Logo">
   </a>
 
   <h3 align="center">NEO AISSYR</h3>
