@@ -219,7 +219,7 @@ def detect_glyphs(img):
     # res = model.predict(img)
     # res = "𒀸 AŠ"
     # res = "𒀸𒀸 2"
-    res = "𒀸𒀸𒀸 3"
+    res = "113 - 𒁁 'BAD'"
 
     return res
 
