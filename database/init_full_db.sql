@@ -90,6 +90,7 @@ CREATE TABLE IF NOT EXISTS tablet_infrn (
 CREATE TABLE IF NOT EXISTS infrn_result (
   id_infrn_result SERIAL PRIMARY KEY,
   bbox            VARCHAR(100) NOT NULL,
+  confidence      DOUBLE PRECISION NOT NULL,
   id_inference    INT NOT NULL,
   mzl_number      INT NOT NULL,
   FOREIGN KEY (id_inference) REFERENCES TABLET_INFRN (id_inference),

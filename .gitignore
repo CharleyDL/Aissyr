@@ -13,7 +13,6 @@ front/
 
 # Config File with sensitive information
 .env
-config.py
 custom.yaml
 
 # Vscode

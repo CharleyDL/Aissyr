@@ -14,8 +14,8 @@ import pandas as pd
 import psycopg2
 
 ## - Personal librairies
-import config
 import clean_insert_data as cid
+import config
 
 from tqdm import tqdm
 
