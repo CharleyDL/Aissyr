@@ -1,1 +1,17 @@
-env
+# Byte-compiled / optimized / DLL files
+__pycache__/
+.DS_Store
+*.cache
+
+# Environments
+.env
+env/
+.aissyr/
+
+# Folders
+data/
+
+
+# Config File with sensitive information
+config.py
+custom.yaml
