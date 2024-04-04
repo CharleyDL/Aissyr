@@ -48,7 +48,7 @@ def postgres_execute_search_query(query: str) -> tuple:
         if db:
             cursor.close()
             db.close()
-            print("PostgreSQL connection is closed")
+            print("Extraction is OK ; PostgreSQL connection is closed")
 
 
 def fetch_data_bbox_annotation(set_param: str) -> pd.DataFrame:
