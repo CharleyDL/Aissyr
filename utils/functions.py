@@ -219,7 +219,7 @@ def detect_glyphs(img):
     # res = model.predict(img)
     # res = "𒀸 AŠ"
     # res = "𒀸𒀸 2"
-    res = "113 - 𒁁 'BAD'"
+    res = "113: 𒁁, BAD -- 88.7%"
 
     return res
 
@@ -271,7 +271,7 @@ def detection(img_path):
         for i, result in enumerate(st.session_state.zip_detect):
             rowImgDet.image(result[0])
             rowImgDet.write(f"""
-                            <h4 style='padding-top: 48px;'>---- {result[1]}</h4>
+                            <h4 style='padding-top: 48px;'>- {result[1]}</h4>
                             """, unsafe_allow_html=True)
 
 
