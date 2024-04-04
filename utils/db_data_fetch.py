@@ -12,7 +12,7 @@ import pandas as pd
 import psycopg2
 import sys
 
-sys.path.append("../docker/postgres/script/")
+# sys.path.append("config.py")
 import config as cfg
 
 
