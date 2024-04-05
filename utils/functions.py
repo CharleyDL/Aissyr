@@ -9,6 +9,7 @@ import bcrypt
 import mlflow.pyfunc
 import numpy as np
 import psycopg2
+import requests
 import streamlit as st
 import utils.functions as fct
 
@@ -17,6 +18,7 @@ from streamlit_img_label import st_img_label
 from streamlit_img_label.manage import ImageManager
 from streamlit_extras.row import row
 
+API_URL = "http://"
 
 ## -------------------------- POSTGRESQL DATABASE --------------------------- ##
 
@@ -213,7 +215,7 @@ def extract_and_resize(image, output_size=(128, 128)):
 def detect_glyphs(img_name: str, img: Image.Image, 
                   glyph_selection: list, bbox: list):
     """Send request to the API to detect the glyphs in the image.
-    
+
     Parameters:
     - tablet_name (str): The name of the tablet
     - img (Image): The full image
@@ -235,16 +237,16 @@ def detect_glyphs(img_name: str, img: Image.Image,
         print(img_name)
         print(f"Glyph {i}: {glyph}")
         print(f"Box {i}: {bbox[i]}")
-        st.image(glyph[0])
+        # st.image(glyph[0])
 
         info_for_api = {"tablet_name": img_name,
                         "picture": img,
                         "glyph": glyph[0],
                         "bbox": bbox[i]}
 
-        # response = requests.post(url, params=info_for_api, json=info_for_api)
+        # response = requests.post(url, 
+        #                          params=info_for_api)
 
-    # payload = {"username": username, "filename": uploaded_pdf.name}
     # response = requests.post(url, params=payload, files={"uploaded_file": uploaded_pdf.getvalue()})
 
     ## - Raw response for test the Front-End
