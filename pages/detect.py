@@ -79,5 +79,4 @@ with st.sidebar:
 ## -------------------------------------------------------------------------- ##
 
 if uploaded_file is not None:
-    # st.image(uploaded_file, use_column_width=True)
     fct.detection(uploaded_file)

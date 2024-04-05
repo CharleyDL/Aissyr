@@ -210,21 +210,50 @@ def extract_and_resize(image, output_size=(128, 128)):
 #     return loaded_model
 
 
-def detect_glyphs(img):
-    # model = load_model()
+def detect_glyphs(img_name: str, img: Image.Image, 
+                  glyph_selection: list, bbox: list):
+    """Send request to the API to detect the glyphs in the image.
+    
+    Parameters:
+    - tablet_name (str): The name of the tablet
+    - img (Image): The full image
+    - glyph_selection (list): List of tuple the selected glyphs (not resized)
+    - bbox (list): List of dictionary (left, top, width, height, label)
 
-    # Preprocess the image
+    Returns:
+    - res (str): The detected glyphs label
+    """
 
-    # Detect the glyphs
-    # res = model.predict(img)
-    # res = "𒀸 AŠ"
-    # res = "𒀸𒀸 2"
+    # print(tablet_name)
+    # print(img)
+    # print(glyph_selection)
+    # print(bbox)
+
+    ## - Preprocess the request and send it
+    img_name = img_name.split(".")[0]
+    for i, glyph in enumerate(glyph_selection):
+        print(img_name)
+        print(f"Glyph {i}: {glyph}")
+        print(f"Box {i}: {bbox[i]}")
+        st.image(glyph[0])
+
+        info_for_api = {"tablet_name": img_name,
+                        "picture": img,
+                        "glyph": glyph[0],
+                        "bbox": bbox[i]}
+
+        # response = requests.post(url, params=info_for_api, json=info_for_api)
+
+    # payload = {"username": username, "filename": uploaded_pdf.name}
+    # response = requests.post(url, params=payload, files={"uploaded_file": uploaded_pdf.getvalue()})
+
+    ## - Raw response for test the Front-End
     res = "113: 𒁁, BAD -- 88.7%"
 
     return res
 
 
-def detection(img_path):
+def detection(uploaded_file):
     if 'preview_imgs' not in st.session_state:
         st.session_state.preview_imgs = []
 
@@ -238,7 +267,7 @@ def detection(img_path):
 
     col1, col2 = st.columns(2)
     with col1:
-        im = ImageManager(img_path)
+        im = ImageManager(uploaded_file)
         img = im.get_img()
         resized_img = im.resizing_img()
         resized_rects = im.get_resized_rects()
@@ -252,6 +281,7 @@ def detection(img_path):
         rowImgDet = row(2, gap='medium')
         tmp_img = st.empty()
 
+        resize_prev_img = []
         for i, prev_img in enumerate(preview_imgs):
             resize_prev_img = extract_and_resize(prev_img[0])
 
@@ -260,8 +290,11 @@ def detection(img_path):
                 tmp_img.image(resize_prev_img)
 
         if detect_button:
-            res = detect_glyphs(resize_prev_img)
+            res = detect_glyphs(uploaded_file.name, img, 
+                                preview_imgs, rects)
 
+            ## AJOUTER UNE BOUCLE POUR ITERER DANS RES
+            ## POUR METTRE LE RES EN FACE DE LA BONNE IMG !!!
             st.session_state.preview_imgs.append(resize_prev_img)
             st.session_state.res_detect.append(res)
             st.session_state.zip_detect.append((resize_prev_img, res))
