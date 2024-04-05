@@ -115,6 +115,8 @@ def get_db_config() -> dict:
 $ python docker/postgres/script/clean_insert_data.py
 ```
 
+7. Dans PgAdmin, copier-coller la requête 'request_labelisation_collection', dans l'outil SQL et supprimer les partie "begin; set transaction read write;" et "COMMIT;"
+
 </br>
 
 > 🎉 La base est initialisée, vous pouvez dorénavant consulter les infos depuis la page web de pgAdmin
@@ -177,6 +179,8 @@ def get_db_config() -> dict:
 ```bash
 $ python docker/postgres/script/clean_insert_data.py
 ```
+
+6. Créer un dataclip (Heroku) pour copier-coller la requête 'request_labelisation_collection'
 
 </br>
 

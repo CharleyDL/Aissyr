@@ -10,3 +10,4 @@ FROM tablet_ref tr
 JOIN segment_ref sr ON tr.id_tablet = sr.id_tablet
 JOIN view_ref vr ON sr.id_view = vr.id_view
 WHERE tr.set_split = 'train'; -- train or test
+-- LIMIT 10;
