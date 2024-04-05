@@ -19,7 +19,7 @@ model = mlflow.pyfunc.load_model(model_uri)
 
 print(model)
 
-
-
-# def prediction_glyph():
-#     pass
+class DetectionRequest(BaseModel):
+    # def prediction_glyph():
+    #     pass
+    pass
