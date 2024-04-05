@@ -22,4 +22,4 @@ print(model)
 class DetectionRequest(BaseModel):
     # def prediction_glyph():
     #     pass
-    pass
+    print("Detect Page")
