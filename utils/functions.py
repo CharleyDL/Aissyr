@@ -14,10 +14,10 @@ dagshub.init(DAGSHUB_REPO, DAGSHUB_REPO_OWNER)
 remote_server_uri="https://dagshub.com/CharleyDL/neo_aissyr.mlflow"
 mlf.set_tracking_uri(remote_server_uri)
 
-model_uri = 'runs:/d104fc5e1dd8470a8dde5b0c7a760814/model'
-model = mlflow.pyfunc.load_model(model_uri)
+# model_uri = 'runs:/d104fc5e1dd8470a8dde5b0c7a760814/model'
+# model = mlflow.pyfunc.load_model(model_uri)
 
-print(model)
+# print(model)
 
 class DetectionRequest(BaseModel):
     # def prediction_glyph():
