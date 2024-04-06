@@ -19,7 +19,6 @@ mlf.set_tracking_uri(remote_server_uri)
 
 # print(model)
 
-class DetectionRequest(BaseModel):
-    # def prediction_glyph():
-    #     pass
-    print("Detect Page")
+# class DetectionRequest(BaseModel):
+#     def prediction_glyph():
+#         return {"message": "From Functions Detect Page"}

@@ -30,13 +30,11 @@ async def root():
 
 ## --------------------------------- DETECT --------------------------------- ##
 
-@app.post("/detect", response_model=fct.DetectionResponse, 
-          summary="Classify glyph from an image")
-def detect_glyph(request: fct.DetectionRequest):
-    return fct.detect_glyph(request)
-
-
-
+# @app.post("/detect", response_model=fct.DetectionResponse, 
+#         summary="Classify glyph from an image")
+# def detect_glyph(request: fct.DetectionRequest):
+#     return fct.detect_glyph(request)
+    # return {"message": "Detecting glyph from image"}
 
 
 
