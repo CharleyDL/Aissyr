@@ -1,3 +1,4 @@
+import bcrypt
 import dagshub.auth
 import mlflow as mlf
 import mlflow.pyfunc
@@ -6,40 +7,21 @@ import psycopg2 as pg
 from pydantic import BaseModel
 
 
-DAGSHUB_USER_TOKEN='a4069f9e2a4a499a4a760c37d7890d1d775d651b'
-DAGSHUB_REPO_OWNER = "CharleyDL"
-DAGSHUB_REPO = "aissyr"
+# DAGSHUB_USER_TOKEN
+# DAGSHUB_REPO_OWNER
+# DAGSHUB_REPO
 # dagshub.init(DAGSHUB_REPO, DAGSHUB_REPO_OWNER)
 
-DATABASE = {
-    "host" : "localhost",
-    "database" : "neo_aissyr",
-    "user" : "DIGMIR",
-    "password" : "m3s_!",
-    "port" : "5432"
-}
 
+def verify_password_hash(account_info, input_pwd) -> bool:
+    input_pwd_bytes_test = bcrypt.hashpw(input_pwd.encode(), bcrypt.gensalt(12))
+    hashed_password = account_info["password_hash"].tobytes()
 
+    print(input_pwd)
+    print(input_pwd_bytes_test)
+    print(hashed_password)
 
-def execute_query(query):
-    try:
-        # Connexion à la base de données PostgreSQL
-        conn = pg.connect(**DATABASE)
-        cursor = conn.cursor()
-
-        # Exécution de la requête SQL
-        cursor.execute(query)
-        rows = cursor.fetchall()
-
-        # Fermeture de la connexion à la base de données
-        cursor.close()
-        conn.close()
-
-        return rows
-    except Exception as e:
-        # Gestion des erreurs
-        raise e
-
+    return bcrypt.checkpw(input_pwd_bytes_test, hashed_password)
 
 
 

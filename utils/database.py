@@ -1,16 +1,13 @@
 import os
 import psycopg2 as pg
-# from pathlib import Path
 
 from abc import ABC, abstractmethod # new
 
-# BASE_DIR = Path(__file__).resolve().parent.parent
-# dotenv.load_dotenv(BASE_DIR / ".env")
+
+
 
 class Database(ABC):
-    """
-    Database context manager
-    """
+    """Database context manager"""
 
     def __init__(self, driver) -> None:
         self.driver = driver
@@ -46,13 +43,37 @@ class PgDatabase(Database):
         )
 
 
-def select_annotation():
+
+## -------------------------------- ACCOUNT --------------------------------- ##
+def verify_user_account(email: str) -> dict:
+    with PgDatabase() as db:
+        db.cursor.execute(f"""
+                           SELECT email, pwd_hash
+                           FROM account_user
+                           WHERE email=%s;
+                           """, (email,))
+
+        data = db.cursor.fetchone()
+        if data is None:
+            return None
+
+    return {
+        "email": data[0],
+        "password_hash": data[1]
+    }
+
+
+
+
+## ------------------------------ ANNOTATION -------------------------------- ##
+
+def select_annotation() -> list:
     with PgDatabase() as db:
         db.cursor.execute(f"""SELECT *
                               FROM annotation_ref
                               LIMIT 10;
                            """)
-        
+
         objects = [
             {
                 "id_annotation": data[0],

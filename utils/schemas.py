@@ -1,5 +1,14 @@
 from pydantic import BaseModel, Field
 
+
+class Verify(BaseModel):
+    result: bool
+    message: str
+
+class Account(BaseModel):
+    email: str
+    pwd_hash: str
+
 class Annotation(BaseModel):
     id_annotation: int
     bbox: str

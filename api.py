@@ -31,6 +31,7 @@ app = FastAPI(
 async def root():
     return {"message": "Welcome to the AISSYR API"}
 
+app.include_router(views.router, prefix='/account', tags=['account'])
 app.include_router(views.router, prefix='/annotation', tags=['annotation'])
 
 
