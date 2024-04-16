@@ -13,15 +13,24 @@ from pydantic import BaseModel
 # dagshub.init(DAGSHUB_REPO, DAGSHUB_REPO_OWNER)
 
 
-def verify_password_hash(account_info, input_pwd) -> bool:
-    input_pwd_bytes_test = bcrypt.hashpw(input_pwd.encode(), bcrypt.gensalt(12))
+def verify_password_hash(account_info: dict, input_pwd:str) -> bool:
+    """
+    Check if a password provided by the user matches the hashed password 
+    stored in the database.
+
+    Args:
+        account_info (dict): A dictionary containing account information, 
+        including the hashed password.
+        input_pwd (str): The password provided by the user to be checked.
+
+    Returns:
+        bool: True if the provided password matches the hashed password 
+        in the database, otherwise False.
+    """
+    input_pwd_bytes = input_pwd.encode()
     hashed_password = account_info["password_hash"].tobytes()
 
-    print(input_pwd)
-    print(input_pwd_bytes_test)
-    print(hashed_password)
-
-    return bcrypt.checkpw(input_pwd_bytes_test, hashed_password)
+    return bcrypt.checkpw(input_pwd_bytes, hashed_password)
 
 
 
