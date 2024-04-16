@@ -11,7 +11,10 @@
 import utils.functions as fct
 import uvicorn
 
-from fastapi import FastAPI
+from fastapi import FastAPI, status
+from fastapi.exceptions import HTTPException
+# from utils.functions import execute_query
+import utils.views as views
 
 
 app = FastAPI(
@@ -28,13 +31,7 @@ app = FastAPI(
 async def root():
     return {"message": "Welcome to the AISSYR API"}
 
-## --------------------------------- DETECT --------------------------------- ##
-
-# @app.post("/detect", response_model=fct.DetectionResponse, 
-#         summary="Classify glyph from an image")
-# def detect_glyph(request: fct.DetectionRequest):
-#     return fct.detect_glyph(request)
-    # return {"message": "Detecting glyph from image"}
+app.include_router(views.router, prefix='/annotation', tags=['annotation'])
 
 
 

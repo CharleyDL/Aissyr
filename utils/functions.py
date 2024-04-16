@@ -8,8 +8,41 @@ from pydantic import BaseModel
 
 DAGSHUB_USER_TOKEN='a4069f9e2a4a499a4a760c37d7890d1d775d651b'
 DAGSHUB_REPO_OWNER = "CharleyDL"
-DAGSHUB_REPO = "neo_aissyr"
+DAGSHUB_REPO = "aissyr"
 # dagshub.init(DAGSHUB_REPO, DAGSHUB_REPO_OWNER)
+
+DATABASE = {
+    "host" : "localhost",
+    "database" : "neo_aissyr",
+    "user" : "DIGMIR",
+    "password" : "m3s_!",
+    "port" : "5432"
+}
+
+
+
+def execute_query(query):
+    try:
+        # Connexion à la base de données PostgreSQL
+        conn = pg.connect(**DATABASE)
+        cursor = conn.cursor()
+
+        # Exécution de la requête SQL
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+        # Fermeture de la connexion à la base de données
+        cursor.close()
+        conn.close()
+
+        return rows
+    except Exception as e:
+        # Gestion des erreurs
+        raise e
+
+
+
+
 
 # remote_server_uri="https://dagshub.com/CharleyDL/neo_aissyr.mlflow"
 # mlf.set_tracking_uri(remote_server_uri)
