@@ -13,8 +13,8 @@ import uvicorn
 
 from fastapi import FastAPI, status
 from fastapi.exceptions import HTTPException
-# from utils.functions import execute_query
-import utils.views as views
+
+from routers import account, annotation
 
 
 app = FastAPI(
@@ -31,8 +31,8 @@ app = FastAPI(
 async def root():
     return {"message": "Welcome to the AISSYR API"}
 
-app.include_router(views.router, prefix='/account', tags=['account'])
-app.include_router(views.router, prefix='/annotation', tags=['annotation'])
+app.include_router(account.router, prefix='/account', tags=['account'])
+app.include_router(annotation.router, prefix='/annotation', tags=['annotation'])
 
 
 

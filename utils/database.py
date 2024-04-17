@@ -44,11 +44,23 @@ class PgDatabase(Database):
 
 
 
+
 ## -------------------------------- ACCOUNT --------------------------------- ##
 def verify_user_account(email: str) -> dict:
+    """Check user account based on email, and retrieves it from the database.
+    If the account exists, it returns a dictionary containing the account 
+    information. If no account is found with the given email, it returns None.
+
+    Args:
+        email (str): The email address of the user to verify.
+
+    Returns:
+        dict or None: A dictionary containing the user account information 
+        if the account exists ; None if no account is found with the given email.
+    """
     with PgDatabase() as db:
         db.cursor.execute(f"""
-                           SELECT email, pwd_hash
+                           SELECT *
                            FROM account_user
                            WHERE email=%s;
                            """, (email,))
@@ -58,9 +70,51 @@ def verify_user_account(email: str) -> dict:
             return None
 
     return {
-        "email": data[0],
-        "password_hash": data[1]
+        "id_account": data[0],
+        "title": data[1],
+        "last_name": data[2],
+        "first_name": data[3],
+        "email": data[4],
+        "pwd_hash": data[5]
     }
+
+
+def create_account(payload: dict) -> bool:
+    """
+    Create a new user account in the database with the provided payload
+    containing account information. 
+    If an account already exists, the function will not create a new account 
+    and will return False. Otherwise, it will insert the new account and 
+    return True.
+
+    Args:
+        payload (dict): A dictionary containing the account information 
+        including 'title', 'last_name', 'first_name', 'email', and 'pwd_hash'.
+
+    Returns:
+        bool: True if the account was successfully created, False otherwise.
+    """
+
+    with PgDatabase() as db:
+        db.cursor.execute(f"""
+            INSERT INTO account_user (title, last_name, 
+                                      first_name, email, pwd_hash)
+            SELECT %s, %s, %s, %s, %s
+            WHERE NOT EXISTS (SELECT 1 FROM account_user WHERE email = %s)
+            """, (payload.title, 
+                  payload.last_name, 
+                  payload.first_name, 
+                  payload.email,
+                  payload.pwd_hash,
+                  payload.email))
+
+        if db.cursor.rowcount > 0:
+            db.commit()
+            return True
+        else:
+            db.rollback()
+            return False
+
 
 
 

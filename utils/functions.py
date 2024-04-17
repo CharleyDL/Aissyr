@@ -28,7 +28,7 @@ def verify_password_hash(account_info: dict, input_pwd:str) -> bool:
         in the database, otherwise False.
     """
     input_pwd_bytes = input_pwd.encode()
-    hashed_password = account_info["password_hash"].tobytes()
+    hashed_password = account_info["pwd_hash"].tobytes()
 
     return bcrypt.checkpw(input_pwd_bytes, hashed_password)
 

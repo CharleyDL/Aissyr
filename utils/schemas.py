@@ -1,13 +1,24 @@
 from pydantic import BaseModel, Field
 
 
-class Verify(BaseModel):
+class MessageAccount(BaseModel):
     result: bool
-    message: str
+    message: str 
+    content: dict | None
 
-class Account(BaseModel):
+
+class VerifyLogin(BaseModel):
+    email: str
+    input_pwd: str
+
+
+class CreateAccount(BaseModel):
+    title: str
+    last_name: str
+    first_name: str
     email: str
     pwd_hash: str
+
 
 class Annotation(BaseModel):
     id_annotation: int
