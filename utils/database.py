@@ -109,14 +109,11 @@ def create_account(payload: dict) -> bool:
                   payload.email))
 
         if db.cursor.rowcount > 0:
-            db.commit()
+            db.connection.commit()
             return True
         else:
-            db.rollback()
+            db.connection.rollback()
             return False
-
-
-
 
 
 ## ------------------------------ ANNOTATION -------------------------------- ##

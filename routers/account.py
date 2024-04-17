@@ -1,6 +1,9 @@
 import utils.functions as fct
 import utils.database as db
+import json
 
+
+from ast import literal_eval
 from fastapi import APIRouter, HTTPException, Response, status
 from fastapi.responses import JSONResponse, RedirectResponse
 from psycopg2.errors import OperationalError
@@ -50,7 +53,7 @@ async def verify_login(payload: VerifyLogin):
 
 ## ----------------------------- CREATE ACCOUNT ----------------------------- ##
 
-@router.post('/create_acccount/', response_model=MessageAccount, 
+@router.post('/create_account/', response_model=MessageAccount, 
              status_code=status.HTTP_201_CREATED)
 async def create_account(payload: CreateAccount):
     try:
@@ -59,11 +62,10 @@ async def create_account(payload: CreateAccount):
             return MessageAccount(result=False, 
                                   message="Account already exists", 
                                   content=None)
-        del payload.email
-        del payload.pwd_hash
+
         return MessageAccount(result=True, 
                               message="Account created successfully", 
-                              content=payload)
+                              content=None)
 
     except OperationalError:
         raise HTTPException(
