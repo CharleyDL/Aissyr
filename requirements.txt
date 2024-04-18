@@ -2,7 +2,7 @@ bcrypt==4.1.2
 dagshub==0.3.12
 fastapi==0.110.0
 gunicorn==21.2.0
-keras==2.15.0
+# keras==2.15.0
 mlflow==2.11.1
 psycopg2==2.9.9
 psycopg2-binary==2.9.9
