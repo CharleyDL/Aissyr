@@ -12,19 +12,21 @@ from utils.schemas import Annotation
 router = APIRouter()
 
 
-@router.get('/get_annotation/', response_model=List[Annotation], 
-            status_code=status.HTTP_200_OK)
-async def read_annotation():
-    try:
-        return select_annotation()
-    except OperationalError:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="""Check if the database exists, connection is successful 
-            or tables exist. To create tables use '/initdb' endpoint"""
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"""Error {e}"""
-        )
+## ------------------------ SAVE ANNOTATION GLYPHS -------------------------- ##
+
+# @router.get('/get_annotation/', response_model=List[Annotation], 
+#             status_code=status.HTTP_200_OK)
+# async def read_annotation():
+#     try:
+#         return select_annotation()
+#     except OperationalError:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail="""Check if the database exists, connection is successful 
+#             or tables exist. To create tables use '/initdb' endpoint"""
+#         )
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST,
+#             detail=f"""Error {e}"""
+#         )
