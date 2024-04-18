@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from psycopg2.errors import OperationalError
 
 from utils.schemas import MessageAccount, ClassifyRequest
-
+import mlflow as mlf
 
 router = APIRouter()
 
@@ -25,11 +25,14 @@ TRACKING_URI = os.getenv("TRACKING_URI")
             status_code=status.HTTP_200_OK)
 async def model():
     try:
-        # mlflow_handler = fct.MLFlowHandler(TRACKING_URI)
-        model = fct.MLFlowHandler(TRACKING_URI)
-        # res = mlflow_handler.check_mlflow_health()
+        mlf.set_tracking_uri(TRACKING_URI)
+        print(mlf.get_tracking_uri())
+        mlflow_handler = fct.MLFlowHandler(mlf.get_tracking_uri())
+        res = mlflow_handler.check_mlflow_health()
+        return MessageAccount(result=True, message=res, content=None)
 
-        return MessageAccount(result=True, message=model, content=None)
+        # model = fct.MLFlowHandler(TRACKING_URI)
+        # return MessageAccount(result=True, message=model, content=None)
 
     except OperationalError:
         raise HTTPException(
