@@ -1,8 +1,6 @@
 import utils.database as db
 
-from fastapi import APIRouter, HTTPException, Response, status
-from fastapi.responses import JSONResponse, RedirectResponse
-from psycopg2.errors import OperationalError
+from fastapi import APIRouter, HTTPException, status
 
 from utils.schemas import AllGlyphs, GlyphInfo
 
@@ -21,8 +19,6 @@ async def all_glyphs():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail='No glyphs found')
     return result
-
-
 
 
 @router.get('/glyphs/{mzl_number}/', 

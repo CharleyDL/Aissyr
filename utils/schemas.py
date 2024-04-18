@@ -1,6 +1,7 @@
 from pydantic import RootModel, BaseModel
 from typing import Dict
 
+
 ## ------------------------------- GENERAL ---------------------------------- ##
 
 class MessageAccount(BaseModel):

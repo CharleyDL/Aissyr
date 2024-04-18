@@ -7,12 +7,9 @@
 # API for the AISSYR project.
 # ==============================================================================
 
-
-import utils.functions as fct
 import uvicorn
 
-from fastapi import FastAPI, status
-from fastapi.exceptions import HTTPException
+from fastapi import FastAPI
 
 from routers import account, annotation, archives, prediction, resources
 

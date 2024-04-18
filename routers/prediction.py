@@ -1,3 +1,6 @@
+import dagshub
+import os
+
 import utils.functions as fct
 import utils.database as db
 
@@ -11,25 +14,50 @@ from utils.schemas import MessageAccount, ClassifyRequest
 router = APIRouter()
 
 
+TRACKING_URI = os.getenv("TRACKING_URI")
+# TRACKING_URI=f"https://dagshub.com/{DAGSHUB_REPO_OWNER}/{DAGSHUB_REPO}.mlflow"
+
+
 ## ------------------------- CLASSIFICATION GLYPHS -------------------------- ##
 
-@router.post('/classify_glyphs/', response_model=MessageAccount, 
+
+@router.get('/model/', response_model=MessageAccount, 
             status_code=status.HTTP_200_OK)
-async def classify_glyphs(payload: ClassifyRequest):
+async def model():
     try:
-        account_info = db.verify_user_account(payload.email)
-        if account_info is None:
-            return MessageAccount(result=False,
-                message="Account not found", content=None)
+        # mlflow_handler = fct.MLFlowHandler(TRACKING_URI)
+        model = fct.MLFlowHandler(TRACKING_URI)
+        # res = mlflow_handler.check_mlflow_health()
+
+        return MessageAccount(result=True, message=model, content=None)
 
     except OperationalError:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="""Check if the database exists, connection is successful 
-            or tables  exist."""
+            detail="""Connection is bad"""
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"""Error {e}"""
         )
+
+
+# @router.post('/classify_glyphs/', response_model=MessageAccount, 
+#             status_code=status.HTTP_200_OK)
+# async def classify_glyphs(payload: ClassifyRequest):
+#     try:
+#         res = fct.check_mlflow_health(TRACKING_URI)
+#         return MessageAccount(result="MLFLOW", message=res, content=None)
+
+#     except OperationalError:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail="""Check if the database exists, connection is successful 
+#             or tables  exist."""
+#         )
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST,
+#             detail=f"""Error {e}"""
+#         )

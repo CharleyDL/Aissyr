@@ -1,8 +1,7 @@
 import utils.functions as fct
 import utils.database as db
 
-from fastapi import APIRouter, HTTPException, Response, status
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi import APIRouter, HTTPException, status
 from psycopg2.errors import OperationalError
 
 from utils.schemas import CreateAccount, MessageAccount, VerifyLogin

@@ -125,7 +125,7 @@ def create_account(payload: dict) -> bool:
             return False
 
 
-## ------------------------------ ANNOTATION -------------------------------- ##
+## ------------------------------- ANNOTATION ------------------------------- ##
 
 def select_annotation() -> list:
     with PgDatabase() as db:
