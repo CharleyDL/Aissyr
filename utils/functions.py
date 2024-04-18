@@ -13,6 +13,11 @@ from pydantic import BaseModel
 # dagshub.init(DAGSHUB_REPO, DAGSHUB_REPO_OWNER)
 
 
+def hash_bcrypt(plain_text: str) -> bytes:
+    plain_text_bytes = plain_text.encode()
+    return bcrypt.hashpw(plain_text_bytes, bcrypt.gensalt(12))
+
+
 def verify_password_hash(account_info: dict, input_pwd:str) -> bool:
     """
     Check if a password provided by the user matches the hashed password 

@@ -1,16 +1,11 @@
 import utils.functions as fct
 import utils.database as db
-import json
 
-
-from ast import literal_eval
 from fastapi import APIRouter, HTTPException, Response, status
 from fastapi.responses import JSONResponse, RedirectResponse
 from psycopg2.errors import OperationalError
 
-from utils.schemas import (CreateAccount, 
-                           MessageAccount, 
-                           VerifyLogin)
+from utils.schemas import CreateAccount, MessageAccount, VerifyLogin
 
 
 router = APIRouter()
@@ -42,7 +37,7 @@ async def verify_login(payload: VerifyLogin):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="""Check if the database exists, connection is successful 
-            or tables  exist."""
+            or tables exist."""
         )
     except Exception as e:
         raise HTTPException(

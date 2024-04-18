@@ -14,7 +14,7 @@ import uvicorn
 from fastapi import FastAPI, status
 from fastapi.exceptions import HTTPException
 
-from routers import account, annotation
+from routers import account, annotation, archives, prediction, resources
 
 
 app = FastAPI(
@@ -27,12 +27,16 @@ app = FastAPI(
 
 
 ## ---------------------------------- ROOT ---------------------------------- ##
+
 @app.get("/")
 async def root():
     return {"message": "Welcome to the AISSYR API"}
 
 app.include_router(account.router, prefix='/account', tags=['account'])
 app.include_router(annotation.router, prefix='/annotation', tags=['annotation'])
+app.include_router(archives.router, prefix='/archives', tags=['archives'])
+app.include_router(prediction.router, prefix='/prediction', tags=['prediction'])
+app.include_router(resources.router, prefix='/resources', tags=['resources'])
 
 
 
