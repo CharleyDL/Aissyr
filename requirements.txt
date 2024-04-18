@@ -11,5 +11,9 @@ pydantic_core==2.16.3
 pytest==6.2.5
 requests==2.31.0
 # tensorflow==2.15.0
-tensorflow-cpu==2.15.0
+# tensorflow-cpu==2.15.0
 uvicorn==0.29.0
+
+
+## - Problem with tensorflow and keras :
+## - error Heroku SlugSize too large (500M max)

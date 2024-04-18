@@ -25,14 +25,14 @@ TRACKING_URI = os.getenv("TRACKING_URI")
             status_code=status.HTTP_200_OK)
 async def model():
     try:
-        mlf.set_tracking_uri(TRACKING_URI)
-        print(mlf.get_tracking_uri())
-        mlflow_handler = fct.MLFlowHandler(mlf.get_tracking_uri())
-        res = mlflow_handler.check_mlflow_health()
-        return MessageAccount(result=True, message=res, content=None)
+        # mlf.set_tracking_uri(TRACKING_URI)
+        # mlflow_handler = fct.MLFlowHandler(mlf.get_tracking_uri())
+    
+        # res = mlflow_handler.check_mlflow_health()
+        # return MessageAccount(result=True, message=res, content=None)
 
-        # model = fct.MLFlowHandler(TRACKING_URI)
-        # return MessageAccount(result=True, message=model, content=None)
+        model = fct.MLFlowHandler(TRACKING_URI)
+        return MessageAccount(result=True, message=model, content=None)
 
     except OperationalError:
         raise HTTPException(

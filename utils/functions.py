@@ -3,6 +3,8 @@ import dagshub.auth
 import mlflow as mlf
 import os
 
+import time
+
 # from mlflow.client import MlflowClient
 from mlflow import MlflowClient
 from mlflow.pyfunc import PyFuncModel, load_model, get_model_dependencies
@@ -22,12 +24,11 @@ class MLFlowHandler:
     def __init__(self, tracking_uri: str) -> None:
         dagshub.init(DAGSHUB_REPO, DAGSHUB_REPO_OWNER, mlflow=True)
 
-        # model_uri = 'runs:/2ba4940995154cb6afdd4ccc34928e7e/model'
-        # self.model = load_model(model_uri)
-        # self.model = get_model_dependencies(model_uri)
+        model_uri = 'runs:/2ba4940995154cb6afdd4ccc34928e7e/model'
+        self.model = load_model(model_uri)
 
-        mlf.set_tracking_uri(tracking_uri)
-        self.client = MlflowClient(tracking_uri=tracking_uri)
+        # mlf.set_tracking_uri(tracking_uri)
+        # self.client = MlflowClient(tracking_uri=tracking_uri)
 
     def check_mlflow_health(self) -> None:
         try:
