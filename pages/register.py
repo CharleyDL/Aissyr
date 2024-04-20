@@ -5,11 +5,17 @@
 # Date Created : Tuesday 19 Apr. 2024
 # ==============================================================================
 
-
-import bcrypt
+import json
+import os
+import requests
 import streamlit as st
 import streamlit_authenticator as sa
+import time
+
 import utils.functions as fct
+
+
+API_URL = os.getenv("API_URL")
 
 
 ## ----------------------------- SETUP PAGE --------------------------------- ##
@@ -68,12 +74,20 @@ with col2:
         with colF2:
             fct.space()
             if st.form_submit_button("Create account"):
-                hash_password = fct.hash_bcrypt(password)
-                credentials = [title, first_name, last_name, email, hash_password]
+                credentials = {
+                    "title": title,
+                    "last_name": last_name,
+                    "first_name": first_name,
+                    "email": email,
+                    "password": password
+                }
+                res = requests.post(url=f"{API_URL}/account/create_account/", 
+                                    data=json.dumps(credentials))
 
-                res = fct.postgres_execute_insert_new_user(credentials)
-                if res:
+                response_data = res.json()
+                if response_data['result']:
+                    st.toast("Account created successfully.", icon='🎉')
+                    time.sleep(2)
                     st.switch_page("pages/login.py")
                 else:
-                    st.toast("Account creation failed. Email already exists.",
-                             icon='🚫')
+                    st.toast(f"{response_data['message']}", icon='🚫')

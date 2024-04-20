@@ -15,6 +15,7 @@ st.set_page_config(page_title='AISSYR',
                    page_icon='asset/fav32.png',
                    layout='wide')
 
+fct.check_session()
 
 
 ## ------------------------------- HEADER  ---------------------------------- ##
@@ -65,7 +66,7 @@ with st.sidebar:
                  label="Archive",
                  icon='📚')
 
-    for i in range(14):
+    for i in range(12):
         fct.space()
     st.markdown('----')
 
@@ -75,6 +76,16 @@ with st.sidebar:
     uploaded_file = st.file_uploader('upload img',
                                       type=["jpg", "jpeg", "png"],
                                       label_visibility='hidden')
+
+    for i in range(2):
+        fct.space()
+
+    cols = st.columns([1,1,1])
+
+    with cols[1]:
+        logout_button = st.button("Logout")
+        if logout_button:
+            fct.logout()
 
 ## -------------------------------------------------------------------------- ##
 

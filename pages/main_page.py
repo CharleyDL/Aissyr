@@ -17,12 +17,15 @@ st.set_page_config(page_title='AISSYR',
                    page_icon='asset/fav32.png', 
                    layout='wide')
 
-st.toast("Authentication successful", icon='🎉')
+if fct.check_session():
+    st.toast("Authentication successful", icon='🎉')
 
 
 ## -------------------------------- LOGO ------------------------------------ ##
 
-h_left, h_left_cent, h_center, h_right_cent, h_right = st.columns(5)
+# h_left, h_left_cent, h_center, h_right_cent, h_right = st.columns(5)
+
+h_left, h_center,h_right = st.columns(3)
 
 with h_center:
     st.markdown(
@@ -38,7 +41,7 @@ with h_center:
 for i in range(3):
     fct.space()
 
-st.header('Welcome to AISSYR')
+st.header(f'Welcome to AISSYR, {st.session_state["f_name"]}!')
 st.markdown('----')
 
 
@@ -108,6 +111,7 @@ with r1_c2:
             """, unsafe_allow_html=True
         )
 
+
 ## ------------------------------ SIDEBAR ----------------------------------- ##
 
 with st.sidebar:
@@ -129,6 +133,16 @@ with st.sidebar:
     st.page_link('pages/archive.py',
                  label="Archive",
                  icon='📚')
+
+    for i in range(36):
+        fct.space()
+
+    cols = st.columns([1,1,1])
+
+    with cols[1]:
+        logout_button = st.button("Logout")
+        if logout_button:
+            fct.logout()
 
 
 ## ------------------------------- FOOTER ----------------------------------- ##

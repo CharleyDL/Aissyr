@@ -11,6 +11,7 @@ env/
 # Folder
 postgres_data/
 front/
+mlruns/
 
 # Config File with sensitive information
 .env

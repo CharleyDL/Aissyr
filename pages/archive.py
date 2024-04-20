@@ -15,6 +15,8 @@ st.set_page_config(page_title='AISSYR',
                    page_icon='asset/fav32.png',
                    layout='wide')
 
+# fct.check_session()
+
 
 ## ------------------------------- HEADER  ---------------------------------- ##
 
@@ -63,5 +65,15 @@ with st.sidebar:
     st.page_link('pages/archive.py', 
                  label="Archive",
                  icon='📚')
+
+    for i in range(32):
+        fct.space()
+
+    cols = st.columns([1,1,1])
+
+    with cols[1]:
+        logout_button = st.button("Logout")
+        if logout_button:
+            fct.logout()
 
 ## -------------------------------------------------------------------------- ##

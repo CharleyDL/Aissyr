@@ -5,12 +5,16 @@
 # Date Created : Tuesday 19 Apr. 2024
 # ==============================================================================
 
-
+import json
+import os
+import requests
 import streamlit as st
-import streamlit.components.v1 as components
 import streamlit_antd_components as sac
+
 import utils.functions as fct
 
+
+API_URL = os.getenv("API_URL")
 
 
 ## ----------------------------- SETUP PAGE --------------------------------- ##
@@ -59,11 +63,23 @@ with right_column:
             )
 
             if st.form_submit_button("Log In"):
-                credentials = [user_email, user_pwd]
-                res = fct.postgres_execute_login(credentials)
+                credentials = {
+                    "email": user_email,
+                    "input_pwd": user_pwd
+                }
 
-                if res:
+                res = requests.post(url=f"{API_URL}/account/verify_login/", 
+                                    data=json.dumps(credentials))
+
+                response_data = res.json()
+                if response_data['result']:
+                    if 'f_name' not in st.session_state:
+                        st.session_state.f_name = response_data['content']['first_name']
+                    if 'log' not in st.session_state:
+                        st.session_state['log'] = False
                     st.switch_page("pages/main_page.py")
+                else:
+                    st.toast(f"{response_data['message']}", icon='🚫')
 
         fct.space()
         st.page_link('pages/register.py', label="Not an account yet? Sign Up")

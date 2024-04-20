@@ -5,187 +5,49 @@
 # Date Created : Tuesday 19 Apr. 2024
 # ==============================================================================
 
-import bcrypt
+import dagshub
+import json
 import mlflow.pyfunc
 import numpy as np
-import psycopg2
+import os
 import requests
 import streamlit as st
 import utils.functions as fct
 
+from mlflow.pyfunc import PyFuncModel
 from PIL import Image
 from streamlit_img_label import st_img_label
 from streamlit_img_label.manage import ImageManager
 from streamlit_extras.row import row
 
-API_URL = "http://"
 
-## -------------------------- POSTGRESQL DATABASE --------------------------- ##
-
-def get_db_config() -> dict:
-    """
-    Returns a dictionary containing database's informations, which are used
-    by the following method : psycopg2.connect()
-    """
-
-    config = {
-        ## -- Local Configuration -- ##
-        "host" : "localhost",
-        "database" : "neo_aissyr",
-        "user" : "DIGMIR",
-        "password" : "m3s_!",
-        "port" : "5432"
-    }
-
-    return config
-
-
-def postgres_execute_insert_new_user(credentials: list) -> None:
-    """
-    Execute an INSERT a new user in a PostgreSQL database.
-
-    Parameter:
-    -----------
-    query (str, required): The SQL query to be executed.
-    """
-    title, first_name, last_name, email, password = credentials
-
-    query= f"""
-        INSERT INTO account_user (title, last_name, first_name, email, pwd_hash)
-        SELECT %s, %s, %s, %s, %s
-        WHERE NOT EXISTS (SELECT 1 FROM account_user WHERE email = %s);
-        """
-
-    try:
-        db = psycopg2.connect(**get_db_config())
-        cursor = db.cursor()
-        cursor.execute(query,
-                       (title, last_name, first_name, email, password, email)
-        )
-
-        if cursor.rowcount > 0:
-            db.commit()
-            # print("Insertion Done")
-            return True
-        else:
-            db.rollback()
-            return False
- 
-    except (Exception, psycopg2.Error) as error:
-        print(f"Failed : {error}")
-
-    finally:
-        if db:
-            cursor.close()
-            db.close()
-            # print("PostgreSQL connection is closed")
-
-
-def postgres_execute_login(credentials: list) -> tuple:
-    """
-    Execute a search query in a PostgreSQL database.
-
-    Parameters:
-    -----------
-    query (str, required): The SQL query to be executed.
-
-    Return:
-    --------
-    tuple: Query result
-    """
-
-    email, password = credentials
-
-    query = f"""
-        SELECT pwd_hash FROM account_user
-        WHERE email = %s;
-        """
-
-    try:
-        db = psycopg2.connect(**get_db_config())
-        cursor = db.cursor()
-        cursor.execute(query,(email,))
-        result = cursor.fetchone()
-
-        if result is not None:
-            hashed_password = result[0].tobytes()
-            if check_bcrypt(password, hashed_password):
-                return True
-            else:
-                st.toast("Incorrect password", icon='🔐')
-                print("Incorrect password")
-        else:
-            st.toast("User not found", icon='❓')
-
-    except (Exception, psycopg2.Error) as error:
-        print(f"Failed : {error}")
-
-    finally:
-        if db:
-            cursor.close()
-            db.close()
-            # print("PostgreSQL connection is closed")
-
-
-def postgres_execute_get_mzl() -> list:
-    """
-    Get MZL information from DB
-
-    Parameters:
-    -----------
-    query (str, required): The SQL query to be executed.
-
-    Return:
-    --------
-    List: MZL Information on format : [482 - 𒀤 AL×HA]
-    """
-    query = f"""
-        SELECT mzl_number, glyph, glyph_name 
-        FROM mzl_ref;
-        """
-
-    try:
-        db = psycopg2.connect(**get_db_config())
-        cursor = db.cursor()
-        cursor.execute(query)
-        result = cursor.fetchall()
-
-        mzl_list = []
-        for index, item in enumerate(result, start=1):
-            formatted_item = f"{index}. {'  '.join(str(e) for e in item[1:])}"
-            mzl_list.append(formatted_item)
-
-        return mzl_list
-
-    except (Exception, psycopg2.Error) as error:
-        print(f"Failed : {error}")
-
-    finally:
-        if db:
-            cursor.close()
-            db.close()
-            # print("PostgreSQL connection is closed")
-
-
-## ----------------------------- BCRYPT HASHING ----------------------------- ##
-
-def hash_bcrypt(plain_text: str) -> bytes:
-    plain_text_bytes = plain_text.encode()
-    return bcrypt.hashpw(plain_text_bytes, bcrypt.gensalt(12))
-
-
-def check_bcrypt(plain_text: str, hashed_password: bytes) -> bool:
-    try:
-        plain_text_bytes = plain_text.encode()
-        return bcrypt.checkpw(plain_text_bytes, hashed_password)
-    except:
-        return False
+API_URL = os.getenv("API_URL")
+DAGSHUB_REPO_OWNER = os.getenv("DAGSHUB_REPO_OWNER")
+DAGSHUB_REPO = os.getenv("DAGSHUB_REPO")
+MODEL_URI = os.getenv("MODEL_URI")
 
 
 ## --------------------------- STREAMLIT UTILITIES -------------------------- ##
 
-def clear_cache(key: str) -> None:
-    st.session_state.pop(key)
+def check_session() -> bool:
+    """
+    Check if the user is authenticated and set the session state accordingly.
+    """
+    if 'log' not in st.session_state:
+        st.switch_page("pages/error401.py")
+
+    if not st.session_state.log:
+        st.session_state['log'] = True
+        return True
+
+
+def clear_session_state(key: str) -> None:
+    st.session_state[key] = []
+
+
+def logout() -> None:
+    """Log out the user and redirect to the home page."""
+    st.switch_page("Home.py")
 
 
 def space() -> None:
@@ -193,9 +55,48 @@ def space() -> None:
     st.markdown("""<style> <br /> </style>""", unsafe_allow_html=True)
 
 
+## --------------------------------- MODEL ---------------------------------- ##
+
+@st.cache_resource(show_spinner=False)
+def load_model() -> PyFuncModel | None:
+    """
+    Loads a MLflow PyFuncModel from a dagshub repository and model_uri.
+    URI example : "runs:/<run_id>/model"
+
+    Returns:
+    ------
+        PyFuncModel | None: The loaded PyFuncModel object if successful, 
+        else None.
+    """
+    try:
+        dagshub.init(DAGSHUB_REPO, DAGSHUB_REPO_OWNER, mlflow=True)
+
+        model = mlflow.pyfunc.load_model(MODEL_URI)
+        return model
+
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
+        return None
+
+
 ## --------------------------------- IMAGES --------------------------------- ##
 
-def extract_and_resize(image, output_size=(128, 128)):
+def extract_and_resize(image, output_size=(100, 100)) -> Image.Image:
+    """
+    Extracts a region of interest from an image and resizes it to the specified 
+    output size.
+
+    Args:
+    ----
+        image (Image.Image): The input image from which the ROI will be 
+            extracted.
+        output_size (Tuple[int, int], optional): The desired output size 
+            of the resized image. Defaults to (100, 100).
+
+    Returns:
+    ----
+        Image.Image: The resized ROI as a PIL image.
+    """
     if image.mode != 'RGB':
         image = image.convert('RGB')
 
@@ -203,59 +104,119 @@ def extract_and_resize(image, output_size=(128, 128)):
 
     return resized_roi
 
-## ------------------------------- DETECTION -------------------------------- ##
 
-# @st.cache_resource()
-# def load_model():
-#     model_id = 'runs:/d104fc5e1dd8470a8dde5b0c7a760814/model'
-#     loaded_model = mlflow.pyfunc.load_model(model_id)
-#     return loaded_model
+## ------------------------ GLYPHS CLASSIFICATION --------------------------- ##
 
 
-def detect_glyphs(img_name: str, img: Image.Image, 
-                  glyph_selection: list, bbox: list):
+def mzl_info(label: str) -> dict:
+    """
+    Retrieves information about a specific MZL from the database.
+
+    Args:
+    ----
+        label (str): The MZL label to search for.
+
+    Returns:
+    -------
+        dict: A dictionary containing the information of the MZL :
+        mzl_number, glyph_name, glyph and glphy_phonetic
+    """
+    res = requests.get(url=f"{API_URL}/resources/glyphs/{label}/")
+    res_dict = res.json()
+    return res_dict
+
+
+def glyphnet_img_preprocess(image: Image.Image) -> np.ndarray:
+    """ 
+    Preprocesses an image to make it compatible with the Glyphnet model.
+
+    - The image is resized to 100x100 pixels and converted to grayscale.
+    - The pixel values are normalized between 0 and 1.
+    - The image is expanded to add a channel dimension.
+
+    Args:
+    ----
+        image (Image.Image): The input PIL image to be preprocessed.
+
+    Returns:
+    -------
+        np.ndarray: The preprocessed image as a numpy array.
+    """
+    image = image.resize((100, 100)).convert("L")
+    img_array = np.array(image, dtype=np.float32) / 255.0
+    img_preprocessed = np.reshape(img_array, (-1, 100, 100, 1))
+
+    return img_preprocessed
+
+
+def predicted_class(pred_array: np.ndarray) -> list:
+    """
+    Predicts the class label and percentage probability from a prediction array.
+
+    Args:
+    ----
+        pred_array (np.ndarray): The prediction array containing probabilities 
+        for each class.
+
+    Returns:
+    -------
+        list: Contain the predicted class label and percentage probability. 
+        - The first element -> the predicted class label.
+        - The second element -> the percentage probability.
+
+    Example:
+    -------
+        >>> prediction = predicted_class(np.array([[0.1, 0.2, 0.7]]))
+        >>> print(prediction)
+        ['110', 70.0]
+    """
+    mzl_label = ['1', '10', '110', '112', '24', '248', '252', '380', '490', 
+                 '514', '552', '566', '596', '661', '724', '736', '748', '754', 
+                 '839', '859', '869', '89']
+
+    pred_idx = np.argmax(pred_array)
+    pred_label = mzl_label[pred_idx]
+    pred_percentage = round(pred_array[0][pred_idx] * 100, 2)
+
+    ## - Get mzl information from the database
+    mzl_information = mzl_info(pred_label)
+    pred_result = [
+        mzl_information['mzl_number'],
+        mzl_information['glyph'],
+        mzl_information['glyph_name'],
+        pred_percentage
+    ]
+
+    return pred_result
+
+
+def classify_glyph(img_name: str, img: Image.Image, 
+                  glyph_selection: Image.Image, bbox: list) -> list:
     """Send request to the API to detect the glyphs in the image.
 
     Parameters:
-    - tablet_name (str): The name of the tablet
+    - img_name (str): The name of the tablet
     - img (Image): The full image
-    - glyph_selection (list): List of tuple the selected glyphs (not resized)
+    - glyph_selection (list): Image of the selected glyph (not resized)
     - bbox (list): List of dictionary (left, top, width, height, label)
 
     Returns:
-    - res (str): The detected glyphs label
+    - pred_result (Image): The detected glyphs label
     """
 
-    # print(tablet_name)
-    # print(img)
-    # print(glyph_selection)
-    # print(bbox)
+    ## - Load the model from MLflow
+    model = load_model()
 
-    ## - Preprocess the request and send it
-    img_name = img_name.split(".")[0]
-    for i, glyph in enumerate(glyph_selection):
-        print(img_name)
-        print(f"Glyph {i}: {glyph}")
-        print(f"Box {i}: {bbox[i]}")
-        # st.image(glyph[0])
+    ## - Preprocess & Predict
+    img_preprocessed = glyphnet_img_preprocess(glyph_selection)
+    pred = model.predict(img_preprocessed)
+    pred_result = predicted_class(pred)
 
-        info_for_api = {"tablet_name": img_name,
-                        "picture": img,
-                        "glyph": glyph[0],
-                        "bbox": bbox[i]}
-
-        # response = requests.post(url, 
-        #                          params=info_for_api)
-
-    # response = requests.post(url, params=payload, files={"uploaded_file": uploaded_pdf.getvalue()})
-
-    ## - Raw response for test the Front-End
-    res = "113: 𒁁, BAD -- 88.7%"
-
-    return res
+    return pred_result
 
 
-def detection(uploaded_file):
+def classification_setup(uploaded_file):
+
     if 'preview_imgs' not in st.session_state:
         st.session_state.preview_imgs = []
 
@@ -280,34 +241,51 @@ def detection(uploaded_file):
     with col2:
         preview_imgs = im.init_annotation(rects)
 
-        rowImgDet = row(2, gap='medium')
-        tmp_img = st.empty()
+        rowImgDet = row([0.3, 0.7], gap='small')
 
-        resize_prev_img = []
+        _cL, colC, _cR = st.columns([1,4,1])
+        with colC:
+            tmp_img = st.empty()
+
+        ## - Display the glyph preview for selection
         for i, prev_img in enumerate(preview_imgs):
-            resize_prev_img = extract_and_resize(prev_img[0])
+            resize_prev_img = extract_and_resize(prev_img[0], output_size=(200, 200))
+            tmp_img.image(resize_prev_img)
 
-            colImg, colDet = st.columns(2)
-            with colImg:
-                tmp_img.image(resize_prev_img)
-
+        ## - Predict the selected glyphs and display result
         if detect_button:
-            res = detect_glyphs(uploaded_file.name, img, 
-                                preview_imgs, rects)
+            for i, glyph in enumerate(preview_imgs):
+                pred_res = classify_glyph(uploaded_file.name, img, 
+                                    glyph[0], rects[i])
 
-            ## AJOUTER UNE BOUCLE POUR ITERER DANS RES
-            ## POUR METTRE LE RES EN FACE DE LA BONNE IMG !!!
-            st.session_state.preview_imgs.append(resize_prev_img)
-            st.session_state.res_detect.append(res)
-            st.session_state.zip_detect.append((resize_prev_img, res))
+                # Resize the glyph for display result
+                glyph_resize = extract_and_resize(glyph[0])
+                st.session_state.zip_detect.append((glyph_resize, pred_res))
 
             tmp_img.empty()
 
-        for i, result in enumerate(st.session_state.zip_detect):
-            rowImgDet.image(result[0])
-            rowImgDet.write(f"""
-                            <h4 style='padding-top: 48px;'>- {result[1]}</h4>
-                            """, unsafe_allow_html=True)
+            for i, result in enumerate(st.session_state.zip_detect):
+                rowImgDet.image(result[0])
+
+                ## - Result form -> [mzl_number - glyph glyph_name [percentage]]
+                rowImgDet.write(f"""
+                                <p style='padding-top: 24px;
+                                        font-size: 20px;'>
+                                <b>
+                                    {result[1][0]}
+                                    <span style='margin-left: 16px;'>&nbsp;</span>
+                                    {result[1][1]} - {result[1][2]}
+                                </b>
+                                <span style='margin-left: 24px;'>&nbsp;</span>
+                                <em style='font-size: 16px;'>
+                                    ({result[1][3]}%)
+                                </em>
+                                </p>
+                                """, unsafe_allow_html=True)
+
+            ## - Clear the session state if new detection is wanted
+            ## - the rects saved the selection so we don't lose information
+            clear_session_state('zip_detect')
 
 
 ## ------------------------------- ANNOTATION ------------------------------- ##
@@ -362,3 +340,59 @@ def annotation(img_path):
                 "Label", labels, key=f"label_{i}", index=default_index
             )
             im.set_annotation(i, select_label)
+
+
+
+
+
+
+
+
+
+## ------------------------------- SAVING -------------------------------- ##
+# def classify_glyph(img_name: str, img: Image.Image, 
+#                   glyph_selection: Image.Image, bbox: list) -> list:
+    """Send request to the API to detect the glyphs in the image.
+
+    Parameters:
+    - tablet_name (str): The name of the tablet
+    - img (Image): The full image
+    - glyph_selection (list): Image of the selected glyph (not resized)
+    - bbox (list): List of dictionary (left, top, width, height, label)
+
+    Returns:
+    - res (str): The detected glyphs label
+    """
+
+    # print(tablet_name)
+    # print(img)
+    # print(glyph_selection)
+    # print(bbox)
+
+    ## - Load the model from MLflow
+    # model = load_model()
+
+    ## - Preprocess & Predict
+    # img_preprocessed = glyphnet_img_preprocess(glyph_selection)
+    # pred = model.predict(img_preprocessed)
+
+    # pred_result = predicted_class(pred)
+    # return pred_result
+
+    ## - Preprocess the request and send it
+    # img_name = img_name.split(".")[0]
+    # for i, glyph in enumerate(glyph_selection):
+    #     print(img_name)
+    #     print(f"Glyph {i}: {glyph}")
+    #     print(f"Box {i}: {bbox[i]}")
+    #     # st.image(glyph[0])
+
+    #     info_for_api = {"tablet_name": img_name,
+    #                     "picture": img,
+    #                     "glyph": glyph[0],
+    #                     "bbox": bbox[i]}
+
+    ## - Raw response for test the Front-End
+    # res = "113: 𒁁, BAD -- 88.7%"
+
+    # return res
