@@ -57,6 +57,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-login_button = st.button("log In")
+login_button = st.button("Log In")
 if login_button:
     fct.logout()

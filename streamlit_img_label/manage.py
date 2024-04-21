@@ -30,10 +30,12 @@ class ImageManager:
         self._resized_ratio_w = 1
         self._resized_ratio_h = 1
 
+
     # def _load_rects(self):
     #     rects_xml = read_xml(self._filename)
     #     if rects_xml:
     #         self._rects = rects_xml
+
 
     def get_img(self):
         """get the image object
@@ -43,6 +45,7 @@ class ImageManager:
         """
         return self._img
 
+
     def get_rects(self):
         """get the rects
 
@@ -50,6 +53,7 @@ class ImageManager:
             rects(list): the bounding boxes of the image.
         """
         return self._rects
+
 
     def resizing_img(self, max_height=700, max_width=700):
         """resizing the image by max_height and max_width.
@@ -76,6 +80,7 @@ class ImageManager:
         self._resized_ratio_h = self._img.height / resized_img.height
         return resized_img
 
+
     def _resize_rect(self, rect):
         resized_rect = {}
         resized_rect["left"] = rect["left"] / self._resized_ratio_w
@@ -86,6 +91,7 @@ class ImageManager:
             resized_rect["label"] = rect["label"]
         return resized_rect
 
+
     def get_resized_rects(self):
         """get resized the rects according to the resized image.
 
@@ -93,6 +99,7 @@ class ImageManager:
             resized_rects(list): the resized bounding boxes of the image.
         """
         return [self._resize_rect(rect) for rect in self._rects]
+
 
     def _chop_box_img(self, rect):
         rect["left"] = int(rect["left"] * self._resized_ratio_w)
@@ -117,6 +124,7 @@ class ImageManager:
             label = rect["label"]
         return (Image.fromarray(prev_img), label)
 
+
     def init_annotation(self, rects):
         """init annotation for current rects.
 
@@ -128,6 +136,7 @@ class ImageManager:
         self._current_rects = rects
         return [self._chop_box_img(rect) for rect in self._current_rects]
 
+
     def set_annotation(self, index, label):
         """set the label of the image.
 
@@ -136,8 +145,3 @@ class ImageManager:
             label(str): the label of the bounding box
         """
         self._current_rects[index]["label"] = label
-
-    def save_annotation(self):
-        """output the xml annotation file."""
-        pass
-        # output_xml(self._filename, self._img, self._current_rects)

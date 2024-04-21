@@ -5,6 +5,7 @@
 # Date Created : Tuesday 19 Apr. 2024
 # ==============================================================================
 
+import base64
 import dagshub
 import json
 import mlflow.pyfunc
@@ -12,8 +13,10 @@ import numpy as np
 import os
 import requests
 import streamlit as st
+
 import utils.functions as fct
 
+from io import BytesIO
 from mlflow.pyfunc import PyFuncModel
 from PIL import Image
 from streamlit_img_label import st_img_label
@@ -29,6 +32,19 @@ MODEL_URI = os.getenv("MODEL_URI")
 
 ## --------------------------- STREAMLIT UTILITIES -------------------------- ##
 
+
+def button_detect_page() -> None:
+    st.markdown("""
+    <style>
+    [data-testid="baseButton-secondary"] {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+
 def check_session() -> bool:
     """
     Check if the user is authenticated and set the session state accordingly.
@@ -42,7 +58,20 @@ def check_session() -> bool:
 
 
 def clear_session_state(key: str) -> None:
+    """
+    Clear the session state to avoid duplicate when new detection.
+    The rects saved the selection so we don't lose the information.
+    """
     st.session_state[key] = []
+
+
+def disable():
+    st.session_state.disabled = True
+
+
+def enable():
+    if st.session_state.disabled == True:
+        st.session_state.disabled = False
 
 
 def logout() -> None:
@@ -103,6 +132,25 @@ def extract_and_resize(image, output_size=(100, 100)) -> Image.Image:
     resized_roi = image.resize(output_size, resample=Image.LANCZOS)
 
     return resized_roi
+
+
+def encode_image(image: Image.Image) -> str:
+    """
+    Encodes a PIL image to a base64 string.
+
+    Args:
+    ----
+        image (Image.Image): The input image to be encoded.
+
+    Returns:
+    ----
+        str: The base64 encoded image as a string.
+    """
+    buffered = BytesIO()
+    image.save(buffered, format="JPEG")
+    encoded_img = base64.b64encode(buffered.getvalue()).decode('utf-8')
+
+    return encoded_img
 
 
 ## ------------------------ GLYPHS CLASSIFICATION --------------------------- ##
@@ -217,16 +265,14 @@ def classify_glyph(img_name: str, img: Image.Image,
 
 def classification_setup(uploaded_file):
 
+    button_detect_page()
+
+    if "disabled" not in st.session_state:
+        st.session_state.disabled = True
     if 'preview_imgs' not in st.session_state:
         st.session_state.preview_imgs = []
-
-    if 'res_detect' not in st.session_state:
-        st.session_state.res_detect = []
-
     if 'zip_detect' not in st.session_state:
         st.session_state.zip_detect = []
-
-    preview_imgs = []
 
     col1, col2 = st.columns(2)
     with col1:
@@ -236,25 +282,43 @@ def classification_setup(uploaded_file):
         resized_rects = im.get_resized_rects()
         rects = st_img_label(resized_img, box_color="red", rects=resized_rects)
 
-        detect_button = st.button(label="Detect")
+        if rects:       # Enable/Disable detect/save/correct button
+            enable() 
+        else:
+            clear_session_state('zip_detect')
+            disable()
+
+        ## - Button row for detect, save and correct
+        rowOption = row(3, gap='small')
+        detect_button = rowOption.button(label="Detect", 
+                                  disabled=st.session_state.disabled)
+        save_button = rowOption.button(label="Save",
+                                       disabled=st.session_state.disabled)
+        correct_button = rowOption.button(label="Correct Label",
+                                          disabled=st.session_state.disabled)
+
 
     with col2:
-        preview_imgs = im.init_annotation(rects)
+        space()
 
-        rowImgDet = row([0.3, 0.7], gap='small')
+        st.session_state.preview_imgs = im.init_annotation(rects)
 
         _cL, colC, _cR = st.columns([1,4,1])
         with colC:
             tmp_img = st.empty()
 
         ## - Display the glyph preview for selection
-        for i, prev_img in enumerate(preview_imgs):
-            resize_prev_img = extract_and_resize(prev_img[0], output_size=(200, 200))
-            tmp_img.image(resize_prev_img)
+        if st.session_state.preview_imgs:
+            for i, prev_img in enumerate(st.session_state.preview_imgs):
+                resize_prev_img = extract_and_resize(prev_img[0], 
+                                                    output_size=(200, 200))
+                tmp_img.image(resize_prev_img)
 
         ## - Predict the selected glyphs and display result
         if detect_button:
-            for i, glyph in enumerate(preview_imgs):
+            clear_session_state('zip_detect')
+
+            for i, glyph in enumerate(st.session_state.preview_imgs):
                 pred_res = classify_glyph(uploaded_file.name, img, 
                                     glyph[0], rects[i])
 
@@ -264,28 +328,42 @@ def classification_setup(uploaded_file):
 
             tmp_img.empty()
 
-            for i, result in enumerate(st.session_state.zip_detect):
-                rowImgDet.image(result[0])
+        for i, result in enumerate(st.session_state.zip_detect):
+            space()
+            rowImgDet = row([0.3, 0.7], gap='small')
 
-                ## - Result form -> [mzl_number - glyph glyph_name [percentage]]
-                rowImgDet.write(f"""
-                                <p style='padding-top: 24px;
-                                        font-size: 20px;'>
-                                <b>
-                                    {result[1][0]}
-                                    <span style='margin-left: 16px;'>&nbsp;</span>
-                                    {result[1][1]} - {result[1][2]}
-                                </b>
-                                <span style='margin-left: 24px;'>&nbsp;</span>
-                                <em style='font-size: 16px;'>
-                                    ({result[1][3]}%)
-                                </em>
-                                </p>
-                                """, unsafe_allow_html=True)
+            rowImgDet.image(result[0])
+            rowImgDet.write(f"""
+                <p style='padding-top: 24px;
+                        font-size: 20px;'>
+                <b>
+                    {result[1][0]}
+                    <span style='margin-left: 16px;'>&nbsp;</span>
+                    {result[1][1]} - {result[1][2]}
+                </b>
+                <span style='margin-left: 24px;'>&nbsp;</span>
+                <em style='font-size: 16px;'>
+                    ({result[1][3]}%)
+                </em>
+                </p>
+                """, unsafe_allow_html=True)
 
-            ## - Clear the session state if new detection is wanted
-            ## - the rects saved the selection so we don't lose information
-            clear_session_state('zip_detect')
+        if save_button:
+            ## - Clear preview to keep the result of the prediction
+            clear_session_state('preview_imgs')
+            tmp_img.empty()
+
+            ## - Send the result to the API
+            print("Save the result")
+
+            save_inference(uploaded_file.name,
+                           img,
+                           rects,
+                           st.session_state.zip_detect)
+
+        # if correct_button:
+        #     pass
+
 
 
 ## ------------------------------- ANNOTATION ------------------------------- ##
@@ -299,14 +377,14 @@ def annotate():
     # next_annotate_file()
 
 def annotation(img_path):
-    if 'preview_imgs' not in st.session_state:
-        st.session_state.preview_imgs = []
+    # if 'preview_imgs' not in st.session_state:
+    #     st.session_state.preview_imgs = []
 
-    if 'res_label' not in st.session_state:
-        st.session_state.res_detect = []
+    # if 'res_label' not in st.session_state:
+    #     st.session_state.res_detect = []
 
-    if 'zip_label' not in st.session_state:
-        st.session_state.zip_detect = []
+    # if 'zip_label' not in st.session_state:
+    #     st.session_state.zip_detect = []
 
     labels = fct.postgres_execute_get_mzl()
     preview_imgs = []
@@ -342,6 +420,42 @@ def annotation(img_path):
             im.set_annotation(i, select_label)
 
 
+## --------------------------------- SAVING --------------------------------- ##
+
+def save_inference(img_name: str,
+                   original_img: Image.Image, 
+                   bbox_glyphs: list, 
+                   pred_results: list) -> None:
+
+    ## - Preprocess the data
+    img_name = img_name.split(".")[0]  # Remove the extension
+    binary_original_img = encode_image(original_img)
+
+    for i, glyph in enumerate(pred_results):
+        bbox_dict = bbox_glyphs[i]
+        bbox = [
+            bbox_dict['left'],  # x_min
+            bbox_dict['top'],   # y_min
+            bbox_dict['left'] + bbox_dict['width'], # x_max
+            bbox_dict['top'] + bbox_dict['height']  # y_max
+        ]
+        mzl_number = pred_results[i][1][0]
+        confidence = pred_results[i][1][3]
+
+        print(confidence)
+        data = {
+            "img_name": img_name,
+            "img": binary_original_img,
+            "bbox": bbox,
+            "mzl_number": mzl_number,
+            "confidence": confidence
+        }
+
+        # print(data)
+
+        res = requests.post(url=f"{API_URL}/prediction/saving_classification/", 
+                            data=json.dumps(data))
+        print(res.json())
 
 
 
@@ -349,7 +463,9 @@ def annotation(img_path):
 
 
 
-## ------------------------------- SAVING -------------------------------- ##
+
+
+## --------------------------- BACKUP OLD CODE  ------------------------------ ##
 # def classify_glyph(img_name: str, img: Image.Image, 
 #                   glyph_selection: Image.Image, bbox: list) -> list:
     """Send request to the API to detect the glyphs in the image.

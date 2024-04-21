@@ -7,6 +7,7 @@ import {
 import { fabric } from "fabric"
 import styles from "./StreamlitImgLabel.module.css"
 
+
 interface RectProps {
     top: number
     left: number
@@ -30,9 +31,7 @@ const StreamlitImgLabel = (props: ComponentProps) => {
     const { canvasWidth, canvasHeight, imageData }: PythonArgs = props.args
     const [newBBoxIndex, setNewBBoxIndex] = useState<number>(0)
 
-    /*
-     * Translate Python image data to a JavaScript Image
-     */
+    //Translate Python image data to a JavaScript Image
     var invisCanvas = document.createElement("canvas")
     var ctx = invisCanvas.getContext("2d")
 
@@ -87,7 +86,7 @@ const StreamlitImgLabel = (props: ComponentProps) => {
         // eslint-disable-next-line
     }, [canvasHeight, canvasWidth, dataUri])
 
-    // Create defualt bounding box
+    // Create default bounding box
     const defaultBox = () => ({
         left: canvasWidth * 0.15 + newBBoxIndex * 3,
         top: canvasHeight * 0.15 + newBBoxIndex * 3,
@@ -216,6 +215,7 @@ const StreamlitImgLabel = (props: ComponentProps) => {
                 width={canvasWidth}
                 height={canvasHeight}
             />
+
             <div className={mode === "dark" ? styles.dark : ""}>
                 <button
                     className={mode === "dark" ? styles.dark : ""}
@@ -238,7 +238,7 @@ const StreamlitImgLabel = (props: ComponentProps) => {
                 {/* <button
                     className={mode === "dark" ? styles.dark : ""}
                     onClick={clearHandler}
-                >
+                    >
                     Clear all
                 </button> */}
             </div>

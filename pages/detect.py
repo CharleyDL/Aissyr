@@ -45,7 +45,7 @@ with st.sidebar:
     """, unsafe_allow_html=True
     )
     st.image('asset/logo_aissyr_S.png')
-
+    
     for i in range(2):
         fct.space()
 
@@ -67,7 +67,7 @@ with st.sidebar:
                  label="Archive",
                  icon='📚')
 
-    for i in range(12):
+    for i in range(8):
         fct.space()
     st.markdown('----')
 
@@ -75,7 +75,7 @@ with st.sidebar:
              <h3 style='text-align: center;'> UPLOAD IMAGE</h3>
              """, unsafe_allow_html=True)
     uploaded_file = st.file_uploader('upload img',
-                                      type=["jpg", "jpeg", "png"],
+                                      type=["jpg", "jpeg"],
                                       label_visibility='hidden')
 
     for i in range(2):
