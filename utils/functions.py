@@ -1,6 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# ==============================================================================
+# Created By   : Charley ∆. Lebarbier
+# Date Created : Friday 19 Apr. 2024
+# ==============================================================================
+# API UTILITIES FUNCTIONS
+# ==============================================================================
+
 import bcrypt
-
-
 
 
 ## --------------------------- PASSWORD MANAGER ----------------------------- ##
@@ -39,6 +46,3 @@ def verify_password_hash(account_info: dict, input_pwd:str) -> bool:
     hashed_password = account_info["pwd_hash"].tobytes()
 
     return bcrypt.checkpw(input_pwd_bytes, hashed_password)
-
-
-## ------------------------------ PREDICTION -------------------------------- ##

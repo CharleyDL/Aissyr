@@ -1,3 +1,12 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# ==============================================================================
+# Created By   : Charley ∆. Lebarbier
+# Date Created : Tuesday 16 Apr. 2024
+# ==============================================================================
+# API ROUTES ANNOTATION
+# ==============================================================================
+
 import utils.functions as fct
 import utils.database as db
 

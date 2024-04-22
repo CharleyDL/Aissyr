@@ -1,3 +1,12 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# ==============================================================================
+# Created By   : Charley ∆. Lebarbier
+# Date Created : Tuesday 16 Apr. 2024
+# ==============================================================================
+# API ROUTES ACCOUNT
+# ==============================================================================
+
 import utils.functions as fct
 import utils.database as db
 
@@ -35,8 +44,8 @@ async def verify_login(payload: VerifyLogin):
     except OperationalError:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="""Check if the database exists, connection is successful 
-            or tables exist."""
+            detail="""Check if the route exists, connection is successful 
+            or database/tables exist."""
         )
     except Exception as e:
         raise HTTPException(
@@ -64,8 +73,8 @@ async def create_account(payload: CreateAccount):
     except OperationalError:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="""Check if the database exists, connection is successful 
-            or tables exist."""
+            detail="""Check if the route exists, connection is successful 
+            or database/tables exist."""
         )
     except Exception as e:
         raise HTTPException(

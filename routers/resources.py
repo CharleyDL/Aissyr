@@ -1,3 +1,12 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# ==============================================================================
+# Created By   : Charley ∆. Lebarbier
+# Date Created : Wednesday 17 Apr. 2024
+# ==============================================================================
+# API ROUTES RESOURCES
+# ==============================================================================
+
 import utils.database as db
 
 from fastapi import APIRouter, HTTPException, status

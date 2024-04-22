@@ -1,4 +1,4 @@
-from pydantic import RootModel, BaseModel
+from pydantic import Base64Bytes, RootModel, BaseModel
 from typing import Dict
 
 
@@ -37,8 +37,12 @@ class Annotation(BaseModel):
 
 ## ----------------------------- PREDICTION --------------------------------- ##
 
-class ClassifyRequest(BaseModel):
-    image: str
+class SaveClassification(BaseModel):
+    img_name: str
+    img: Base64Bytes
+    bbox: list[int]
+    mzl_number: int
+    confidence: float
 
 
 ## ------------------------------ RESOURCES --------------------------------- ##

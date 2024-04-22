@@ -1,10 +1,19 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# ==============================================================================
+# Created By   : Charley ∆. Lebarbier
+# Date Created : Friday 19 Apr. 2024
+# ==============================================================================
+# Database requests functions 
+# ==============================================================================
+
 import os
 import psycopg2 as pg
 
 import utils.functions as fct
 
 from abc import ABC, abstractmethod
-
+from datetime import date
 
 
 
@@ -230,3 +239,124 @@ def select_glyph_by_mzl(mzl_number: int) -> dict:
         "glyph": data[2],
         "glyph_phonetic": phonetic_list
     }
+
+
+## --------------------------- SAVE CLASSIFICATION -------------------------- ##
+
+def check_img_name(img_name: str) -> bool|int:
+    """
+    Check if an image exists in the tablet_infrn table.
+
+    Args:
+    -----
+        img_name (str): The name of the image to check.
+
+    Returns:
+    -------
+        boolean or int: Returns False if the tablet name doesn't exist, 
+        otherwise returns the id_inference associated with the tablet name.
+    """
+    with PgDatabase() as db:
+        db.cursor.execute(f"""
+                           SELECT id_inference
+                           FROM tablet_infrn
+                           WHERE tablet_name=%s;
+                           """, (img_name,))
+        data = db.cursor.fetchone()
+
+        if data is None:
+            return False
+
+        return data[0]
+
+
+def save_in_tablet_name(payload: dict, date_infrn: date) -> bool|int:
+    """
+    Save tablet information into the tablet_infrn table.
+
+    Args:
+    ----
+    payload: The payload containing tablet information.
+    date_infrn (date): The date of the inference.
+
+    Returns:
+    -------
+    int or bool: Returns the id_inference if the insertion was successful,
+    otherwise returns False.
+    """
+    with PgDatabase() as db:
+        db.cursor.execute(f"""
+                           INSERT INTO tablet_infrn (tablet_name, 
+                                                     picture, 
+                                                     date_infrn)
+                           VALUES (%s, %s, %s)
+                           RETURNING id_inference;
+                           """, (payload.img_name, 
+                                 payload.img, 
+                                 date_infrn))
+        id_inference = db.cursor.fetchone()[0]
+        db.connection.commit()
+
+        if id_inference is not None:
+            db.connection.commit()
+            return id_inference
+        else:
+            db.connection.rollback()
+            return False
+
+
+def save_in_infrn_result(payload: dict, id_inference: int) -> bool:
+    """
+    Save inference result into the infrn_result table.
+
+    Args:
+    ----
+        payload: The payload containing inference result information.
+        id_inference (int): The id of the inference associated with the result.
+
+    Returns:
+    ----
+        bool: Returns True if the insertion is successful, 
+        otherwise returns False.
+    """
+    with PgDatabase() as db:
+        # db.cursor.execute(f"""
+        #                    INSERT INTO infrn_result (bbox, 
+        #                                              confidence,
+        #                                              mzl_number, 
+        #                                              id_inference)
+        #                    VALUES (%s, %s, %s, %s);
+        #                    """, (str(payload.bbox),
+        #                          payload.confidence,
+        #                          payload.mzl_number,
+        #                          id_inference))
+        # db.connection.commit()
+
+        db.cursor.execute("""
+            INSERT INTO infrn_result (bbox, 
+                                      confidence,
+                                      mzl_number, 
+                                      id_inference)
+            SELECT %s, %s, %s, %s
+            WHERE NOT EXISTS (
+                SELECT 1 FROM infrn_result 
+                WHERE bbox = %s 
+                AND confidence = %s 
+                AND mzl_number = %s 
+                AND id_inference = %s
+            );
+            """, (str(payload.bbox),
+                  payload.confidence,
+                  payload.mzl_number,
+                  id_inference,
+                  str(payload.bbox), 
+                  payload.confidence, 
+                  payload.mzl_number, 
+                  id_inference))
+
+        if db.cursor.rowcount > 0:
+            db.connection.commit()
+            return True
+        else:
+            db.connection.rollback()
+            return False
