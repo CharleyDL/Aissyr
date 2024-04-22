@@ -32,7 +32,6 @@ MODEL_URI = os.getenv("MODEL_URI")
 
 ## --------------------------- STREAMLIT UTILITIES -------------------------- ##
 
-
 def button_detect_page() -> None:
     st.markdown("""
     <style>
@@ -153,7 +152,42 @@ def encode_image(image: Image.Image) -> str:
     return encoded_img
 
 
-## ------------------------ GLYPHS CLASSIFICATION --------------------------- ##
+## ------------------------------- MZL INFO --------------------------------- ##
+
+def all_mzl_info(choice: str='dict') -> dict:
+    """
+    Get the all mzl resources from the database.
+
+    Returns:
+    -------
+        dict: A dictionary containing all MZL glyphs and their info :
+        mzl_number, glyph_name, glyph (get phonetic but no return it))
+    """
+    res = requests.get(url=f"{API_URL}/resources/glyphs/")
+    res_dict = res.json()
+
+    mzl_dict_format = {}
+    for key, value in res_dict.items():
+        mzl_dict_format[key] = {
+            'mzl_number': value['mzl_number'],
+            'glyph': value['glyph'],
+            'glyph_name': value['glyph_name']
+         }
+
+    mzl_list_format = []
+    for key, value in res_dict.items():
+        mzl_number = value['mzl_number']
+        glyph = value['glyph']
+        glyph_name = value['glyph_name']
+
+        formatted_string = f"{mzl_number} {glyph} - {glyph_name}"
+
+        mzl_list_format.append(formatted_string)
+
+    if choice == 'list':
+        return mzl_list_format
+    else:
+        return mzl_dict_format
 
 
 def mzl_info(label: str) -> dict:
@@ -172,6 +206,79 @@ def mzl_info(label: str) -> dict:
     res = requests.get(url=f"{API_URL}/resources/glyphs/{label}/")
     res_dict = res.json()
     return res_dict
+
+
+## ------------------------ GLYPHS CLASSIFICATION --------------------------- ##
+
+def display_glyphs_classification(rowImgDet, result):
+    if len(result[1]) == 4:
+        rowImgDet.write(f"""
+            <p style='padding-top: 24px;
+                    font-size: 20px;'>
+            <b>
+                {result[1][0]}
+                <span style='margin-left: 16px;'>&nbsp;</span>
+                {result[1][1]} - {result[1][2]}
+            </b>
+            <span style='margin-left: 24px;'>&nbsp;</span>
+            <em style='font-size: 16px;'>
+                ({result[1][3]}%)
+            </em>
+            </p>
+            """, unsafe_allow_html=True)
+    else:
+        rowImgDet.write(f"""
+            <p style='padding-top: 24px;
+                    font-size: 20px;'>
+            <b>
+                {result[1][0]}
+                <span style='margin-left: 16px;'>&nbsp;</span>
+                {result[1][1]} - {result[1][2]}
+            <span style='margin-left: 24px;'>&nbsp;</span>
+            <em style='font-size: 16px;'>
+                (corrected)
+            </em>
+            </b>
+            </p>
+            """, unsafe_allow_html=True)
+
+
+def update_zip_detect(index, new_prediction):
+    updated_zip_detect = st.session_state.zip_detect[:]
+    updated_zip_detect[index] = (updated_zip_detect[index][0], new_prediction)
+    st.session_state.zip_detect = updated_zip_detect
+
+
+def select_correct_glyph(rowImgDet, idx: int):
+    all_mzl = all_mzl_info('list')
+    default_index = None
+
+    if st.session_state.zip_detect[idx][1][0]:
+        default_index = st.session_state.zip_detect[idx][1][0] - 1
+
+    new_label = rowImgDet.selectbox("Correct Label",
+                            all_mzl, 
+                            key=f"label_{idx}", 
+                            index=default_index,
+                            label_visibility='hidden')
+
+
+    new_label = int(new_label.split(" ")[0])
+    print("1", new_label)
+
+    if new_label != st.session_state.zip_detect[idx][1][0]:
+        mzl_information = mzl_info(new_label['mzl_number'])
+        print(mzl_information)
+        pred_result = [
+            mzl_information['mzl_number'],
+            mzl_information['glyph'],
+            mzl_information['glyph_name'],
+        ]
+
+        update_zip_detect(idx, pred_result)
+        print("2", st.session_state.zip_detect[idx][1][0])
+
+    else: print("FUCK")
 
 
 def glyphnet_img_preprocess(image: Image.Image) -> np.ndarray:
@@ -297,7 +404,6 @@ def classification_setup(uploaded_file):
         correct_button = rowOption.button(label="Correct Label",
                                           disabled=st.session_state.disabled)
 
-
     with col2:
         space()
 
@@ -328,41 +434,49 @@ def classification_setup(uploaded_file):
 
             tmp_img.empty()
 
-        for i, result in enumerate(st.session_state.zip_detect):
-            space()
-            rowImgDet = row([0.3, 0.7], gap='small')
-
-            rowImgDet.image(result[0])
-            rowImgDet.write(f"""
-                <p style='padding-top: 24px;
-                        font-size: 20px;'>
-                <b>
-                    {result[1][0]}
-                    <span style='margin-left: 16px;'>&nbsp;</span>
-                    {result[1][1]} - {result[1][2]}
-                </b>
-                <span style='margin-left: 24px;'>&nbsp;</span>
-                <em style='font-size: 16px;'>
-                    ({result[1][3]}%)
-                </em>
-                </p>
-                """, unsafe_allow_html=True)
-
+        ## - Save the prediction in database
         if save_button:
             ## - Clear preview to keep the result of the prediction
             clear_session_state('preview_imgs')
             tmp_img.empty()
 
-            ## - Send the result to the API
-            print("Save the result")
+            ## - Send the result to the API and display the message
+            results = save_inference(uploaded_file.name,
+                                     img,
+                                     rects,
+                                     st.session_state.zip_detect)
 
-            save_inference(uploaded_file.name,
-                           img,
-                           rects,
-                           st.session_state.zip_detect)
+            for i, result in enumerate(results):
+                if result['result']:
+                     st.toast(result['message'], icon='✅')
+                else:
+                    st.toast(result['message'], icon='🚫')
 
-        # if correct_button:
-        #     pass
+        ## - Correct the label
+        if not correct_button:
+            clear_session_state('preview_imgs')
+            tmp_img.empty()
+
+            for i, result in enumerate(st.session_state.zip_detect):
+                space()
+                rowImgDet = row([0.3, 0.7], gap='small')
+
+                rowImgDet.image(result[0])
+                display_glyphs_classification(rowImgDet, result)
+        else:
+            ## - Clear preview to keep the result of the prediction
+            clear_session_state('preview_imgs')
+            tmp_img.empty()
+
+            ## - Correct the label of the detected glyphs
+            for i, result in enumerate(st.session_state.zip_detect):
+                space()
+                rowImgDet = row([0.3, 0.7], gap='small')
+
+                rowImgDet.image(result[0])
+                select_correct_glyph(rowImgDet, i)
+
+
 
 
 
@@ -386,7 +500,7 @@ def annotation(img_path):
     # if 'zip_label' not in st.session_state:
     #     st.session_state.zip_detect = []
 
-    labels = fct.postgres_execute_get_mzl()
+    labels = [1, 10, 100]
     preview_imgs = []
 
     col1, col2 = st.columns(2)
@@ -425,7 +539,24 @@ def annotation(img_path):
 def save_inference(img_name: str,
                    original_img: Image.Image, 
                    bbox_glyphs: list, 
-                   pred_results: list) -> None:
+                   pred_results: list) -> list[dict]:
+
+    """
+    Save inference results to the server.
+
+    Args:
+        img_name (str): The name of the image.
+        original_img (PIL.Image.Image): The full image (not the glyph).
+        bbox_glyphs (list): List of dictionaries containing 
+                            bounding box information for glyphs.
+        pred_results (list): List of prediction results.
+
+    Returns:
+        list[dict]: A list containing all dictionary containing 
+        for each glyph response from the server.
+    """
+
+    results = []
 
     ## - Preprocess the data
     img_name = img_name.split(".")[0]  # Remove the extension
@@ -442,7 +573,6 @@ def save_inference(img_name: str,
         mzl_number = pred_results[i][1][0]
         confidence = pred_results[i][1][3]
 
-        print(confidence)
         data = {
             "img_name": img_name,
             "img": binary_original_img,
@@ -451,64 +581,8 @@ def save_inference(img_name: str,
             "confidence": confidence
         }
 
-        # print(data)
-
         res = requests.post(url=f"{API_URL}/prediction/saving_classification/", 
                             data=json.dumps(data))
-        print(res.json())
+        results.append(res.json())
 
-
-
-
-
-
-
-
-
-## --------------------------- BACKUP OLD CODE  ------------------------------ ##
-# def classify_glyph(img_name: str, img: Image.Image, 
-#                   glyph_selection: Image.Image, bbox: list) -> list:
-    """Send request to the API to detect the glyphs in the image.
-
-    Parameters:
-    - tablet_name (str): The name of the tablet
-    - img (Image): The full image
-    - glyph_selection (list): Image of the selected glyph (not resized)
-    - bbox (list): List of dictionary (left, top, width, height, label)
-
-    Returns:
-    - res (str): The detected glyphs label
-    """
-
-    # print(tablet_name)
-    # print(img)
-    # print(glyph_selection)
-    # print(bbox)
-
-    ## - Load the model from MLflow
-    # model = load_model()
-
-    ## - Preprocess & Predict
-    # img_preprocessed = glyphnet_img_preprocess(glyph_selection)
-    # pred = model.predict(img_preprocessed)
-
-    # pred_result = predicted_class(pred)
-    # return pred_result
-
-    ## - Preprocess the request and send it
-    # img_name = img_name.split(".")[0]
-    # for i, glyph in enumerate(glyph_selection):
-    #     print(img_name)
-    #     print(f"Glyph {i}: {glyph}")
-    #     print(f"Box {i}: {bbox[i]}")
-    #     # st.image(glyph[0])
-
-    #     info_for_api = {"tablet_name": img_name,
-    #                     "picture": img,
-    #                     "glyph": glyph[0],
-    #                     "bbox": bbox[i]}
-
-    ## - Raw response for test the Front-End
-    # res = "113: 𒁁, BAD -- 88.7%"
-
-    # return res
+    return results
