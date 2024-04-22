@@ -198,18 +198,20 @@ def insert_segment_ref(df: pd.DataFrame) -> None:
 
 
 def insert_mzl_ref(mzl_dict: dict) -> None:
+    
+    ## ----> Create bug insert 716 717 718 after index 410
     ## - Get the train_label if exist
-    for file in CSV_FILES:
-        if any(substring in file for substring in [f"bbox"]):
-            df_bbox = pd.read_csv(file)
-            control_df = df_bbox[df_bbox['mzl_label']\
-                                  == mzl_dict['mzl_number']].head(1)
+    # for file in CSV_FILES:
+    #     if any(substring in file for substring in [f"bbox"]):
+    #         df_bbox = pd.read_csv(file)
+    #         control_df = df_bbox[df_bbox['mzl_label']\
+    #                               == mzl_dict['mzl_number']].head(1)
 
-            if not control_df.empty:
-                train_label = control_df['train_label'].values[0]
-            else : 
-                train_label = 'NULL'
-            break
+    #         if not control_df.empty:
+    #             train_label = control_df['train_label'].values[0]
+    #         else : 
+    #             train_label = 'NULL'
+    #         break
 
     ## - Complete dict when no information on some glyph (ex: 48, 58...)
     if 'name' not in mzl_dict: mzl_dict['name'] = ''
@@ -223,7 +225,7 @@ def insert_mzl_ref(mzl_dict: dict) -> None:
                                 glyph_name, glyph, glyph_phonetic)
                  VALUES ({mzl_dict['mzl_number']}, {train_label}, 
                          '{mzl_dict['name']}', '{mzl_dict['glyph']}',
-                         {f"ARRAY {mzl_dict['phonetic']}"
+                         {f"ARRAY {mzl_dict['phonetic']} ::varchar[]"
                           if mzl_dict['phonetic'] != 'NULL' else 'NULL'});
             """
 
