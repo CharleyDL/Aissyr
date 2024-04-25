@@ -105,3 +105,30 @@ with right_column:
             <h6 style='padding-left: 92px;'>©2024 - Charley ∆.L.</h6>
             """, unsafe_allow_html=True
         )
+
+
+## ---------------------------- SESSION STATE ------------------------------- ##
+
+if "correct_label" not in st.session_state:
+    st.session_state.correct_label = []
+
+if "disabled_detect" not in st.session_state:
+    st.session_state.disabled_detect = True
+
+if "disable_btns_correct_page" not in st.session_state:
+    st.session_state.disable_btns_correct_page = True
+
+if "disable_btns_detect_page" not in st.session_state:
+    st.session_state.disable_btns_detect_page = True
+
+if "hide_selectbox_correct" not in st.session_state:
+    st.session_state.hide_selectbox_correct = False
+
+if 'preview_imgs' not in st.session_state:
+    st.session_state.preview_imgs = []
+
+if 'rects_detect' not in st.session_state:
+    st.session_state.rects_detect = []
+
+if 'zip_detect' not in st.session_state:
+    st.session_state.zip_detect = []

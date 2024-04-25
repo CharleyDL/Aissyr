@@ -41,7 +41,7 @@ with h_center:
 for i in range(3):
     fct.space()
 
-st.header(f'Welcome to AISSYR, {st.session_state["f_name"]}!')
+st.header(f'Welcome {st.session_state["f_name"]}!')
 st.markdown('----')
 
 
@@ -164,3 +164,8 @@ with f_right:
         sac.ButtonsItem(label='Github', icon='github',
                         href='https://github.com/CharleyDL'),
     ], align='center')
+
+
+## ---------------------------- SESSION STATE ------------------------------- ##
+
+fct.disable_btns_correct_page()      # - Reset the correct page buttons

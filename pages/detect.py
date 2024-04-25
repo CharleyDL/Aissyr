@@ -5,8 +5,8 @@
 # Date Created : Tuesday 19 Apr. 2024
 # ==============================================================================
 
-
 import streamlit as st
+
 import utils.functions as fct
 
 
@@ -89,6 +89,11 @@ with st.sidebar:
             fct.logout()
 
 ## -------------------------------------------------------------------------- ##
+
+## - clear session state for correct page
+fct.enable('hide_selectbox_correct')
+fct.clear_session_state('correct_label')
+fct.clear_session_state('del_label')
 
 if uploaded_file is not None:
     fct.classification_setup(uploaded_file)
