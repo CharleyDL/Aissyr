@@ -121,14 +121,20 @@ if "disable_btns_correct_page" not in st.session_state:
 if "disable_btns_detect_page" not in st.session_state:
     st.session_state.disable_btns_detect_page = True
 
-if "hide_selectbox_correct" not in st.session_state:
-    st.session_state.hide_selectbox_correct = False
-
 if 'preview_imgs' not in st.session_state:
     st.session_state.preview_imgs = []
 
+if 'rects_annotation' not in st.session_state:
+    st.session_state.rects_annotation = []
+
+if 'rects_correct' not in st.session_state:
+    st.session_state.rects_correct = []
+
 if 'rects_detect' not in st.session_state:
     st.session_state.rects_detect = []
+
+if "upload_file" not in st.session_state:
+    st.session_state.upload_file = None
 
 if 'zip_detect' not in st.session_state:
     st.session_state.zip_detect = []

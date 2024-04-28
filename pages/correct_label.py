@@ -19,6 +19,10 @@ st.set_page_config(page_title='AISSYR',
                    layout='wide')
 
 fct.check_session()
+fct.button_del_page()
+
+## - Load glyphs information
+ALL_MZL = fct.all_mzl_info('list')
 
 
 ## ------------------------------- HEADER  ---------------------------------- ##
@@ -84,7 +88,7 @@ with st.sidebar:
 
 ## - Setup Rows Configuration
 rowOption = row(8, gap='small')
-rowImgDet = row([0.3, 0.7], gap='small')
+rowImgDet = row([0.3, 0.5, 0.2], gap='small', vertical_align='center')
 
 ## - Buttons
 validate = rowOption.button(label="Validate", 
@@ -94,39 +98,29 @@ validate = rowOption.button(label="Validate",
 save_button = rowOption.button(label="Save Label", key="save_correct_page",
                         disabled=st.session_state.disable_btns_correct_page)
 
-## - Load glyphs information
-all_mzl = fct.all_mzl_info('list')  
-
-## - Display images and selectbox
+## - Display glyphs and selectbox to correct if needed
 if not validate:
-    for i, result in enumerate(st.session_state.zip_detect):
+    if st.session_state.zip_detect:
+        for i, result in enumerate(st.session_state.zip_detect):
+            rowImgDet.image(result[0])
+            new_label = rowImgDet.selectbox("Correct Label",
+                            ALL_MZL, 
+                            key=f"label_{i}", 
+                            index=st.session_state.zip_detect[i][1][0] - 1,
+                            label_visibility='hidden',
+                            on_change=fct.update_zip_detect,
+                            args=(i,))
+            rowImgDet.button("🗑️", key=f"delete_{i}",
+                             on_click=fct.del_unknow_glyphs, args=(i,))
+    else:
+        fct.space()
 
-        rowImgDet = row([0.3, 0.7], gap='small')
-
-        rowImgDet.image(result[0])
-        new_label = rowImgDet.selectbox("Correct Label",
-                                all_mzl, 
-                                key=f"label_{i}", 
-                                index=st.session_state.zip_detect[i][1][0] - 1,
-                                label_visibility='hidden')
-
-        new_label = int(new_label.split(" ")[0])
-
-        if new_label != st.session_state.zip_detect[i][1][0]:
-            mzl_information = fct.mzl_info(new_label)
-            correct_glyph = [
-                mzl_information['mzl_number'],
-                mzl_information['glyph'],
-                mzl_information['glyph_name'],
-            ]
-
-            fct.update_zip_detect(i, correct_glyph)
+        cols_correct = st.columns(3)
+        with cols_correct[1]:
+            st.subheader("No glyphs to correct")
 
 ## - Summary before saving
-if validate:
-    fct.correct_label()
-    fct.disable('hide_selectbox_correct')
-
+else:
     fct.space()
 
     cols = st.columns(2)

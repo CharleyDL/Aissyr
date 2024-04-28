@@ -14,7 +14,8 @@ import os
 import requests
 import streamlit as st
 
-import utils.functions as fct
+import copy
+
 
 from io import BytesIO
 from mlflow.pyfunc import PyFuncModel
@@ -32,6 +33,17 @@ MODEL_URI = os.getenv("MODEL_URI")
 
 
 ## --------------------------- STREAMLIT UTILITIES -------------------------- ##
+
+def button_del_page() -> None:
+    st.markdown("""
+    <style>
+    [data-testid="baseButton-secondary"] {
+        display: block;
+        margin-top: 29px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 
 def button_detect_page() -> None:
     st.markdown("""
@@ -59,7 +71,7 @@ def check_session() -> bool:
 
 def clear_session_state(key: str) -> None:
     """
-    Clear the session state only for the list one
+    Clear the session state for list key only
 
     Special case:
     ----
@@ -69,19 +81,19 @@ def clear_session_state(key: str) -> None:
     st.session_state[key] = []
 
 
-def disable(state_key: str):
+def disable(state_key: str) -> None:
     st.session_state[state_key] = True
 
 
-def disable_btns_detect_page():
+def disable_btns_detect_page() -> None:
     st.session_state.disable_btns_detect_page = not st.session_state.disable_btns_detect_page
 
 
-def disable_btns_correct_page(): 
+def disable_btns_correct_page() -> None: 
     st.session_state.disable_btns_correct_page = not st.session_state.disable_btns_correct_page
 
 
-def enable(state_key: str):
+def enable(state_key: str) -> None:
     st.session_state[state_key] = False
 
 
@@ -245,7 +257,7 @@ def classify_glyph(glyph_selection: Image.Image) -> list:
     return pred_result
 
 
-def classification_setup(uploaded_file: UploadedFile):
+def classification_setup(uploaded_file: UploadedFile) -> None:
     """
     Sets up the classification interface for detecting, saving labels, 
     and correcting labels.
@@ -373,7 +385,7 @@ def classification_setup(uploaded_file: UploadedFile):
             st.switch_page("pages/correct_label.py")
 
 
-def correct_label():
+def correct_label() -> None:
     """
     Moves correctly labeled items from the zip_detect list to the 
     correct_label list in the session state.
@@ -385,8 +397,27 @@ def correct_label():
     """
     for i, value in enumerate(st.session_state.zip_detect):
         if len(value[1]) == 3:   # - if % not in the list means it's corrected
+            ## - Prepare the correct label and its bbox
             st.session_state.correct_label.append(value)
+            st.session_state.rects_correct.append(st.session_state.rects_detect[i])
+
+            ## - Remove the corrected label and bbox
             del st.session_state.zip_detect[i]
+            del st.session_state.rects_detect[i]
+
+
+def del_unknow_glyphs(index) -> None:
+    """
+    Deletes the correctly labeled glyph and its corresponding bounding box 
+    from the session state lists.
+
+    Args:
+    ----
+        index (int): The index of the correctly labeled glyph to be deleted 
+                     from the lists.
+    """
+    del st.session_state.zip_detect[index]
+    del st.session_state.rects_detect[index]
 
 
 def glyphnet_img_preprocess(image: Image.Image) -> np.ndarray:
@@ -453,22 +484,33 @@ def predicted_class(pred_array: np.ndarray) -> list:
     return pred_result
 
 
-def update_zip_detect(index: int, new_prediction: list):
+def update_zip_detect(index: int) -> None:
     """
-    Updates the list of zip_detect predictions in the session by replacing 
-    the prediction at the specified index with the provided new prediction.
+    Update the list of zip_detect predictions in the session by replacing 
+    the prediction at the specified index with the new prediction selected 
+    by the user.
 
     Args:
     ----
-        index (int): The index of the item to update in the zip_detect list.
-        new_prediction (list): The new prediction to place at the specified 
-            index. This prediction should be in list form.
+    - index (int): The index of the item to update in the zip_detect list.
     """
+    value = st.session_state[f"label_{index}"]
+    new_label = int(value.split(" ")[0])
+
+    if new_label != st.session_state.zip_detect[index][1][0]:
+        mzl_information = mzl_info(new_label)
+        correct_glyph = [
+            mzl_information['mzl_number'],
+            mzl_information['glyph'],
+            mzl_information['glyph_name'],
+        ]
+
     updated_zip_detect = st.session_state.zip_detect
-    updated_zip_detect[index] = (updated_zip_detect[index][0], new_prediction)
+    updated_zip_detect[index] = (updated_zip_detect[index][0], correct_glyph)
 
     clear_session_state('zip_detect')
     st.session_state.zip_detect = updated_zip_detect
+    correct_label()
 
 
 ## ------------------------------- ANNOTATION ------------------------------- ##
@@ -480,6 +522,7 @@ def annotate():
     # if image_annotate_file_name not in st.session_state["annotation_files"]:
     #     st.session_state["annotation_files"].append(image_annotate_file_name)
     # next_annotate_file()
+
 
 def annotation(img_path):
     # if 'preview_imgs' not in st.session_state:
@@ -527,6 +570,62 @@ def annotation(img_path):
 
 ## --------------------------------- SAVING --------------------------------- ##
 
+def save_annotation(img_name: str,
+                    original_img: Image.Image,
+                    bbox_img: list,
+                    bbox_glyphs: list, 
+                    annotations: list) -> list[dict]:
+    """
+    Save annotation to the server
+
+    Args:
+    ----
+    img_name (str): The name of the image.
+    original_img (PIL.Image.Image): The original image.
+    bbox_img (list): A list containing the bounding box coordinates of 
+                     the entire image.
+    bbox_glyphs (list): A list containing dictionaries with bounding box 
+                        coordinates for each glyph.
+    annotations (list): A list of annotations.
+
+    Returns:
+    --------
+    list[dict]: A list of dictionaries containing the results of the 
+                annotation saving process.
+    """
+    results = []
+
+    ## - Preprocess the data
+    img_name = img_name.split(".")[0]  # Remove the extension
+    binary_original_img = encode_image(original_img)
+
+    for i, glyph in enumerate(annotations):
+        bbox_dict = bbox_glyphs[i]
+        bbox_annotation = [
+            bbox_dict['left'],  # x_min
+            bbox_dict['top'],   # y_min
+            bbox_dict['left'] + bbox_dict['width'], # x_max
+            bbox_dict['top'] + bbox_dict['height']  # y_max
+        ]
+        mzl_number = annotations[i][1][0]
+
+        data = {
+            "img_name": img_name,
+            "img": binary_original_img,
+            "bbox_img": bbox_img,
+            "bbox_annotation": bbox_annotation,
+            "mzl_number": mzl_number
+        }
+
+        res = requests.post(url=f"{API_URL}/annotation/saving_annotation/", 
+                            data=json.dumps(data))
+
+        print(res.json())
+        results.append(res.json())
+
+    return results
+
+
 def save_inference(img_name: str,
                    original_img: Image.Image, 
                    bbox_glyphs: list, 
@@ -536,6 +635,7 @@ def save_inference(img_name: str,
     Save inference results to the server.
 
     Args:
+    -----
         img_name (str): The name of the image.
         original_img (PIL.Image.Image): The full image (not the glyph).
         bbox_glyphs (list): List of dictionaries containing 
@@ -543,6 +643,7 @@ def save_inference(img_name: str,
         pred_results (list): List of prediction results.
 
     Returns:
+    --------
         list[dict]: A list containing all dictionary containing 
         for each glyph response from the server.
     """
@@ -574,6 +675,7 @@ def save_inference(img_name: str,
 
         res = requests.post(url=f"{API_URL}/prediction/saving_classification/", 
                             data=json.dumps(data))
+        print(res.json())
         results.append(res.json())
 
     return results

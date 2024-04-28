@@ -23,8 +23,6 @@ if fct.check_session():
 
 ## -------------------------------- LOGO ------------------------------------ ##
 
-# h_left, h_left_cent, h_center, h_right_cent, h_right = st.columns(5)
-
 h_left, h_center,h_right = st.columns(3)
 
 with h_center:
@@ -146,6 +144,7 @@ with st.sidebar:
 
 
 ## ------------------------------- FOOTER ----------------------------------- ##
+
 st.markdown('----')
 
 f_left, f_left_cent, f_center, f_right_cent, f_right = st.columns([2, 1, 1,
@@ -164,8 +163,3 @@ with f_right:
         sac.ButtonsItem(label='Github', icon='github',
                         href='https://github.com/CharleyDL'),
     ], align='center')
-
-
-## ---------------------------- SESSION STATE ------------------------------- ##
-
-fct.disable_btns_correct_page()      # - Reset the correct page buttons

@@ -88,6 +88,7 @@ with st.sidebar:
         if logout_button:
             fct.logout()
 
+
 ## -------------------------------------------------------------------------- ##
 
 ## - clear session state for correct page
@@ -95,5 +96,14 @@ fct.enable('hide_selectbox_correct')
 fct.clear_session_state('correct_label')
 fct.clear_session_state('del_label')
 
+## - Upload file to classify glyphs
 if uploaded_file is not None:
+    st.session_state.upload_file = uploaded_file
+
     fct.classification_setup(uploaded_file)
+
+
+## ------------------------------ SESSION STATE ----------------------------- ##
+
+st.session_state.disable_btns_correct_page = True       # reset button state
+                                                        # of the correct page

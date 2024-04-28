@@ -7,8 +7,8 @@
 
 import streamlit as st
 
-import streamlit_antd_components as sac
 from streamlit_extras.row import row
+from streamlit_img_label.manage import ImageManager
 
 import utils.functions as fct
 
@@ -20,7 +20,7 @@ st.set_page_config(page_title='AISSYR',
                    layout='wide')
 
 
-## ------------------------------- HEADER  ---------------------------------- ##
+## --------------------------------- HEADER --------------------------------- ##
 
 st.page_link('pages/main_page.py',
             label="Go back to Main Page",
@@ -112,3 +112,50 @@ with cols[1]:
             </em>
             </p>
             """, unsafe_allow_html=True)
+
+
+## --------------------------- SAVING IN DATABASE --------------------------- ##
+
+## -- Prepare the image info
+img = ImageManager(st.session_state.upload_file).get_img()
+img_name = st.session_state.upload_file.name
+
+width, height = img.size
+bbox_img = [0, 0, width, height]    # Need for the annotation save not inference
+
+
+## -- Send Corrected Glyphs to the API and display the message
+annot_results = fct.save_annotation(img_name,
+                    img,
+                    bbox_img,
+                    st.session_state.rects_correct,
+                    st.session_state.correct_label)
+
+for i, result in enumerate(annot_results):
+    if result['result']:
+            st.toast(result['message'], icon='✅')
+    else:
+        st.toast(result['message'], icon='🚫')
+
+
+## -- Send Predicted Glyphs to the API and display the message
+pred_results = fct.save_inference(img_name,
+                                  img,
+                                  st.session_state.rects_detect,
+                                  st.session_state.zip_detect)
+
+for i, result in enumerate(pred_results):
+    if result['result']:
+            st.toast(result['message'], icon='✅')
+    else:
+        st.toast(result['message'], icon='🚫')
+
+
+
+
+
+
+
+## ------------------------------ SESSION STATE ----------------------------- ##
+
+fct.disable_btns_correct_page()            # - Reset the correct page buttons
