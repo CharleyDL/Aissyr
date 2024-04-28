@@ -14,9 +14,6 @@ import os
 import requests
 import streamlit as st
 
-import copy
-
-
 from io import BytesIO
 from mlflow.pyfunc import PyFuncModel
 from PIL import Image
