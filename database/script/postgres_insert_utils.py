@@ -223,7 +223,7 @@ def insert_mzl_ref(mzl_dict: dict) -> None:
     query = f"""
             INSERT INTO mzl_ref (mzl_number, train_label, 
                                 glyph_name, glyph, glyph_phonetic)
-                 VALUES ({mzl_dict['mzl_number']}, {train_label}, 
+                 VALUES ({mzl_dict['mzl_number']}, NULL, 
                          '{mzl_dict['name']}', '{mzl_dict['glyph']}',
                          {f"ARRAY {mzl_dict['phonetic']} ::varchar[]"
                           if mzl_dict['phonetic'] != 'NULL' else 'NULL'});
