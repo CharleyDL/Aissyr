@@ -7,7 +7,6 @@
 # API ROUTES PREDICTION
 # ==============================================================================
 
-import utils.functions as fct
 import utils.database as db
 
 from datetime import date

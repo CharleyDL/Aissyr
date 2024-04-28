@@ -1,12 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# ==============================================================================
-# Created By   : Charley ∆. Lebarbier
-# Date Created : Friday 19 Apr. 2024
-# ==============================================================================
-# Database requests functions 
-# ==============================================================================
-
 import os
 import psycopg2 as pg
 
@@ -14,6 +5,7 @@ import utils.functions as fct
 
 from abc import ABC, abstractmethod
 from datetime import date
+
 
 
 
@@ -241,6 +233,159 @@ def select_glyph_by_mzl(mzl_number: int) -> dict:
     }
 
 
+
+## ----------------------------- SAVE ANNOTATION ---------------------------- ##
+
+def save_in_tablet_ref(payload: dict) -> int:
+    """
+    Save tablet reference in the database.
+
+    Args:
+    -----
+    - payload (dict): A dictionary containing tablet payload.
+
+    Returns:
+    - int: The ID of the tablet if successfully saved or already exist.
+    """
+
+    with PgDatabase() as db:
+        ## - Check if the tablet already exists in the database
+        db.cursor.execute("""
+                           SELECT id_tablet
+                           FROM tablet_ref
+                           WHERE tablet_name = %s AND picture = %s;
+                           """, (payload.img_name, payload.img))
+        existing_tablet = db.cursor.fetchone()
+
+        if existing_tablet:
+            return existing_tablet[0]
+        else:
+            db.cursor.execute("""
+                               INSERT INTO tablet_ref (tablet_name,
+                                                       set_split, 
+                                                       picture,
+                                                       id_collection)
+                               VALUES (%s, 'annotation', %s, 6)
+                               RETURNING id_tablet;
+                               """, (payload.img_name, payload.img))
+
+            id_tablet = db.cursor.fetchone()[0]
+            db.connection.commit()
+
+            return id_tablet
+
+
+def save_in_reveal(id_tablet: int) -> None:
+    """
+    Save reveal information in the database.
+
+    Args:
+    -----
+    - id_tablet (int): The ID of the tablet.
+    """
+    with PgDatabase() as db:
+        db.cursor.execute("""
+                           INSERT INTO reveal (id_tablet, id_view)
+                           VALUES (%s, 6)
+                           ON CONFLICT (id_tablet, id_view) DO NOTHING;
+                           """, (id_tablet,))
+
+        if db.cursor.rowcount > 0:
+            db.connection.commit()
+        else:
+            db.connection.rollback()
+
+
+def save_in_segment_ref(payload: dict, id_tablet: int) -> int:
+    """
+    Save segment reference in the database.
+
+    Args:
+    -----
+    - payload (dict): A dictionary containing segment payload.
+    - id_tablet (int): The ID of the tablet.
+
+    Returns:
+    - int: The ID of the segment if successfully saved or already exists.
+    """
+    with PgDatabase() as db:
+        ## - Check if the segment already exists in the database
+        db.cursor.execute("""
+                           SELECT id_segment
+                           FROM segment_ref
+                           WHERE id_tablet = %s;
+                           """, (id_tablet,))
+        existing_segment = db.cursor.fetchone()
+
+        if existing_segment:
+            return existing_segment[0]
+        else:
+            db.cursor.execute("""
+                               INSERT INTO segment_ref (segment_idx,
+                                                        bbox_segment,
+                                                        scale,
+                                                        id_collection,
+                                                        id_tablet,
+                                                        id_view)
+                               VALUES (999999, %s, NULL, 6, %s, 6)
+                               RETURNING id_segment;
+                               """, (str(payload.bbox_img), 
+                                     id_tablet))
+
+            id_segment = db.cursor.fetchone()[0]
+
+            if id_segment is not None:
+                db.connection.commit()
+                return id_segment
+
+
+def save_in_annotation_ref(payload: dict, id_segment: int) -> bool:
+    """
+    Save annotation reference in the database.
+
+    Args:
+    -----
+    - payload (dict): A dictionary containing annotation payload.
+    - id_segment (int): The ID of the segment.
+
+    Returns:
+    -------
+    - bool: True if the annotation reference is successfully saved, 
+            False otherwise.
+    """
+    with PgDatabase() as db:
+        ## - Check if the annotation already exists in the database
+        db.cursor.execute("""
+                           SELECT id_annotation
+                           FROM annotation_ref
+                           WHERE bbox = %s
+                           AND relative_bbox = %s
+                           AND mzl_number = %s
+                           AND id_segment = %s;
+                           """, (str(payload.bbox_annotation),
+                                 str(payload.bbox_annotation),
+                                 payload.mzl_number,
+                                 id_segment))
+        existing_annotation = db.cursor.fetchone()
+
+        if existing_annotation:
+            return False
+        else:
+            db.cursor.execute("""
+                               INSERT INTO annotation_ref (bbox,
+                                                           relative_bbox,
+                                                           mzl_number,
+                                                           id_segment)
+                               VALUES (%s, %s, %s, %s);
+                               """, (str(payload.bbox_annotation),
+                                     str(payload.bbox_annotation),
+                                     payload.mzl_number,
+                                     id_segment))
+
+            db.connection.commit()
+            return True
+
+
 ## --------------------------- SAVE CLASSIFICATION -------------------------- ##
 
 def check_img_name(img_name: str) -> bool|int:
@@ -320,18 +465,6 @@ def save_in_infrn_result(payload: dict, id_inference: int) -> bool:
         otherwise returns False.
     """
     with PgDatabase() as db:
-        # db.cursor.execute(f"""
-        #                    INSERT INTO infrn_result (bbox, 
-        #                                              confidence,
-        #                                              mzl_number, 
-        #                                              id_inference)
-        #                    VALUES (%s, %s, %s, %s);
-        #                    """, (str(payload.bbox),
-        #                          payload.confidence,
-        #                          payload.mzl_number,
-        #                          id_inference))
-        # db.connection.commit()
-
         db.cursor.execute("""
             INSERT INTO infrn_result (bbox, 
                                       confidence,

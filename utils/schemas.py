@@ -27,12 +27,12 @@ class VerifyLogin(BaseModel):
 
 ## ----------------------------- ANNOTATION --------------------------------- ##
 
-class Annotation(BaseModel):
-    id_annotation: int
-    bbox: str
-    relative_bbox: str
+class SaveAnnotation(BaseModel):
+    img_name: str
+    img: Base64Bytes
+    bbox_img: list[int]
+    bbox_annotation: list[int]
     mzl_number: int
-    id_segment: int
 
 
 ## ----------------------------- PREDICTION --------------------------------- ##

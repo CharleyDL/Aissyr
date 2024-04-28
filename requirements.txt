@@ -2,7 +2,6 @@ bcrypt==4.1.2
 dagshub==0.3.12
 fastapi==0.110.0
 gunicorn==21.2.0
-# keras==2.15.0
 mlflow==2.11.1
 psycopg2==2.9.9
 psycopg2-binary==2.9.9
@@ -10,10 +9,12 @@ pydantic==2.6.4
 pydantic_core==2.16.3
 pytest==6.2.5
 requests==2.31.0
-# tensorflow==2.15.0
-# tensorflow-cpu==2.15.0
 uvicorn==0.29.0
 
 
 ## - Problem with tensorflow and keras :
 ## - error Heroku SlugSize too large (500M max)
+
+# keras==2.15.0
+# tensorflow==2.15.0
+# tensorflow-cpu==2.15.0
