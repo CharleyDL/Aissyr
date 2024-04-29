@@ -127,7 +127,7 @@ with st.sidebar:
     st.page_link('pages/annotation_page.py',
                  label="Label Glyphs",
                  icon='🏷️')
-
+    
     st.page_link('pages/archive.py',
                  label="Archive",
                  icon='📚')

@@ -9,7 +9,7 @@
 import streamlit as st
 import utils.functions as fct
 
-## ----------------------------- SETUP PAGE --------------------------------- ##
+## ------------------------------- SETUP PAGE ------------------------------- ##
 
 st.set_page_config(page_title='AISSYR',
                    page_icon='asset/fav32.png',
@@ -18,7 +18,7 @@ st.set_page_config(page_title='AISSYR',
 # fct.check_session()
 
 
-## ------------------------------- HEADER  ---------------------------------- ##
+## --------------------------------- HEADER --------------------------------- ##
 
 st.page_link('pages/main_page.py',
             label="Go back to Main Page",
@@ -28,7 +28,7 @@ st.header('ARCHIVE PAGE')
 st.markdown('----')
 
 
-## ------------------------------ SIDEBAR ----------------------------------- ##
+## --------------------------------- SIDEBAR -----=-------------------------- ##
 
 with st.sidebar:
     st.markdown(
@@ -76,4 +76,15 @@ with st.sidebar:
         if logout_button:
             fct.logout()
 
-## -------------------------------------------------------------------------- ##
+
+## ----------------------------- TAB ANNOTATION ----------------------------- ##
+
+
+
+
+
+
+
+
+
+
