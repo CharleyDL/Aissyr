@@ -15,7 +15,7 @@ st.set_page_config(page_title='AISSYR',
                    page_icon='asset/fav32.png',
                    layout='wide')
 
-# fct.check_session()
+fct.check_session()
 
 
 ## --------------------------------- HEADER --------------------------------- ##
@@ -27,6 +27,7 @@ st.page_link('pages/main_page.py',
 st.header('ARCHIVE PAGE')
 st.markdown('----')
 
+tabDet, tabLab = st.tabs(['Detection', 'Labelisation'])
 
 ## --------------------------------- SIDEBAR -----=-------------------------- ##
 
@@ -77,7 +78,10 @@ with st.sidebar:
             fct.logout()
 
 
-## ----------------------------- TAB ANNOTATION ----------------------------- ##
+## ----------------------------- TAB DETECTION ------------------------------ ##
+
+with tabDet:
+    st.write('Detection Tab')
 
 
 
@@ -85,6 +89,7 @@ with st.sidebar:
 
 
 
+## ---------------------------- TAB LABELISATION ---------------------------- ##
 
-
-
+with tabLab:
+    st.write('Labelisation Tab')

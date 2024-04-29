@@ -18,7 +18,7 @@ class TestRequiredElements:
                           'pages/error401.py', 'pages/login.py', 
                           'pages/main_page.py', 'pages/register.py',
                           'pages/save_result.py', 'pages/select_label.py',
-                          'utils/functions.py', 'streamlit_img_label/'
+                          'utils/functions.py', 'streamlit_img_label/',
                           'Home.py', 'requirements.txt', 
                           '.streamlit/config.toml',
                          ]
