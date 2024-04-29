@@ -54,11 +54,11 @@ with st.sidebar:
 
     fct.space()
 
-    st.page_link('pages/detect.py', 
+    st.page_link('pages/detect_page.py', 
                  label="Detect Glyphs",
                  icon='🔍')
 
-    st.page_link('pages/annotation.py', 
+    st.page_link('pages/annotation_page.py', 
                  label="Label Glyphs",
                  icon='🏷️')
 

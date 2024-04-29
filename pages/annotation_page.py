@@ -6,7 +6,6 @@
 # ==============================================================================
 
 import streamlit as st
-
 import utils.functions as fct
 
 
@@ -25,7 +24,7 @@ st.page_link('pages/main_page.py',
             label="Go back to Main Page",
             icon='⬅')
 
-st.header('DETECT PAGE')
+st.header('LABELISATION PAGE')
 st.markdown('----')
 
 
@@ -45,7 +44,7 @@ with st.sidebar:
     """, unsafe_allow_html=True
     )
     st.image('asset/logo_aissyr_S.png')
-    
+
     for i in range(2):
         fct.space()
 
@@ -55,15 +54,15 @@ with st.sidebar:
 
     fct.space()
 
-    st.page_link('pages/detect.py',
+    st.page_link('pages/detect_page.py',
                  label="Detect Glyphs",
                  icon='🔍')
 
-    st.page_link('pages/annotation.py',
+    st.page_link('pages/annotation_page.py',
                  label="Label Glyphs",
                  icon='🏷️')
 
-    st.page_link('pages/archive.py',
+    st.page_link('pages/archive.py', 
                  label="Archive",
                  icon='📚')
 
@@ -88,22 +87,49 @@ with st.sidebar:
         if logout_button:
             fct.logout()
 
-
 ## -------------------------------------------------------------------------- ##
 
-## - clear session state for correct page
-fct.enable('hide_selectbox_correct')
-fct.clear_session_state('correct_label')
-fct.clear_session_state('del_label')
-
-## - Upload file to classify glyphs
 if uploaded_file is not None:
+    fct.clear_session_state('uploaded_file')
     st.session_state.upload_file = uploaded_file
 
-    fct.classification_setup(uploaded_file)
+    fct.annotation_setup(uploaded_file)
 
 
-## ------------------------------ SESSION STATE ----------------------------- ##
 
-st.session_state.disable_btns_correct_page = True       # reset button state
-                                                        # of the correct page
+
+
+
+
+# img_path = os.path.join(img_dir, img_file_name)
+# im = ImageManager(img_path)
+# img = im.get_img()
+# resized_img = im.resizing_img()
+# resized_rects = im.get_resized_rects()
+# rects = st_img_label(resized_img, box_color="red", rects=resized_rects)
+
+# def annotate():
+#     im.save_annotation()
+#     image_annotate_file_name = img_file_name.split(".")[0] + ".xml"
+#     if image_annotate_file_name not in st.session_state["annotation_files"]:
+#         st.session_state["annotation_files"].append(image_annotate_file_name)
+#     next_annotate_file()
+
+# if rects:
+#     st.button(label="Save", on_click=annotate)
+#     preview_imgs = im.init_annotation(rects)
+
+#     for i, prev_img in enumerate(preview_imgs):
+#         prev_img[0].thumbnail((200, 200))
+#         col1, col2 = st.columns(2)
+#         with col1:
+#             col1.image(prev_img[0])
+#         with col2:
+#             default_index = 0
+#             if prev_img[1]:
+#                 default_index = labels.index(prev_img[1])
+
+#             select_label = col2.selectbox(
+#                 "Label", labels, key=f"label_{i}", index=default_index
+#             )
+#             im.set_annotation(i, select_label)

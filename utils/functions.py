@@ -82,12 +82,16 @@ def disable(state_key: str) -> None:
     st.session_state[state_key] = True
 
 
+def disable_btns_correct_page() -> None: 
+    st.session_state.disable_btns_correct_page = not st.session_state.disable_btns_correct_page
+
+
 def disable_btns_detect_page() -> None:
     st.session_state.disable_btns_detect_page = not st.session_state.disable_btns_detect_page
 
 
-def disable_btns_correct_page() -> None: 
-    st.session_state.disable_btns_correct_page = not st.session_state.disable_btns_correct_page
+def disable_btns_save() -> None: 
+    st.session_state.disable_btns_save = not st.session_state.disable_btns_save
 
 
 def enable(state_key: str) -> None:
@@ -510,59 +514,85 @@ def update_zip_detect(index: int) -> None:
     correct_label()
 
 
-## ------------------------------- ANNOTATION ------------------------------- ##
+## ----------------------------- GLYPHS ANNOTATION -------------------------- ##
 
-def annotate():
-    print("Detecting")
-    # im.save_annotation()
-    # image_annotate_file_name = img_file_name.split(".")[0] + ".xml"
-    # if image_annotate_file_name not in st.session_state["annotation_files"]:
-    #     st.session_state["annotation_files"].append(image_annotate_file_name)
-    # next_annotate_file()
+def update_labelisation(index: int) -> None:
+    """
+    Update the list of zip_detect predictions in the session by replacing 
+    the prediction at the specified index with the new prediction selected 
+    by the user.
+
+    Args:
+    ----
+    - index (int): The index of the item to update in the zip_detect list.
+    """
+    value = st.session_state[f"label_{index}"]
+    if value:
+        new_label = int(value.split(" ")[0])
+        mzl_information = mzl_info(new_label)
+        correct_glyph = [
+            mzl_information['mzl_number'],
+            mzl_information['glyph'],
+            mzl_information['glyph_name'],
+        ]
+
+    updated_zip_labelisation = st.session_state.zip_labelisation
+    updated_zip_labelisation[index] = (updated_zip_labelisation[index][0], 
+                                       correct_glyph)
+
+    clear_session_state('zip_labelisation')
+    st.session_state.zip_labelisation = updated_zip_labelisation
 
 
-def annotation(img_path):
-    # if 'preview_imgs' not in st.session_state:
-    #     st.session_state.preview_imgs = []
+def annotation_setup(uploaded_file: UploadedFile) -> None:
 
-    # if 'res_label' not in st.session_state:
-    #     st.session_state.res_detect = []
-
-    # if 'zip_label' not in st.session_state:
-    #     st.session_state.zip_detect = []
-
-    labels = [1, 10, 100]
-    preview_imgs = []
+    ## - Load glyphs information
+    ALL_MZL = all_mzl_info('list')
 
     col1, col2 = st.columns(2)
     with col1:
-        im = ImageManager(img_path)
+        im = ImageManager(uploaded_file)
         img = im.get_img()
         resized_img = im.resizing_img()
         resized_rects = im.get_resized_rects()
         rects = st_img_label(resized_img, box_color="red", rects=resized_rects)
 
-        label_button = st.button(label="Labeled")
+        if rects:       # Enable/Disable Label button
+            enable('disabled_detect')
+
+        ## - Button row for save
+        rowOption = row(3, gap='small')
+        label_button = rowOption.button(label="Label", 
+                                       key="label_button",
+                                       disabled=st.session_state.disabled_detect)
 
     with col2:
-        preview_imgs = im.init_annotation(rects)
+        space()
 
-        rowImgDet = row(2, gap='medium')
-        # tmp_img = st.empty()
+        _cL, colC, _cR = st.columns([1,4,1])
+        with colC:
+            tmp_img = st.empty()
 
-        for i, prev_img in enumerate(preview_imgs):
-            resize_prev_img = extract_and_resize(prev_img[0])
+        ## - Display the glyph preview for selection
+        st.session_state.preview_imgs = im.init_annotation(rects) 
+        if st.session_state.preview_imgs:
+            for i, prev_img in enumerate(st.session_state.preview_imgs):
+                resize_prev_img = extract_and_resize(prev_img[0], 
+                                                     output_size=(200, 200))
+                tmp_img.image(resize_prev_img)
+                clear_session_state('rects_annotation')
 
-            rowImgDet.image(resize_prev_img)
+        st.session_state.rects_annotation = rects
 
-            default_index = 0
-            if prev_img[1]:
-                default_index = labels.index(prev_img[1])
+        if label_button:
+            clear_session_state('zip_labelisation')
 
-            select_label = rowImgDet.selectbox(
-                "Label", labels, key=f"label_{i}", index=default_index
-            )
-            im.set_annotation(i, select_label)
+            for i, glyph in enumerate(st.session_state.preview_imgs):
+                glyph_resize = extract_and_resize(glyph[0])
+                st.session_state.zip_labelisation.append((glyph_resize, 
+                                                          None))
+
+            st.switch_page("pages/select_label.py")
 
 
 ## --------------------------------- SAVING --------------------------------- ##
@@ -614,6 +644,7 @@ def save_annotation(img_name: str,
             "mzl_number": mzl_number
         }
 
+        print(data)
         res = requests.post(url=f"{API_URL}/annotation/saving_annotation/", 
                             data=json.dumps(data))
 

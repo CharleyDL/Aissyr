@@ -121,6 +121,9 @@ if "disable_btns_correct_page" not in st.session_state:
 if "disable_btns_detect_page" not in st.session_state:
     st.session_state.disable_btns_detect_page = True
 
+if "disable_btns_save" not in st.session_state:
+    st.session_state.disable_btns_save = False
+
 if 'preview_imgs' not in st.session_state:
     st.session_state.preview_imgs = []
 
@@ -136,5 +139,10 @@ if 'rects_detect' not in st.session_state:
 if "upload_file" not in st.session_state:
     st.session_state.upload_file = None
 
+if 'zip_labelisation' not in st.session_state:
+    st.session_state.zip_labelisation = []
+
 if 'zip_detect' not in st.session_state:
     st.session_state.zip_detect = []
+
+
