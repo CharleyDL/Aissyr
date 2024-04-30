@@ -73,7 +73,8 @@ with right_column:
 
                 response_data = res.json()
                 if response_data['result']:
-                    st.session_state.f_name = response_data['content']['first_name']
+                    if 'f_name' not in st.session_state:
+                        st.session_state.f_name = response_data['content']['first_name']
                     if 'log' not in st.session_state:
                         st.session_state['log'] = False
                     st.switch_page("pages/main_page.py")
@@ -122,9 +123,6 @@ if "disable_btns_detect_page" not in st.session_state:
 
 if "disable_btns_save" not in st.session_state:
     st.session_state.disable_btns_save = False
-
-if 'f_name' not in st.session_state:
-    st.session_state.f_name = None
 
 if 'preview_imgs' not in st.session_state:
     st.session_state.preview_imgs = []
