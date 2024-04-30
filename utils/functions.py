@@ -102,7 +102,7 @@ def enable(state_key: str) -> None:
 
 
 def is_valid_email(email):
-    # Expression régulière pour vérifier le format de l'e-mail
+    """Check if the email input is valid."""
     regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
     return re.match(regex, email) is not None
 
