@@ -9,8 +9,7 @@
 
 import utils.database as db
 
-from fastapi import APIRouter, HTTPException, Response, status
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi import APIRouter, HTTPException, status
 from psycopg2.errors import OperationalError
 
 from utils.schemas import MessageAccount, SaveAnnotation
@@ -65,24 +64,3 @@ async def save_annotation(payload: SaveAnnotation):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"""Error {e}"""
         )
-
-
-
-
-
-# @router.get('/get_annotation/', response_model=List[Annotation], 
-#             status_code=status.HTTP_200_OK)
-# async def read_annotation():
-#     try:
-#         return select_annotation()
-#     except OperationalError:
-#         raise HTTPException(
-#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#             detail="""Check if the route exists, connection is successful 
-#                        or database/tables exist."""
-#         )
-#     except Exception as e:
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST,
-#             detail=f"""Error {e}"""
-#         )

@@ -1,8 +1,18 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# ==============================================================================
+# Created By   : Charley ∆. Lebarbier
+# Date Created : Saturday 20 Apr. 2024
+# ==============================================================================
+# SCHEMAS FOR API
+# ==============================================================================
+
+
 from pydantic import Base64Bytes, RootModel, BaseModel
 from typing import Dict
 
 
-## ------------------------------- GENERAL ---------------------------------- ##
+## -------------------------------- GENERAL --------------------------------- ##
 
 class MessageAccount(BaseModel):
     result: bool
@@ -10,7 +20,7 @@ class MessageAccount(BaseModel):
     content: dict | None
 
 
-## ------------------------------- ACCOUNT ---------------------------------- ##
+## -------------------------------- ACCOUNT --------------------------------- ##
 
 class CreateAccount(BaseModel):
     title: str
@@ -25,7 +35,7 @@ class VerifyLogin(BaseModel):
     input_pwd: str
 
 
-## ----------------------------- ANNOTATION --------------------------------- ##
+## ------------------------------- ANNOTATION ------------------------------- ##
 
 class SaveAnnotation(BaseModel):
     img_name: str
@@ -35,7 +45,25 @@ class SaveAnnotation(BaseModel):
     mzl_number: int
 
 
-## ----------------------------- PREDICTION --------------------------------- ##
+## -------------------------------- ARCHIVE --------------------------------- ##
+
+class ImageData(BaseModel):
+    img_name: str
+    img: Base64Bytes
+
+
+class GlyphData(BaseModel):
+    bbox: list[int]
+    mzl_number: int
+    glyph: str
+    glyph_name: str
+    confidence: float
+
+
+class ArchiveClassification(RootModel):
+    root: dict[ImageData, GlyphData]
+
+## ------------------------------ PREDICTION -------------------------------- ##
 
 class SaveClassification(BaseModel):
     img_name: str
@@ -45,7 +73,7 @@ class SaveClassification(BaseModel):
     confidence: float
 
 
-## ------------------------------ RESOURCES --------------------------------- ##
+## ------------------------------- RESOURCES -------------------------------- ##
 
 class GlyphInfo(BaseModel):
     mzl_number: int

@@ -36,7 +36,5 @@ app.include_router(prediction.router, prefix='/prediction', tags=['prediction'])
 app.include_router(resources.router, prefix='/resources', tags=['resources'])
 
 
-
-
 if __name__=='__main__':
     uvicorn.run(app, host='0.0.0.0', port=4000)

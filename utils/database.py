@@ -1,10 +1,21 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# ==============================================================================
+# Created By : Charley ∆. Lebarbier
+# Date Created : Saturday 20 April 2024
+# ==============================================================================
+# Requests functions to interact with the database.
+# ==============================================================================
+
 import os
 import psycopg2 as pg
 
 import utils.functions as fct
 
 from abc import ABC, abstractmethod
+from ast import literal_eval
 from datetime import date
+from typing import List
 
 
 
@@ -49,6 +60,7 @@ class PgDatabase(Database):
 
 
 ## -------------------------------- ACCOUNT --------------------------------- ##
+
 def verify_user_account(email: str) -> dict:
     """Check user account based on email, and retrieves it from the database.
     If the account exists, it returns a dictionary containing the account 
@@ -56,11 +68,11 @@ def verify_user_account(email: str) -> dict:
 
     Args:
     -----
-        email (str): The email address of the user to verify.
+        - email (str): The email address of the user to verify.
 
     Returns:
     -------
-        dict or None: A dictionary containing the user account information 
+        - dict or None: A dictionary containing the user account information 
         if the account exists ; None if no account is found with the given email.
     """
     with PgDatabase() as db:
@@ -94,12 +106,12 @@ def create_account(payload: dict) -> bool:
 
     Args:
     -----
-        payload (dict): A dictionary containing the account information 
+        - payload (dict): A dictionary containing the account information 
         including 'title', 'last_name', 'first_name', 'email', and 'pwd_hash'.
 
     Returns:
     -------
-        bool: True if the account was successfully created, False otherwise.
+        - bool: True if the account was successfully created, False otherwise.
     """
 
     ## - Hash the password before storing it in the database
@@ -126,26 +138,126 @@ def create_account(payload: dict) -> bool:
             return False
 
 
-## ------------------------------- ANNOTATION ------------------------------- ##
+## -------------------------------- ARCHIVE --------------------------------- ##
 
-def select_annotation() -> list:
+def get_archive_classifications() -> dict:
+    """
+    Retrieve archive classification data from the database.
+
+    Returns:
+    -------
+        - dict: A dictionary containing the classification data.
+            Each key is an artefact name, and the corresponding value is a dictionary
+            with the artefact picture and a list of glyphs data.
+            Each glyph data contains:
+                - Bounding box coordinates.
+                - MZL number.
+                - Glyph name.
+                - Glyph phonetic.
+                - Confidence level.
+    """
     with PgDatabase() as db:
-        db.cursor.execute(f"""SELECT *
-                              FROM annotation_ref
-                              LIMIT 10;
-                           """)
+        db.cursor.execute(f"""
+        SELECT
+                ti.tablet_name AS artefact_name,
+                encode(ti.picture, 'base64') AS picture_base64,
+                ir.bbox AS bbox_glyph,
+                ir.mzl_number,
+                mr.glyph,
+                mr.glyph_name,
+                ir.confidence
+        FROM infrn_result ir
+        JOIN tablet_infrn ti ON ir.id_inference = ti.id_inference
+        JOIN mzl_ref mr ON ir.mzl_number = mr.mzl_number;
+        """)
 
-        objects = [
-            {
-                "id_annotation": data[0],
-                "bbox": data[1],
-                "relative_bbox":data[2],
-                "mzl_number":data[3],
-                "id_segment": data[4]
-            }
-            for data in db.cursor.fetchall()
-        ]
-    return objects
+        data = db.cursor.fetchall()
+        if data is None:
+            return None
+
+        classification_data = {}
+        for row in data:
+            artefact_name = row[0]
+            picture = row[1]
+            bbox_glyph = literal_eval(row[2])
+            mzl_number = row[3]
+            glyph_name = row[4]
+            glyph_phonetic = row[5]
+            confidence = row[6]
+
+            if artefact_name not in classification_data:
+                classification_data[artefact_name] = {
+                    'picture': picture,
+                    'glyphs_data': []
+                }
+
+            classification_data[artefact_name]['glyphs_data'].append([bbox_glyph, 
+                                                                      mzl_number, 
+                                                                      glyph_name, 
+                                                                      glyph_phonetic, 
+                                                                      confidence])
+
+    return classification_data
+
+
+def get_archive_labelisation() -> dict:
+    """
+    Retrieve archive labelisation data from the database.
+
+    Returns:
+    -------
+        - dict: A dictionary containing the labelisation data.
+            Each key is an artefact name, and the corresponding value is a dictionary
+            with the artefact picture and a list of glyphs data.
+            Each glyph data contains:
+                - Bounding box coordinates.
+                - MZL number.
+                - Glyph code.
+                - Glyph name.
+    """
+    with PgDatabase() as db:
+        db.cursor.execute(f"""
+            SELECT
+                    tr.tablet_name AS artefact_name,
+                    encode(tr.picture, 'base64') AS picture_base64,
+                    ar.relative_bbox AS bbox_glyph,
+                    mr.mzl_number,
+                    mr.glyph,
+                    mr.glyph_name
+            FROM segment_ref sr
+            JOIN tablet_ref tr ON sr.id_tablet = tr.id_tablet
+            JOIN view_ref vr ON sr.id_view = vr.id_view
+            JOIN collection_ref cr ON sr.id_collection = cr.id_collection
+            JOIN annotation_ref ar ON sr.id_segment = ar.id_segment
+            JOIN mzl_ref mr ON ar.mzl_number = mr.mzl_number
+            WHERE tr.set_split = 'annotation';
+        """)
+
+        data = db.cursor.fetchall()
+        if data is None:
+            return None
+
+        labelisation_data = {}
+        for row in data:
+            artefact_name = row[0]
+            picture = row[1]
+            bbox_glyph = literal_eval(row[2])
+            mzl_number = row[3]
+            glyph = row[4]
+            glyph_name = row[5]
+
+            if artefact_name not in labelisation_data:
+                labelisation_data[artefact_name] = {
+                    'picture': picture,
+                    'glyphs_data': []
+                }
+
+            labelisation_data[artefact_name]['glyphs_data'].append([bbox_glyph, 
+                                                                    mzl_number, 
+                                                                    glyph, 
+                                                                    glyph_name])
+
+    return labelisation_data
 
 
 ## ------------------------------- RESOURCES -------------------------------- ##
@@ -156,7 +268,7 @@ def select_all_glyphs() -> dict:
 
     Returns:
     -------
-        dict: A dictionary containing glyph information. 
+        - dict: A dictionary containing glyph information. 
         The keys are integers representing the index of the glyph, and the values 
         are dictionaries containing the glyph details, including 
         'mzl_number', 'glyph_name', 'glyph', and 'glyph_phonetic'.
@@ -194,11 +306,11 @@ def select_glyph_by_mzl(mzl_number: int) -> dict:
 
     Args:
     -----
-        mzl_number (int): The MZL number to search for in the database.
+        - mzl_number (int): The MZL number to search for in the database.
 
     Returns:
     ----
-        dict: A dictionary containing glyph information, including 'mzl_number',
+        - dict: A dictionary containing glyph information, including 'mzl_number',
               'glyph_name', 'glyph', and 'glyph_phonetic'. If no data is found
               for the given MZL number, None is returned.
 
@@ -238,16 +350,17 @@ def select_glyph_by_mzl(mzl_number: int) -> dict:
 
 def save_in_tablet_ref(payload: dict) -> int:
     """
-    Save tablet reference in the database.
+    Save tablet data in the tablet_ref table of the database.
 
     Args:
-    -----
-    - payload (dict): A dictionary containing tablet payload.
+        - payload (Dict): A dictionary containing tablet data.
+            It should have the following keys:
+                - "img_name": The name of the tablet image.
+                - "img": The tablet image.
 
     Returns:
-    - int: The ID of the tablet if successfully saved or already exist.
+        - int: The ID of the saved tablet.
     """
-
     with PgDatabase() as db:
         ## - Check if the tablet already exists in the database
         db.cursor.execute("""
@@ -277,11 +390,11 @@ def save_in_tablet_ref(payload: dict) -> int:
 
 def save_in_reveal(id_tablet: int) -> None:
     """
-    Save reveal information in the database.
+    Save reveal data in the reveal table of the database.
 
     Args:
     -----
-    - id_tablet (int): The ID of the tablet.
+        - id_tablet (int): The ID of the tablet.
     """
     with PgDatabase() as db:
         db.cursor.execute("""
@@ -298,15 +411,16 @@ def save_in_reveal(id_tablet: int) -> None:
 
 def save_in_segment_ref(payload: dict, id_tablet: int) -> int:
     """
-    Save segment reference in the database.
+    Save segment data in the segment_ref table of the database.
 
     Args:
-    -----
-    - payload (dict): A dictionary containing segment payload.
-    - id_tablet (int): The ID of the tablet.
+        - payload (Dict): A dictionary containing segment data.
+            It should have the following keys:
+                - "bbox_img": The bounding box coordinates of the segment image.
+        - id_tablet (int): The ID of the tablet.
 
     Returns:
-    - int: The ID of the segment if successfully saved or already exists.
+        - int: The ID of the saved segment if successful, None otherwise.
     """
     with PgDatabase() as db:
         ## - Check if the segment already exists in the database
@@ -337,22 +451,29 @@ def save_in_segment_ref(payload: dict, id_tablet: int) -> int:
             if id_segment is not None:
                 db.connection.commit()
                 return id_segment
+            else:
+                db.connection.rollback()
+                return None
 
 
 def save_in_annotation_ref(payload: dict, id_segment: int) -> bool:
     """
-    Save annotation reference in the database.
+    Save annotation data in the annotation_ref table of the database.
 
     Args:
     -----
-    - payload (dict): A dictionary containing annotation payload.
-    - id_segment (int): The ID of the segment.
+        - payload (Dict): A dictionary containing annotation data.
+            It should have the following keys:
+                - "bbox_annotation": The bounding box coordinates.
+                - "relative_bbox": The relative bounding box coordinates.
+                - "mzl_number": The MZL number.
+        - id_segment (int): The ID of the segment.
 
     Returns:
     -------
-    - bool: True if the annotation reference is successfully saved, 
-            False otherwise.
+        - bool: True if the annotation is successfully saved, False otherwise.
     """
+
     with PgDatabase() as db:
         ## - Check if the annotation already exists in the database
         db.cursor.execute("""
@@ -394,11 +515,11 @@ def check_img_name(img_name: str) -> bool|int:
 
     Args:
     -----
-        img_name (str): The name of the image to check.
+        - img_name (str): The name of the image to check.
 
     Returns:
     -------
-        boolean or int: Returns False if the tablet name doesn't exist, 
+        - boolean or int: Returns False if the tablet name doesn't exist, 
         otherwise returns the id_inference associated with the tablet name.
     """
     with PgDatabase() as db:
@@ -421,12 +542,12 @@ def save_in_tablet_name(payload: dict, date_infrn: date) -> bool|int:
 
     Args:
     ----
-    payload: The payload containing tablet information.
-    date_infrn (date): The date of the inference.
+        - payload: The payload containing tablet information.
+        - date_infrn (date): The date of the inference.
 
     Returns:
     -------
-    int or bool: Returns the id_inference if the insertion was successful,
+        - int or bool: Returns the id_inference if the insertion was successful,
     otherwise returns False.
     """
     with PgDatabase() as db:
@@ -456,15 +577,27 @@ def save_in_infrn_result(payload: dict, id_inference: int) -> bool:
 
     Args:
     ----
-        payload: The payload containing inference result information.
-        id_inference (int): The id of the inference associated with the result.
+        - payload: The payload containing inference result information.
+        - id_inference (int): The id of the inference associated with the result.
 
     Returns:
     ----
-        bool: Returns True if the insertion is successful, 
+        - bool: Returns True if the insertion is successful, 
         otherwise returns False.
     """
     with PgDatabase() as db:
+        # db.cursor.execute(f"""
+        #                    INSERT INTO infrn_result (bbox, 
+        #                                              confidence,
+        #                                              mzl_number, 
+        #                                              id_inference)
+        #                    VALUES (%s, %s, %s, %s);
+        #                    """, (str(payload.bbox),
+        #                          payload.confidence,
+        #                          payload.mzl_number,
+        #                          id_inference))
+        # db.connection.commit()
+
         db.cursor.execute("""
             INSERT INTO infrn_result (bbox, 
                                       confidence,
