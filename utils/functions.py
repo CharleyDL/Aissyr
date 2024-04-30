@@ -102,6 +102,7 @@ def enable(state_key: str) -> None:
 
 def logout() -> None:
     """Log out the user and redirect to the home page."""
+    st.session_state.f_name = None
     st.switch_page("Home.py")
 
 
