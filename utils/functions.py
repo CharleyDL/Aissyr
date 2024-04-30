@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import mlflow.pyfunc
 import numpy as np
 import os
+import re
 import requests
 import streamlit as st
 
@@ -98,6 +99,12 @@ def disable_btns_save() -> None:
 
 def enable(state_key: str) -> None:
     st.session_state[state_key] = False
+
+
+def is_valid_email(email):
+    # Expression régulière pour vérifier le format de l'e-mail
+    regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+    return re.match(regex, email) is not None
 
 
 def logout() -> None:

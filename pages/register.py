@@ -59,7 +59,7 @@ with col2:
 
         email = st.text_input(
             "email", placeholder="email",
-            label_visibility='hidden', key='email'
+            label_visibility='hidden', key='email',
         )
 
         password = st.text_input(
@@ -73,20 +73,26 @@ with col2:
         with colF2:
             fct.space()
             if st.form_submit_button("Create account"):
-                credentials = {
-                    "title": title,
-                    "last_name": last_name,
-                    "first_name": first_name,
-                    "email": email,
-                    "password": password
-                }
-                res = requests.post(url=f"{API_URL}/account/create_account/", 
-                                    data=json.dumps(credentials))
-
-                response_data = res.json()
-                if response_data['result']:
-                    st.toast("Account created successfully.", icon='🎉')
-                    time.sleep(2)
-                    st.switch_page("pages/login.py")
+                if not all([title, last_name, first_name, email, password]):
+                    st.warning("Please fill in all the fields.")
+                elif fct.is_valid_email(email) == False:
+                    st.warning("The email is not valid.")
                 else:
-                    st.toast(f"{response_data['message']}", icon='🚫')
+                    credentials = {
+                        "title": title,
+                        "last_name": last_name,
+                        "first_name": first_name,
+                        "email": email,
+                        "password": password
+                    }
+
+                    res = requests.post(url=f"{API_URL}/account/create_account/", 
+                                        data=json.dumps(credentials))
+
+                    response_data = res.json()
+                    if response_data['result']:
+                        st.toast("Account created successfully.", icon='🎉')
+                        time.sleep(2)
+                        st.switch_page("pages/login.py")
+                    else:
+                        st.toast(f"{response_data['message']}", icon='🚫')
