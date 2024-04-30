@@ -8,8 +8,12 @@
 # ==============================================================================
 
 import os
+import unittest
 
-class TestRequiredElements:
+
+
+
+class TestRequiredElements(unittest.TestCase):
 
     def test_folder_exists(self):
         required_folders = ['routers', 'utils'] 
