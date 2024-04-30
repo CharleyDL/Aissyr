@@ -28,7 +28,7 @@ ALL_MZL = fct.all_mzl_info('list')
 
 ## ------------------------------- HEADER  ---------------------------------- ##
 
-st.page_link('pages/annotation_page.py',
+st.page_link('pages/labelisation_page.py',
             label="Go back to Labelisation Page",
             icon='⬅')
 
@@ -66,7 +66,7 @@ with st.sidebar:
                  label="Detect Glyphs",
                  icon='🔍')
 
-    st.page_link('pages/annotation_page.py',
+    st.page_link('pages/labelisation_page.py',
                  label="Label Glyphs",
                  icon='🏷️')
 
@@ -148,7 +148,7 @@ else:
 
  
     ## -- Send Corrected Glyphs to the API and display the message
-    annot_results = fct.save_annotation(img_name,
+    annot_results = fct.save_labelisation(img_name,
                         img,
                         bbox_img,
                         st.session_state.rects_annotation,

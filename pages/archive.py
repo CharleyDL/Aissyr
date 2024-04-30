@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
 # Created By   : Charley ∆. Lebarbier
-# Date Created : Tuesday 19 Apr. 2024
+# Date Created : Tuesday 29 Apr. 2024
 # ==============================================================================
 
-
 import streamlit as st
+
 import utils.functions as fct
+
 
 ## ------------------------------- SETUP PAGE ------------------------------- ##
 
@@ -59,7 +60,7 @@ with st.sidebar:
                  label="Detect Glyphs",
                  icon='🔍')
 
-    st.page_link('pages/annotation_page.py', 
+    st.page_link('pages/labelisation_page.py', 
                  label="Label Glyphs",
                  icon='🏷️')
 
@@ -67,7 +68,7 @@ with st.sidebar:
                  label="Archive",
                  icon='📚')
 
-    for i in range(32):
+    for i in range(31):
         fct.space()
 
     cols = st.columns([1,1,1])
@@ -81,15 +82,20 @@ with st.sidebar:
 ## ----------------------------- TAB DETECTION ------------------------------ ##
 
 with tabDet:
-    st.write('Detection Tab')
+    detection_dict = fct.get_archives_classification()
+
+    if detection_dict:
+        fct.display_archives_classification(detection_dict)
+    else:
+        st.write('No detection archive to display')
 
 
-
-
-
-
-
-## ---------------------------- TAB LABELISATION ---------------------------- ##
+## --------------------------- TAB LABELISATION ----------------------------- ##
 
 with tabLab:
-    st.write('Labelisation Tab')
+    labelisation_dict = fct.get_archives_labelisation()
+
+    if labelisation_dict:
+        fct.display_archives_labelisation(labelisation_dict)
+    else:
+        st.write('No labelisation archive to display')

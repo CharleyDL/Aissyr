@@ -16,8 +16,8 @@ st.set_page_config(page_title='AISSYR',
                    page_icon='asset/fav32.png', 
                    layout='wide')
 
-## ---------------------------- ERROR 401 PAGE ------------------------------ ##
 
+## ---------------------------- ERROR 401 PAGE ------------------------------ ##
 
 ## - SHIEL ICON
 st.markdown(

@@ -58,7 +58,7 @@ with st.sidebar:
                  label="Detect Glyphs",
                  icon='🔍')
 
-    st.page_link('pages/annotation_page.py',
+    st.page_link('pages/labelisation_page.py',
                  label="Label Glyphs",
                  icon='🏷️')
 
@@ -93,43 +93,4 @@ if uploaded_file is not None:
     fct.clear_session_state('uploaded_file')
     st.session_state.upload_file = uploaded_file
 
-    fct.annotation_setup(uploaded_file)
-
-
-
-
-
-
-
-# img_path = os.path.join(img_dir, img_file_name)
-# im = ImageManager(img_path)
-# img = im.get_img()
-# resized_img = im.resizing_img()
-# resized_rects = im.get_resized_rects()
-# rects = st_img_label(resized_img, box_color="red", rects=resized_rects)
-
-# def annotate():
-#     im.save_annotation()
-#     image_annotate_file_name = img_file_name.split(".")[0] + ".xml"
-#     if image_annotate_file_name not in st.session_state["annotation_files"]:
-#         st.session_state["annotation_files"].append(image_annotate_file_name)
-#     next_annotate_file()
-
-# if rects:
-#     st.button(label="Save", on_click=annotate)
-#     preview_imgs = im.init_annotation(rects)
-
-#     for i, prev_img in enumerate(preview_imgs):
-#         prev_img[0].thumbnail((200, 200))
-#         col1, col2 = st.columns(2)
-#         with col1:
-#             col1.image(prev_img[0])
-#         with col2:
-#             default_index = 0
-#             if prev_img[1]:
-#                 default_index = labels.index(prev_img[1])
-
-#             select_label = col2.selectbox(
-#                 "Label", labels, key=f"label_{i}", index=default_index
-#             )
-#             im.set_annotation(i, select_label)
+    fct.labelisation_setup(uploaded_file)

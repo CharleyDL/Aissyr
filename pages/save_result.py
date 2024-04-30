@@ -19,6 +19,7 @@ st.set_page_config(page_title='AISSYR',
                    page_icon='asset/fav32.png', 
                    layout='wide')
 
+fct.check_session()
 
 ## --------------------------------- HEADER --------------------------------- ##
 
@@ -125,7 +126,7 @@ bbox_img = [0, 0, width, height]    # Need for the annotation save not inference
 
 
 ## -- Send Corrected Glyphs to the API and display the message
-annot_results = fct.save_annotation(img_name,
+annot_results = fct.save_labelisation(img_name,
                     img,
                     bbox_img,
                     st.session_state.rects_correct,
@@ -149,11 +150,6 @@ for i, result in enumerate(pred_results):
             st.toast(result['message'], icon='✅')
     else:
         st.toast(result['message'], icon='🚫')
-
-
-
-
-
 
 
 ## ------------------------------ SESSION STATE ----------------------------- ##

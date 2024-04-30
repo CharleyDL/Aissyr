@@ -5,9 +5,9 @@
 # Date Created : Tuesday 19 Apr. 2024
 # ==============================================================================
 
-
 import streamlit as st
 import streamlit_antd_components as sac
+
 import utils.functions as fct
 
 
@@ -124,7 +124,7 @@ with st.sidebar:
                  label="Detect Glyphs",
                  icon='🔍')
 
-    st.page_link('pages/annotation_page.py',
+    st.page_link('pages/labelisation_page.py',
                  label="Label Glyphs",
                  icon='🏷️')
     

@@ -8,6 +8,7 @@
 import base64
 import dagshub
 import json
+import matplotlib.pyplot as plt
 import mlflow.pyfunc
 import numpy as np
 import os
@@ -17,10 +18,11 @@ import streamlit as st
 from io import BytesIO
 from mlflow.pyfunc import PyFuncModel
 from PIL import Image
-from streamlit.runtime.uploaded_file_manager import UploadedFile
-from streamlit_img_label import st_img_label
-from streamlit_img_label.manage import ImageManager
 from streamlit_extras.row import row
+from streamlit_img_label import st_img_label
+from streamlit_img_label.manage import ArchiveImageManager, ImageManager
+from streamlit.runtime.uploaded_file_manager import UploadedFile
+from typing import Any, Dict, List, Tuple
 
 
 API_URL = os.getenv("API_URL")
@@ -134,6 +136,24 @@ def load_model() -> PyFuncModel | None:
 
 ## --------------------------------- IMAGE --------------------------------- ##
 
+def decode_image(encoded_img: str) -> Image.Image:
+    """
+    Decodes a base64 encoded image string to a PIL image.
+
+    Args:
+    ----
+        encoded_img (str): The base64 encoded image string.
+
+    Returns:
+    ----
+        Image.Image: The decoded PIL image.
+    """
+    decoded_img = base64.b64decode(encoded_img)
+    # image = Image.open(BytesIO(decoded_img))
+    # return image
+    return decoded_img
+
+
 def encode_image(image: Image.Image) -> str:
     """
     Encodes a PIL image to a base64 string.
@@ -177,8 +197,71 @@ def extract_and_resize(image, output_size=(100, 100)) -> Image.Image:
     return resized_roi
 
 
+def plot_boxes_on_image(image: Image.Image, 
+                        rects: List[Tuple[int, int, int, int]],
+                        figsize: Tuple[int, int] = (10, 10)) -> plt.Figure:
+    """
+    Plot bounding boxes on the input image.
+
+    Args:
+    -----
+        image (PIL.Image.Image): The input image.
+        rects (List[Tuple[int, int, int, int]]): List of tuples representing bounding boxes. 
+            Each tuple contains (left, top, right, bottom) coordinates of the bounding box.
+        figsize (Tuple[int, int], optional): Size of the matplotlib figure. 
+            Defaults to (10, 10).
+
+    Returns:
+    -------
+        plt.Figure: The matplotlib figure containing the plotted image with bounding boxes.
+    """
+
+    image_array = np.array(image)
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.imshow(image_array)
+
+    for rect in rects:
+        left, top, width, height = (rect[0], rect[1], 
+                                    rect[2] - rect[0], 
+                                    rect[3] - rect[1])
+        rect_patch = plt.Rectangle((left, top), width, height, 
+                                   fill=False, edgecolor='red', linewidth=2)
+        ax.add_patch(rect_patch)
+
+    ax.axis('off')
+    return fig
+
+
+def resizing_img_ratio(img, max_height=300, max_width=300):
+        """resizing the image by max_height and max_width.
+
+        Args:
+            max_height(int): the max_height of the frame.
+            max_width(int): the max_width of the frame.
+        Returns:
+            resized_img(PIL.Image): the resized image.
+        """
+        resized_img = img.copy()
+        if resized_img.height > max_height:
+            ratio = max_height / resized_img.height
+            resized_img = resized_img.resize(
+                (int(resized_img.width * ratio), int(resized_img.height * ratio))
+            )
+        if resized_img.width > max_width:
+            ratio = max_width / resized_img.width
+            resized_img = resized_img.resize(
+                (int(resized_img.width * ratio), int(resized_img.height * ratio))
+            )
+
+        # resized_ratio_w = img.width / resized_img.width
+        # resized_ratio_h = img.height / resized_img.height
+        return resized_img
+
+
 ## -------------------------------- MZL INFO -------------------------------- ##
 
+@st.cache_data(show_spinner=False)
 def all_mzl_info(choice: str='dict') -> dict:
     """
     Get the all mzl resources from the database.
@@ -231,6 +314,168 @@ def mzl_info(label: str) -> dict:
     res = requests.get(url=f"{API_URL}/resources/glyphs/{label}/")
     res_dict = res.json()
     return res_dict
+
+
+
+## --------------------------------- ARCHIVES ------------------------------- ##
+
+def display_archives_classification(detection_dict: Dict[str, dict]) -> None:
+    """
+    Display the archives classification.
+
+    Args:
+    -----
+        detection_dict (Dict[str, dict]): A dictionary containing the classification data.
+            Each key is a category and the corresponding value is a dictionary containing 
+            the information for that category.
+    """
+    for key, value in detection_dict.items():
+            expander = st.expander(f"**{key}**")
+
+            with expander:
+                cols = st.columns([2, 3])
+
+                ## - LEFT - Display artefact and bbox
+                with cols[0]:
+                    # - Initiate the image
+                    decoded_img = decode_image(value['picture'])
+                    im = ArchiveImageManager(decoded_img)
+                    img = im.get_img()
+
+                    # - Get all glyph bbox 
+                    all_rects = []
+                    for i, glyph in enumerate(value['glyphs_data']):
+                        all_rects.append(glyph[0])
+
+                    st.pyplot(plot_boxes_on_image(img, all_rects))
+
+                ## - RIGHT - Display information
+                with cols[1]:
+                    for i, glyph in enumerate(value['glyphs_data']):
+                        rowGlyphs = row([0.2, 0.2, 0.5], gap='small')
+                        rowGlyphs.empty()
+
+                        # - Display the glyph image
+                        glyph_bbox = glyph[0]
+                        resized_bbox = im._resize_rect({
+                            "left": glyph_bbox[0],
+                            "top": glyph_bbox[1],
+                            "width": glyph_bbox[2] - glyph_bbox[0],
+                            "height": glyph_bbox[3] - glyph_bbox[1]
+                        })
+                        glyph_img, _ = im._chop_box_img(resized_bbox)
+                        resize_glyph_img = extract_and_resize(glyph_img, 
+                                                        output_size=(100, 100))
+                        rowGlyphs.image(resize_glyph_img)
+
+                        # - Display glyph information
+                        rowGlyphs.write(f"""
+                        <p style='padding-top: 24px;
+                                font-size: 20px;'>
+                        <b>
+                            <span style='margin-left: 16px;'>&nbsp;</span>
+                            {glyph[2]} : {glyph[1]} - {glyph[3]}
+                        </b>
+                        <span style='margin-left: 24px;'>&nbsp;</span>
+                        <em style='font-size: 16px;'>
+                            Confiance: {glyph[4]}%
+                        </em>
+                        </p>
+                        """, unsafe_allow_html=True)
+
+
+def display_archives_labelisation(labelisation_dict: Dict[str, dict]) -> None:
+    """
+    Display the archives labelisation.
+
+    Args:
+    ----
+        - labelisation_dict (Dict[str, dict]): A dictionary containing 
+                the labelisation data. Each key is a category and the 
+                corresponding value is a dictionary containing the information 
+                for that category.
+    """
+    for key, value in labelisation_dict.items():
+            expander = st.expander(f"**{key}**")
+
+            with expander:
+                cols = st.columns([2, 3])
+
+                ## - LEFT - Display artefact and bbox
+                with cols[0]:
+                    # - Initiate the image
+                    decoded_img = decode_image(value['picture'])
+                    im = ArchiveImageManager(decoded_img)
+                    img = im.get_img()
+
+                    # - Get all glyph bbox 
+                    all_rects = []
+                    for i, glyph in enumerate(value['glyphs_data']):
+                        all_rects.append(glyph[0])
+
+                    st.pyplot(plot_boxes_on_image(img, all_rects))
+
+                ## - RIGHT - Display information
+                with cols[1]:
+                    for i, glyph in enumerate(value['glyphs_data']):
+                        rowGlyphs = row([0.2, 0.2, 0.5], gap='small')
+                        rowGlyphs.empty()
+
+                        # - Display the glyph image
+                        glyph_bbox = glyph[0]
+                        resized_bbox = im._resize_rect({
+                            "left": glyph_bbox[0],
+                            "top": glyph_bbox[1],
+                            "width": glyph_bbox[2] - glyph_bbox[0],
+                            "height": glyph_bbox[3] - glyph_bbox[1]
+                        })
+                        glyph_img, _ = im._chop_box_img(resized_bbox)
+                        resize_glyph_img = extract_and_resize(glyph_img, 
+                                                        output_size=(100, 100))
+                        rowGlyphs.image(resize_glyph_img)
+
+                        # - Display glyph information
+                        rowGlyphs.write(f"""
+                        <p style='padding-top: 24px;
+                                font-size: 20px;'>
+                        <b>
+                            <span style='margin-left: 16px;'>&nbsp;</span>
+                            {glyph[2]} : {glyph[1]} - {glyph[3]}
+                        </b>
+                        </p>
+                        """, unsafe_allow_html=True)
+
+
+@st.cache_data(show_spinner=False)
+def get_archives_classification() -> Dict[str, Any]:
+    """
+    Retrieve the archives classification data from the API.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the classification data.
+            Each key is a category and the corresponding value is the information
+            for that category.
+    """
+    res = requests.get(url=f"{API_URL}/archives/classification/")
+    # print(res.json())
+    res_json = res.json()
+    return res_json['content']
+
+
+@st.cache_data(show_spinner=False)
+def get_archives_labelisation() -> Dict[str, Any]:
+    """
+    Retrieve the archives labelisation data from the API.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the classification data.
+            Each key is a category and the corresponding value is the information
+            for that category.
+    """
+    res = requests.get(url=f"{API_URL}/archives/labelisation/")
+    # print(res.json())
+    res_json = res.json()
+    return res_json['content']
 
 
 ## -------------------------- GLYPHS CLASSIFICATION ------------------------- ##
@@ -514,41 +759,16 @@ def update_zip_detect(index: int) -> None:
     correct_label()
 
 
-## ----------------------------- GLYPHS ANNOTATION -------------------------- ##
+## ---------------------------- GLYPHS LABELISATION ------------------------- ##
 
-def update_labelisation(index: int) -> None:
+def labelisation_setup(uploaded_file: UploadedFile) -> None:
     """
-    Update the list of zip_detect predictions in the session by replacing 
-    the prediction at the specified index with the new prediction selected 
-    by the user.
+    Set up annotation interface for the uploaded file.
 
     Args:
     ----
-    - index (int): The index of the item to update in the zip_detect list.
+    - uploaded_file (UploadedFile): The uploaded image file.
     """
-    value = st.session_state[f"label_{index}"]
-    if value:
-        new_label = int(value.split(" ")[0])
-        mzl_information = mzl_info(new_label)
-        correct_glyph = [
-            mzl_information['mzl_number'],
-            mzl_information['glyph'],
-            mzl_information['glyph_name'],
-        ]
-
-    updated_zip_labelisation = st.session_state.zip_labelisation
-    updated_zip_labelisation[index] = (updated_zip_labelisation[index][0], 
-                                       correct_glyph)
-
-    clear_session_state('zip_labelisation')
-    st.session_state.zip_labelisation = updated_zip_labelisation
-
-
-def annotation_setup(uploaded_file: UploadedFile) -> None:
-
-    ## - Load glyphs information
-    ALL_MZL = all_mzl_info('list')
-
     col1, col2 = st.columns(2)
     with col1:
         im = ImageManager(uploaded_file)
@@ -595,9 +815,37 @@ def annotation_setup(uploaded_file: UploadedFile) -> None:
             st.switch_page("pages/select_label.py")
 
 
+def update_labelisation(index: int) -> None:
+    """
+    Update the list of zip_labelisation predictions in the session by replacing 
+    the prediction at the specified index with the new prediction selected 
+    by the user.
+
+    Args:
+    ----
+    - index (int): The index of the item to update in the zip_labelisation list.
+    """
+    value = st.session_state[f"label_{index}"]
+    if value:
+        new_label = int(value.split(" ")[0])
+        mzl_information = mzl_info(new_label)
+        correct_glyph = [
+            mzl_information['mzl_number'],
+            mzl_information['glyph'],
+            mzl_information['glyph_name'],
+        ]
+
+    updated_zip_labelisation = st.session_state.zip_labelisation
+    updated_zip_labelisation[index] = (updated_zip_labelisation[index][0], 
+                                       correct_glyph)
+
+    clear_session_state('zip_labelisation')
+    st.session_state.zip_labelisation = updated_zip_labelisation
+
+
 ## --------------------------------- SAVING --------------------------------- ##
 
-def save_annotation(img_name: str,
+def save_labelisation(img_name: str,
                     original_img: Image.Image,
                     bbox_img: list,
                     bbox_glyphs: list, 

@@ -9,7 +9,6 @@ import json
 import os
 import requests
 import streamlit as st
-import streamlit_authenticator as sa
 import time
 
 import utils.functions as fct

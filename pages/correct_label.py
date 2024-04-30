@@ -65,7 +65,7 @@ with st.sidebar:
                  label="Detect Glyphs",
                  icon='🔍')
 
-    st.page_link('pages/annotation_page.py',
+    st.page_link('pages/labelisation_page.py',
                  label="Label Glyphs",
                  icon='🏷️')
 
