@@ -11,7 +11,7 @@ import uvicorn
 
 from fastapi import FastAPI
 
-from routers import account, annotation, archives, prediction, resources
+from routers import account, archives, labelisation, prediction, resources
 
 
 app = FastAPI(
@@ -30,8 +30,8 @@ async def root():
     return {"message": "Welcome to the AISSYR API"}
 
 app.include_router(account.router, prefix='/account', tags=['account'])
-app.include_router(annotation.router, prefix='/annotation', tags=['annotation'])
 app.include_router(archives.router, prefix='/archives', tags=['archives'])
+app.include_router(labelisation.router, prefix='/labelisation', tags=['labelisation'])
 app.include_router(prediction.router, prefix='/prediction', tags=['prediction'])
 app.include_router(resources.router, prefix='/resources', tags=['resources'])
 
