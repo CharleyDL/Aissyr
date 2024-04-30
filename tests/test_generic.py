@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# ==============================================================================
+# Created By   : Charley ∆. Lebarbier
+# Date Created : Tuesday 20 Apr. 2024
+# ==============================================================================
+
 import os
 
 class TestRequiredElements:
