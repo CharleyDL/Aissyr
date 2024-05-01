@@ -630,17 +630,22 @@ def classification_setup(uploaded_file: UploadedFile) -> None:
             clear_session_state('preview_imgs')
             tmp_img.empty()
 
-            ## - Send the result to the API and display the message
-            results = save_inference(uploaded_file.name,
-                                     img,
-                                     rects,
-                                     st.session_state.zip_detect)
+            # - Check if the user is in DEMO mode
+            if st.session_state.f_name == 'DEMO':
+                st.toast(f"""This is a demo version, 
+                         the data is not saved in the database.""", icon='🚫')
+            else:
+                ## - Send the result to the API and display the message
+                results = save_inference(uploaded_file.name,
+                                        img,
+                                        rects,
+                                        st.session_state.zip_detect)
 
-            for i, result in enumerate(results):
-                if result['result']:
-                     st.toast(result['message'], icon='✅')
-                else:
-                    st.toast(result['message'], icon='🚫')
+                for i, result in enumerate(results):
+                    if result['result']:
+                        st.toast(result['message'], icon='✅')
+                    else:
+                        st.toast(result['message'], icon='🚫')
 
         if correct_button:
             st.switch_page("pages/correct_label.py")
