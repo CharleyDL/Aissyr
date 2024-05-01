@@ -913,7 +913,7 @@ def save_labelisation(img_name: str,
         }
 
         print(data)
-        res = requests.post(url=f"{API_URL}/annotation/saving_annotation/", 
+        res = requests.post(url=f"{API_URL}/labelisation/saving_annotation/", 
                             data=json.dumps(data))
 
         print(res.json())
