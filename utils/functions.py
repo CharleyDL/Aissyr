@@ -325,7 +325,6 @@ def mzl_info(label: str) -> dict:
     return res_dict
 
 
-
 ## --------------------------------- ARCHIVES ------------------------------- ##
 
 def display_archives_classification(detection_dict: Dict[str, dict]) -> None:
@@ -777,7 +776,6 @@ def update_zip_detect(index: int) -> None:
     clear_session_state('zip_detect')
     st.session_state.zip_detect = updated_zip_detect
     correct_label()
-
 
 
 ## ---------------------------- GLYPHS LABELISATION ------------------------- ##
