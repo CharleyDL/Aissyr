@@ -455,7 +455,6 @@ def display_archives_labelisation(labelisation_dict: Dict[str, dict]) -> None:
                         """, unsafe_allow_html=True)
 
 
-@st.cache_data(show_spinner=False)
 def get_archives_classification() -> Dict[str, Any]:
     """
     Retrieve the archives classification data from the API.
@@ -467,6 +466,7 @@ def get_archives_classification() -> Dict[str, Any]:
     """
     res = requests.get(url=f"{API_URL}/archives/classification/")
     # print(res.json())
+
     res_json = res.json()
     if 'content' in res_json:
         return res_json['content']
@@ -474,7 +474,6 @@ def get_archives_classification() -> Dict[str, Any]:
         return None
 
 
-@st.cache_data(show_spinner=False)
 def get_archives_labelisation() -> Dict[str, Any]:
     """
     Retrieve the archives labelisation data from the API.
@@ -486,6 +485,7 @@ def get_archives_labelisation() -> Dict[str, Any]:
     """
     res = requests.get(url=f"{API_URL}/archives/labelisation/")
     # print(res.json())
+
     res_json = res.json()
     if 'content' in res_json:
         return res_json['content']
@@ -779,6 +779,7 @@ def update_zip_detect(index: int) -> None:
     correct_label()
 
 
+
 ## ---------------------------- GLYPHS LABELISATION ------------------------- ##
 
 def labelisation_setup(uploaded_file: UploadedFile) -> None:
@@ -912,11 +913,9 @@ def save_labelisation(img_name: str,
             "mzl_number": mzl_number
         }
 
-        print(data)
         res = requests.post(url=f"{API_URL}/labelisation/saving_annotation/", 
                             data=json.dumps(data))
 
-        print(res.json())
         results.append(res.json())
 
     return results
@@ -971,7 +970,7 @@ def save_inference(img_name: str,
 
         res = requests.post(url=f"{API_URL}/prediction/saving_classification/", 
                             data=json.dumps(data))
-        print(res.json())
+
         results.append(res.json())
 
     return results

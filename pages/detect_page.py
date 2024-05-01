@@ -94,6 +94,7 @@ with st.sidebar:
 ## - clear session state for correct page
 fct.clear_session_state('correct_label')
 fct.clear_session_state('del_label')
+fct.clear_session_state('rects_correct')
 
 ## - Upload file to classify glyphs
 if uploaded_file is not None:

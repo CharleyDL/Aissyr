@@ -102,11 +102,13 @@ save_button = rowOption.button(label="Save Label", key="save_correct_page",
 if not validate:
     if st.session_state.zip_detect:
         for i, result in enumerate(st.session_state.zip_detect):
+            default_index = st.session_state.zip_detect[i][1][0] - 1
+
             rowImgDet.image(result[0])
             new_label = rowImgDet.selectbox("Correct Label",
                             ALL_MZL, 
                             key=f"label_{i}", 
-                            index=st.session_state.zip_detect[i][1][0] - 1,
+                            index=default_index,
                             label_visibility='hidden',
                             on_change=fct.update_zip_detect,
                             args=(i,))

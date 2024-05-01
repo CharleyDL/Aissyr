@@ -131,13 +131,13 @@ else:
 
 
     ## -- Send Corrected Glyphs to the API and display the message
-    annot_results = fct.save_labelisation(img_name,
+    label_results = fct.save_labelisation(img_name,
                         img,
                         bbox_img,
                         st.session_state.rects_correct,
                         st.session_state.correct_label)
 
-    for i, result in enumerate(annot_results):
+    for i, result in enumerate(label_results):
         if result['result']:
                 st.toast(result['message'], icon='✅')
         else:
