@@ -468,7 +468,7 @@ def get_archives_classification() -> Dict[str, Any]:
     res = requests.get(url=f"{API_URL}/archives/classification/")
     # print(res.json())
     res_json = res.json()
-    if res_json['content']:
+    if 'content' in res_json:
         return res_json['content']
     else:
         return None
@@ -487,7 +487,7 @@ def get_archives_labelisation() -> Dict[str, Any]:
     res = requests.get(url=f"{API_URL}/archives/labelisation/")
     # print(res.json())
     res_json = res.json()
-    if res_json['content']:
+    if 'content' in res_json:
         return res_json['content']
     else:
         return None
