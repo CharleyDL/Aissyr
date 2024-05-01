@@ -467,7 +467,10 @@ def get_archives_classification() -> Dict[str, Any]:
     res = requests.get(url=f"{API_URL}/archives/classification/")
     # print(res.json())
     res_json = res.json()
-    return res_json['content']
+    if res_json['content']:
+        return res_json['content']
+    else:
+        return None
 
 
 @st.cache_data(show_spinner=False)
@@ -483,7 +486,10 @@ def get_archives_labelisation() -> Dict[str, Any]:
     res = requests.get(url=f"{API_URL}/archives/labelisation/")
     # print(res.json())
     res_json = res.json()
-    return res_json['content']
+    if res_json['content']:
+        return res_json['content']
+    else:
+        return None
 
 
 ## -------------------------- GLYPHS CLASSIFICATION ------------------------- ##

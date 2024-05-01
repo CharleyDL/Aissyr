@@ -86,13 +86,19 @@ with col2:
                         "password": password
                     }
 
-                    res = requests.post(url=f"{API_URL}/account/create_account/", 
-                                        data=json.dumps(credentials))
+                    ## -- Suspended Account Creation -- ##
 
-                    response_data = res.json()
-                    if response_data['result']:
-                        st.toast("Account created successfully.", icon='🎉')
-                        time.sleep(2)
-                        st.switch_page("pages/login.py")
-                    else:
-                        st.toast(f"{response_data['message']}", icon='🚫')
+                    # res = requests.post(url=f"{API_URL}/account/create_account/", 
+                    #                     data=json.dumps(credentials))
+
+                    # response_data = res.json()
+                    # if response_data['result']:
+                    #     st.toast("Account created successfully.", icon='🎉')
+                    #     time.sleep(2)
+                    #     st.switch_page("pages/login.py")
+                    # else:
+                    #     st.toast(f"{response_data['message']}", icon='🚫')
+
+                    st.toast(f"""CURRENTLY IN RESTRICTED USE! PLEASE CONTACT 
+                             THE ADMIN FOR THE DEMO ACCESS.""",
+                             icon='🚫')

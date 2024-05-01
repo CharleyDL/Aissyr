@@ -27,7 +27,7 @@ ALL_MZL = fct.all_mzl_info('list')
 
 ## ------------------------------- HEADER  ---------------------------------- ##
 
-st.page_link('pages/detect.py',
+st.page_link('pages/detect_page.py',
             label="Go back to Detect Page",
             icon='⬅')
 

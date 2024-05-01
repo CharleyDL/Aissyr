@@ -146,16 +146,20 @@ else:
     width, height = img.size
     bbox_img = [0, 0, width, height]    # Need for the annotation save not inference
 
- 
-    ## -- Send Corrected Glyphs to the API and display the message
-    annot_results = fct.save_labelisation(img_name,
-                        img,
-                        bbox_img,
-                        st.session_state.rects_annotation,
-                        st.session_state.zip_labelisation)
+    # - Check if the user is in DEMO mode
+    if st.session_state.f_name == 'DEMO':
+        st.toast(f"""This is a demo version, 
+             the data is not saved in the database.""", icon='🚫')
+    else:
+        ## -- Send Corrected Glyphs to the API and display the message
+        annot_results = fct.save_labelisation(img_name,
+                            img,
+                            bbox_img,
+                            st.session_state.rects_annotation,
+                            st.session_state.zip_labelisation)
 
-    for i, result in enumerate(annot_results):
-        if result['result']:
-                st.toast(result['message'], icon='✅')
-        else:
-            st.toast(result['message'], icon='🚫')
+        for i, result in enumerate(annot_results):
+            if result['result']:
+                    st.toast(result['message'], icon='✅')
+            else:
+                st.toast(result['message'], icon='🚫')
