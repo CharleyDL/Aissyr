@@ -29,7 +29,7 @@ jobs:
           DAGSHUB_REPO: ${{ secrets.DAGSHUB_REPO }}
           MODEL_URI: ${{ secrets.MODEL_URI }}
         run: |
-          "$API_URL"
+          example-command "$API_URL"
 
       - name: Run Streamlit tests
         uses: streamlit/streamlit-app-action@v0.0.3
