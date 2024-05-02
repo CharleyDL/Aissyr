@@ -22,9 +22,14 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Show environment variables
+      - shell: bash
+        env:
+          API_URL: ${{ secrets.API_URL }}
+          DAGSHUB_REPO_OWNER: ${{ secrets.DAGSHUB_REPO_OWNER }}
+          DAGSHUB_REPO: ${{ secrets.DAGSHUB_REPO }}
+          MODEL_URI: ${{ secrets.MODEL_URI }}
         run: |
-          env
+          cat "$API_URL"
 
       - name: Run Streamlit tests
         uses: streamlit/streamlit-app-action@v0.0.3
