@@ -20,10 +20,8 @@ class TestLoadModel:
     def test_load_model(self):
         DAGSHUB_REPO = os.getenv('DAGSHUB_REPO')
         DAGSHUB_REPO_OWNER = os.getenv('DAGSHUB_REPO_OWNER')
-        # DAGSHUB_USER_TOKEN = os.getenv('DAGSHUB_USER_TOKEN')
         MODEL_URI = os.getenv('MODEL_URI')
 
-        # auth.add_app_token(token=DAGSHUB_USER_TOKEN, host='dagshub.com')
         dagshub.init(DAGSHUB_REPO, DAGSHUB_REPO_OWNER, mlflow=True)
 
         model = mlflow.pyfunc.load_model(MODEL_URI)
