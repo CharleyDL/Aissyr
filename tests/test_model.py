@@ -10,7 +10,6 @@ import mlflow.pyfunc
 import os
 
 from dotenv import load_dotenv
-from dagshub import 
 
 
 load_dotenv()
