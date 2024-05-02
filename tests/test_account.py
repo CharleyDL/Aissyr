@@ -3,10 +3,14 @@ import pytest
 import sys
 
 from fastapi.testclient import TestClient
+from dotenv import load_dotenv
 
 ## Add the current directory to the path
 sys.path.append(".")
 from api import app
+
+
+load_dotenv()
 
 
 class TestAPIAccount:

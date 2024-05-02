@@ -1,5 +1,5 @@
 bcrypt==4.1.2
-dagshub==0.3.12
+dagshub==0.3.26
 fastapi==0.110.0
 gunicorn==21.2.0
 mlflow==2.11.1
@@ -7,7 +7,8 @@ psycopg2==2.9.9
 psycopg2-binary==2.9.9
 pydantic==2.6.4
 pydantic_core==2.16.3
-pytest==6.2.5
+pytest==8.1.1
+python-dotenv==1.0.1
 requests==2.31.0
 uvicorn==0.29.0
 
