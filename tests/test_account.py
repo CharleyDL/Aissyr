@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# ==============================================================================
+# Created By   : Charley ∆. Lebarbier
+# Date Created : Thursday 2 May 2024
+# ==============================================================================
+
 import os
 import pytest
 import sys
