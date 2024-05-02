@@ -7,6 +7,12 @@
 
 import os
 
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+
 class TestRequiredElements:
 
     def test_folder_exists(self):
@@ -14,7 +20,6 @@ class TestRequiredElements:
                             'streamlit_img_label', 'utils']
         for folder in required_folders:
             assert os.path.exists(folder)
-
 
     def test_file_exists(self):
         required_files = ['asset/icn_save.png', 'asset/icn_shield.png',
@@ -32,3 +37,12 @@ class TestRequiredElements:
 
         for file in required_files:
             assert os.path.exists(file)
+
+
+class TestEnvVar:
+
+    def test_get_envvar(self):
+        assert os.getenv('API_URL') is not None
+        assert os.getenv('DAGSHUB_REPO_OWNER') is not None
+        assert os.getenv('DAGSHUB_REPO') is not None
+        assert os.getenv('MODEL_URI') is not None
