@@ -10,12 +10,22 @@ import os
 # from utils.functions import load_model
 
 
+API_URL = os.environ("API_URL",)
+DAGSHUB_REPO_OWNER = os.environ("DAGSHUB_REPO_OWNER")
+DAGSHUB_REPO = os.environ("DAGSHUB_REPO")
+MODEL_URI = os.environ("MODEL_URI")
+
+
+
 class TestLoadModel:
 
     def test_get_envvar(self):
-        assert os.environ.get("DAGSHUB_REPO_OWNER") is not None
-        assert os.environ.get("DAGSHUB_REPO") is not None
-        assert os.environ.get("MODEL_URI") is not None
+        envvar = [API_URL, DAGSHUB_REPO_OWNER, DAGSHUB_REPO, MODEL_URI]
+
+        for var in envvar:
+            assert var in os.environ, f"{var} is not in os.environ"
+
+
 
 #     def test_load_model(self):
 #         model = load_model()
