@@ -22,6 +22,10 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Show environment variables
+        run: |
+          env
+
       - name: Run Streamlit tests
         uses: streamlit/streamlit-app-action@v0.0.3
         with:
