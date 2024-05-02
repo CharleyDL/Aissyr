@@ -31,7 +31,7 @@ async def archive_classification():
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, 
                 detail='No archive for classification found')
-    
+
         return MessageAccount(result=True, 
                               message="Archive classification found", 
                               content=result)

@@ -38,5 +38,26 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Set up environment variables
+        shell: bash
+        env:
+          API_URL: ${{ secrets.API_URL }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          echo "API_URL=${API_URL}" >> .env
+          echo "DAGSHUB_REPO_OWNER=${DAGSHUB_REPO_OWNER}" >> .env
+          echo "DAGSHUB_REPO=${DAGSHUB_REPO}" >> .env
+          echo "DAGSHUB_USER_TOKEN=${DAGSHUB_USER_TOKEN}" >> .env
+          echo "MODEL_URI=${MODEL_URI}" >> .env
+          echo "DB_HOST=${DB_HOST}" >> .env
+          echo "DB_PORT=${DB_PORT}" >> .env
+          echo "DB_NAME=${DB_NAME}" >> .env
+          echo "DB_USERNAME=${DB_USERNAME}" >> .env
+          echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
+
       - name: Run tests with pytest
         run: pytest tests
