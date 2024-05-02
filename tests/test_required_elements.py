@@ -47,3 +47,5 @@ class TestEnvVar:
         assert os.getenv('DAGSHUB_REPO') is not None, "DAGSHUB_REPO is not defined"
         assert os.getenv('DAGSHUB_USER_TOKEN') is not None, "DAGSHUB_USER_TOKEN is not defined"
         assert os.getenv('MODEL_URI') is not None, "MODEL_URI is not defined"
+
+        print(os.getenv('API_URL'))
