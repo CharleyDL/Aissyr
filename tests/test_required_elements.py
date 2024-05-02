@@ -42,10 +42,8 @@ class TestRequiredElements:
 class TestEnvVar:
 
     def test_get_envvar(self):
-        assert os.getenv('API_URL') is not None, "API_URL is not defined"
-        assert os.getenv('DAGSHUB_REPO_OWNER') is not None, "DAGSHUB_REPO_OWNER is not defined"
-        assert os.getenv('DAGSHUB_REPO') is not None, "DAGSHUB_REPO is not defined"
-        assert os.getenv('DAGSHUB_USER_TOKEN') is not None, "DAGSHUB_USER_TOKEN is not defined"
-        assert os.getenv('MODEL_URI') is not None, "MODEL_URI is not defined"
-
-        print(os.getenv('API_URL'))
+        assert os.environ['API_URL'] is not None, "API_URL is not defined"
+        assert os.environ['DAGSHUB_REPO_OWNER'] is not None, "DAGSHUB_REPO_OWNER is not defined"
+        assert os.environ['DAGSHUB_REPO'] is not None, "DAGSHUB_REPO is not defined"
+        assert os.environ['DAGSHUB_USER_TOKEN'] is not None, "DAGSHUB_USER_TOKEN is not defined"
+        assert os.environ['MODEL_URI'] is not None, "MODEL_URI is not defined"

@@ -11,8 +11,8 @@ import os
 import logging
 import requests
 
+from dagshub import auth
 from dotenv import load_dotenv
-
 
 load_dotenv()
 logging.basicConfig(level=logging.DEBUG)
@@ -26,6 +26,7 @@ class TestLoadModel:
         DAGSHUB_USER_TOKEN = os.getenv("DAGSHUB_USER_TOKEN")
         MODEL_URI = os.getenv("MODEL_URI")
 
+        auth.add_app_token(token=DAGSHUB_USER_TOKEN)
         dagshub.init(DAGSHUB_REPO, DAGSHUB_REPO_OWNER, mlflow=True)
 
         model = mlflow.pyfunc.load_model(MODEL_URI)
