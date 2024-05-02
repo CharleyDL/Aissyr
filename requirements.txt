@@ -23,7 +23,7 @@ commonmark==0.9.1
 contourpy==1.2.0
 cycler==0.12.1
 dacite==1.6.0
-dagshub==0.3.12
+dagshub==0.3.26
 databricks-cli==0.18.0
 dataclasses-json==0.6.3
 debugpy==1.8.0
