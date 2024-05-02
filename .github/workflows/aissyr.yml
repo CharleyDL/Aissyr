@@ -28,6 +28,11 @@ jobs:
           DAGSHUB_REPO_OWNER: ${{ secrets.DAGSHUB_REPO_OWNER }}
           DAGSHUB_REPO: ${{ secrets.DAGSHUB_REPO }}
           MODEL_URI: ${{ secrets.MODEL_URI }}
+        run: |
+          echo "API_URL=${API_URL}" >> .env
+          echo "DAGSHUB_REPO_OWNER=${DAGSHUB_REPO_OWNER}" >> .env
+          echo "DAGSHUB_REPO=${DAGSHUB_REPO}" >> .env
+          echo "MODEL_URI=${MODEL_URI}" >> .env
 
       - name: Run Streamlit tests
         uses: streamlit/streamlit-app-action@v0.0.3
