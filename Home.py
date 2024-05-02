@@ -144,5 +144,3 @@ if 'zip_labelisation' not in st.session_state:
 
 if 'zip_detect' not in st.session_state:
     st.session_state.zip_detect = []
-
-
