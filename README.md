@@ -7,24 +7,24 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/CharleyDL/neo_aissyr/">
+  <a href="https://github.com/CharleyDL/Aissyr">
     <img src="asset/logo_aissyr_M.png" alt="Logo">
   </a>
 
-  <h3 align="center">NEO AISSYR</h3>
+  <h3 align="center">AISSYR</h3>
 
   <p align="center">
-    A WebApp to detect and transcript neo-assyrian glyphs !
+    A WebApp to detect Neo-Assyrian glyphs !
     <br />
     <br />
     <a href="https://github.com/CharleyDL/neo_aissyr"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/CharleyDL/neo_aissyr">View Demo</a>
+    <a href="https://aissyr-app.streamlit.app">View Demo</a>
     ·
-    <a href="https://github.com/CharleyDL/neo_aissyr/issues">Report Bug</a>
+    <a href="https://github.com/CharleyDL/Aissyr/issues">Report Bug</a>
     ·
-    <a href="https://github.com/CharleyDL/neo_aissyr/issues">Request Feature</a>
+    <a href="https://github.com/CharleyDL/Aissyr/issues">Request Feature</a>
   </p>
 </div>
 
