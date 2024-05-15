@@ -586,18 +586,6 @@ def save_in_infrn_result(payload: dict, id_inference: int) -> bool:
         otherwise returns False.
     """
     with PgDatabase() as db:
-        # db.cursor.execute(f"""
-        #                    INSERT INTO infrn_result (bbox, 
-        #                                              confidence,
-        #                                              mzl_number, 
-        #                                              id_inference)
-        #                    VALUES (%s, %s, %s, %s);
-        #                    """, (str(payload.bbox),
-        #                          payload.confidence,
-        #                          payload.mzl_number,
-        #                          id_inference))
-        # db.connection.commit()
-
         db.cursor.execute("""
             INSERT INTO infrn_result (bbox, 
                                       confidence,
