@@ -4,7 +4,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/CharleyDL/Aissyr">
-    <img src="asset/logo_aissyr_white_M.png" alt="Logo">
+    <img src="asset/aissyr_logo_git.png" alt="Logo">
   </a>
 
   <br />
