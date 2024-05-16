@@ -80,7 +80,7 @@
 <br/>
 <br/>
 
-<p style="text-align: center;">
+<p align="center">
   <em>
     AIssyr Web App is dedicated to researchers to work on the Assyrian 
     cuneiforms writing system, providing a toolbox for detecting and labeling images.
