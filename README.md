@@ -66,6 +66,7 @@
 </blockquote>
 
 <br/>
+<br/>
 
 <div align="center">
     <img src="asset/mantra.svg" alt="empower assyrian cuneiform research you with new AI toolkit companion">
