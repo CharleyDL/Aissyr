@@ -83,7 +83,7 @@
 <p align="center">
   <em>
     AIssyr Web App is dedicated to researchers to work on the Assyrian 
-    cuneiforms writing system, providing a toolbox for detecting and labeling images.
+    cuneiforms writing system, providing a toolbox for glyphs classification and labeling images.
   </em>
 </p>
 
