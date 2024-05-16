@@ -1,26 +1,18 @@
 <a name="readme-top"></a>
 
-<!-- PROJECT SHIELDS -->
-
-[![Github][github-shield]][github-url]
-
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
   <a href="https://github.com/CharleyDL/Aissyr">
-    <img src="asset/logo_aissyr_M.png" alt="Logo">
+    <img src="asset/logo_aissyr_white_M.png" alt="Logo">
   </a>
 
-  <h3 align="center">AISSYR</h3>
+  <br />
 
   <p align="center">
-    A WebApp to detect Neo-Assyrian glyphs !
-    <br />
-    <br />
-    <a href="https://github.com/CharleyDL/neo_aissyr"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://aissyr-app.streamlit.app">View Demo</a>
+    <br/>
+    <br/>
+    <a href="https://aissyr-app.streamlit.app"><strong>View Demo</strong></a>
     ·
     <a href="https://github.com/CharleyDL/Aissyr/issues">Report Bug</a>
     ·
@@ -28,59 +20,121 @@
   </p>
 </div>
 
+<br/>
+
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
+    <li><a href="#about-the-project">About The Project</a></li>
+    <li><a href="#current-features">Current Features</a></li>
+    <li><a href="#built-with">Built With</a></li>
+    <li><a href="#getting-started">Getting Started</a></li>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
+
+<br/>
 
 <!-- ABOUT THE PROJECT -->
 
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+<br/>
 
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
+<blockquote>
+  <p>
+    <em>
+      This project showcases the expertise necessary to achieve the professional qualification of 
+        <a href="https://www.francecompetences.fr/recherche/rncp/34757">
+          Artificial Intelligence Developer (RNCP 34757)
+        </a>
+      , as part of the 
+        <a href="https://isen-caen.fr/ecole-ia-microsoft-by-simplon-et-isen-ouest/">
+          Microsoft IA Caen School by Simplon x ISEN (Engineer School)
+        </a>. 
+      AIssyr is an original creation by 
+        <a href="https://www.linkedin.com/in/charleylebarbier/">
+          Charley ∆. Lebarbier
+        </a>
+    </em>
+  </p>
 
-Here's why:
+  <p style="text-align: center; margin-left: 80px; margin-right: 80px;">
 
-- Your time should be focused on creating something amazing. A project that solves a problem and helps others
-- You shouldn't be doing the same tasks over and over like creating a README from scratch
-- You should implement DRY principles to the rest of your life :smile:
+  </p>
+</blockquote>
 
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
+<br/>
 
-Use the `BLANK_README.md` to get started.
+<p style="text-align: center; font-size: 24px; 
+          margin-left: 80px; margin-right: 80px;">
+  <b style='color: #DEA15B;'>EMPOWER</b> ASSYRIAN CUNEIFORM RESEARCH WITH YOUR 
+  <b style='color: #DEA15B;'>NEW AI TOOLKIT COMPANION</b>
+</p>
+
+<br/>
+
+<!-- ![Preview Product][product-screenshot] -->
+
+<img src="asset/preview_aissyr.jpg" 
+     style="display: block;
+            margin-left: auto;
+            margin-right: auto;">
+
+<br/>
+
+<br/>
+
+<p style="text-align: center; margin-left: 80px; margin-right: 80px;">
+  <em>
+    AIssyr Web App is dedicated to researchers to work on the Assyrian 
+    cuneiforms writing system, providing a toolbox for detecting and labeling 
+    images.
+  </em>
+</p>
+
+<br/>
+
+## Current Features
+
+<!-- - [x] Login and Sign up
+
+- Glyph Detection from an image with a manual bounding box (22 Glyphs)
+- Tool to label glyphs
+- Archive consultation -->
+
+- [x] Login and Sign up on App
+- [x] Glyph Classification IA Model (_currently 22 Glyphs recognition_)
+- [x] Prediction Select Tool
+- [x] Labeling Select Tool
+- [x] Archive Consultation
+- [x] API
+  - [x] account route
+  - [x] prediction route
+  - [x] labelling route
+  - [x] resources route
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Built With
+## Built With
 
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
-
-- [![Python]][Python-url]
-- [![Heroku]][Heroku-url]
-- [![Postgres]][Postgres-url]
+<p align="center">
+    <img src="https://img.shields.io/badge/Python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54" alt="Python">
+    <img src="https://img.shields.io/badge/Google%20Colab-F9AB00?style=for-the-badge&logo=googlecolab&color=525252" alt="Google Colab">
+    <img src="https://img.shields.io/badge/Dagshub-135664?style=for-the-badge&logoColor=white" alt="Dagshub">
+    <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
+    <img src="https://img.shields.io/badge/FastApi-109989?style=for-the-badge&logo=FASTAPI&logoColor=white" alt="FastApi">
+    <img src="https://img.shields.io/badge/Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white" alt="Heroku">
+    <img src="https://img.shields.io/badge/mlflow-%23d9ead3.svg?style=for-the-badge&logo=mlflow&logoColor=blue" alt="MLflow">
+    <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="Postgres">
+    <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white" alt="Streamlit">
+    <img src="https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white" alt="Tensorflow">
+</p>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -88,61 +142,65 @@ This section should list any major frameworks/libraries used to bootstrap your p
 
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+### Repository Content
+
+<p align="left">-----> <a href="#readme-top">back to the main branch</a></p>
+
+| Branch                                                                  | Description                                                                                       |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| [API](https://github.com/CharleyDL/Aissyr/tree/API)                     | API to connect Streamlit with Database                                                            |
+| [App_Streamlit](https://github.com/CharleyDL/Aissyr/tree/App_Streamlit) | Streamlit web app to deploy                                                                       |
+| [Database](https://github.com/CharleyDL/Aissyr/tree/Database)           | Scripts for initializing and deploying the database, along with the project's data.               |
+| [EDA](https://github.com/CharleyDL/Aissyr/tree/EDA)                     | EDA Notebooks utilized for acquiring deeper insights into the data.                               |
+| [Model](https://github.com/CharleyDL/Aissyr/tree/Model)                 | All AI architectures we train to compare them - currently _Glyphnet_DO65_ is used in this project |
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-
-- npm
-  ```sh
-  npm install npm@latest -g
-  ```
+1. Fork the repo and give a star
+   ```sh
+   git clone https://github.com/CharleyDL/Aissyr.git
+   ```
 
 ### Installation
 
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
+<blockquote>
+  This installation guide has not been tested, still in construction.
+  USE WITH CAUTION!
+</blockquote>
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/your_username_/Project-Name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = "ENTER YOUR API";
-   ```
+<br/>
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- USAGE EXAMPLES -->
-
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- ROADMAP -->
-
-## Roadmap
-
-- [x] Add Changelog
-- [x] Add back to top links
-- [ ] Add Additional Templates w/ Examples
-- [ ] Add "components" document to easily copy & paste sections of the readme
-- [ ] Multi-language Support
-  - [ ] Chinese
-  - [ ] Spanish
-
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
+<details>
+  <summary>Local Installation</summary>
+    <ol>
+      <li>
+        Create a local Python Virtual Environment _(with venv or alt.)
+        <code>python -m venv .env</code><br/>
+        <code>source .env/bin/activate</code><br/>
+        <b>On Windows</b>, use <code>.env\Scripts\activate</code>
+        </code>
+      </li>
+      <br/>
+      <li>
+        Create a local Docker stack with 4 container for : Streamlit, 
+        API (FastAPI), PostgreSQL, PGAdmin.<br/>
+        <b><em>You can use and complete the Docker Templace in Database
+        Branch (only PostgreSQL and PGadmin Containers)</em></b>
+      </li>
+      <br/>
+      <li>
+        Start with Database Branch, then <a href="docs/install_guide/1_install_db.md">read the doc</a><br/>
+        <code>git checkout Database</code><br/>
+        <code>pip install -r requirements.txt</code>
+      </li>
+      <br/>
+      <li>Continue with API Branch</li>
+      <br/>
+      <li>Finish with AppStreamlit Branch</li>
+      <br/>
+      <li>Now you can train model or create your own</li>
+    </ol>
+</details>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -151,18 +209,6 @@ See the [open issues](https://github.com/othneildrew/Best-README-Template/issues
 ## Acknowledgments
 
 - [Cuneiform Dataset](https://github.com/CompVis/cuneiform-sign-detection-dataset)
+- [Streamlit-Image-Labelling](https://github.com/lit26/streamlit-img-label/tree/main)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-
-[github-shield]: https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
-[github-url]: https://github.com/CharleyDL
-[product-screenshot]: images/screenshot.png
-[Python]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54
-[Python-url]: https://www.python.org/
-[Heroku]: https://img.shields.io/badge/Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white
-[Heroku-url]: https://www.heroku.com
-[Postgres]: https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white
-[Postgres-url]: https://www.postgresql.org
