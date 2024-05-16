@@ -4,7 +4,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/CharleyDL/Aissyr">
-    <img src="asset/logo_aissyr_white_M.png" alt="Logo">
+    <img src="asset/aissyr_logo_git.png" alt="Logo">
   </a>
 
   <br />
@@ -71,8 +71,6 @@
 <br/>
 
 ## 💻 - STREAMLIT
-
-[![Watch the video](https://img.youtube.com/vi/7oSaOvixXqQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=7oSaOvixXqQ)
 
 > Need the API, Database and Model
 
