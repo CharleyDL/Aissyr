@@ -10,6 +10,8 @@ env/
 # Folder
 postgres_data/
 front/
+/tests/
+/model/
 
 # Config File with sensitive information
 .env
