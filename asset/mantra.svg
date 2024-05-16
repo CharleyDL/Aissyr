@@ -1,16 +1,21 @@
-<defs>
-    <style type="text/css">@import url('https://fonts.googleapis.com/css?family=Roboto');</style>
-</defs>
-
 <svg fill="none" viewBox="0 0 800 200" width="800" height="200" xmlns="http://www.w3.org/2000/svg">
-  <foreignObject width="100%" height="100%">
-    <div style="text-align: center;
-                font-family: Roboto;
+    <defs>
+        <style> 
+            @font-face {
+                font-family: 'Roboto';
+                src:  url('https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxP.ttf');
+            }    
+        </style>
+    </defs>
+  
+    <foreignObject width="100%" height="100%">
+        <div style="text-align: center;
+                font-family: Roboto, sans-serif;
                 font-size: 24px;
                 margin: 60px;"
-         xmlns="http://www.w3.org/1999/xhtml">
-      <span style="color: #DEA15B; font-weight: bold;">EMPOWER</span> ASSYRIAN CUNEIFORM RESEARCH WITH YOUR 
-      <span style="color: #DEA15B; font-weight: bold;">NEW AI TOOLKIT COMPANION</span>
-    </div>
-  </foreignObject>
+             xmlns="http://www.w3.org/1999/xhtml">
+            <b style="color: #DEA15B;">EMPOWER</b> ASSYRIAN CUNEIFORM RESEARCH WITH YOUR 
+            <b style="color: #DEA15B;">NEW AI TOOLKIT COMPANION</b>
+        </div>
+    </foreignObject>
 </svg>
