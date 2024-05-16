@@ -63,25 +63,12 @@
         </a>
     </em>
   </p>
-
-  <p style="text-align: center; margin-left: 80px; margin-right: 80px;">
-
-  </p>
 </blockquote>
 
-<br/>
-
-<!-- <p style="text-align: center; font-size: 24px; margin-left: auto; margin-right: auto;">
-  <b style='color: #DEA15B;'>EMPOWER</b> ASSYRIAN CUNEIFORM RESEARCH WITH YOUR
-  <b style='color: #DEA15B;'>NEW AI TOOLKIT COMPANION</b>
-</p> -->
-
-<div style="text-align: center; font-size: 24px;">
-  <b style='color: #DEA15B;'>EMPOWER</b> ASSYRIAN CUNEIFORM RESEARCH WITH YOUR 
-  <b style='color: #DEA15B;'>NEW AI TOOLKIT COMPANION</b>
+<div style="text-align: center; font-size: 24px; margin: 80px;">
+  <b><span style='color: #DEA15B;'>EMPOWER</span></b> ASSYRIAN CUNEIFORM RESEARCH WITH YOUR 
+  <b><span style='color: #DEA15B;'>NEW AI TOOLKIT COMPANION</span></b>
 </div>
-
-<br/>
 
 <img src="asset/preview_aissyr.jpg" 
      style="display: block;
