@@ -69,7 +69,7 @@
 <br/>
 
 <div align="center">
-    <img src="asset/mantra.svg" alt="empower assyrian cuneiform research you with new AI toolkit companion">
+    <img src="asset/hook.svg" alt="empower assyrian cuneiform research you with new AI toolkit companion">
 </div>
 
 <img src="asset/preview_aissyr.jpg" 
@@ -80,7 +80,7 @@
 <br/>
 <br/>
 
-<p style="text-align: center; margin-left: auto; margin-right: 60px;">
+<p style="text-align: center;">
   <em>
     AIssyr Web App is dedicated to researchers to work on the Assyrian 
     cuneiforms writing system, providing a toolbox for detecting and labeling images.
