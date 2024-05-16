@@ -71,14 +71,17 @@
 
 <br/>
 
-<p style="text-align: center; font-size: 24px; margin-left: auto; margin-right: auto;">
+<!-- <p style="text-align: center; font-size: 24px; margin-left: auto; margin-right: auto;">
+  <b style='color: #DEA15B;'>EMPOWER</b> ASSYRIAN CUNEIFORM RESEARCH WITH YOUR
+  <b style='color: #DEA15B;'>NEW AI TOOLKIT COMPANION</b>
+</p> -->
+
+<div style="text-align: center; font-size: 24px;">
   <b style='color: #DEA15B;'>EMPOWER</b> ASSYRIAN CUNEIFORM RESEARCH WITH YOUR 
   <b style='color: #DEA15B;'>NEW AI TOOLKIT COMPANION</b>
-</p>
+</div>
 
 <br/>
-
-<!-- ![Preview Product][product-screenshot] -->
 
 <img src="asset/preview_aissyr.jpg" 
      style="display: block;
@@ -86,7 +89,6 @@
             margin-right: auto;">
 
 <br/>
-
 <br/>
 
 <p style="text-align: center; margin-left: auto; margin-right: auto;">
