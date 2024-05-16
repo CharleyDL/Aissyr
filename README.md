@@ -68,11 +68,8 @@
 <svg fill="none" viewBox="0 0 800 200" width="800" height="200" xmlns="http://www.w3.org/2000/svg">
   <foreignObject width="100%" height="100%">
     <div style="text-align: center; font-size: 24px; margin: 60px;">
-      <style>
-        b {color: #DEA15B;}
-      </style>
-      <b>EMPOWER</b> ASSYRIAN CUNEIFORM RESEARCH WITH YOUR 
-      <b>NEW AI TOOLKIT COMPANION</b>
+      <b style="color: #DEA15B;">EMPOWER</b> ASSYRIAN CUNEIFORM RESEARCH WITH YOUR 
+      <b style="color: #DEA15B;">NEW AI TOOLKIT COMPANION</b>
     </div>
   </foreignObject>
 </svg>
