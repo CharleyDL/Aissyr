@@ -72,18 +72,11 @@
 
 ## 🤖 - IA Model
 
-| IA MODEL | Description                                                                                                                 | Train in Colab                                                                                                                                     |
-| -------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| xCxF     | Based on xCxF architecture from this [scientific paper](https://iopscience.iop.org/article/10.1088/1742-6596/1235/1/012063) | <a target="_blank" href="https://colab.research.google.com/github/CharleyDL/Aissyr/blob/Model/model/model_xCxF/model_xCxF_INITIAL_22Glyphs.ipynb"> |
-
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
-</a> |
-| Glyphnet | Based on Glypnet architecture from this [scientific paper](https://ieeexplore.ieee.org/document/9528382) | <a target="_blank" href="https://colab.research.google.com/github/CharleyDL/Aissyr/blob/Model/model/model_glyphnet/model_glyphnet_INITIAL_22GLYPHS.ipynb">
-<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
-</a>|
-| Xception | Based on Keras Xception | <a target="_blank" href="https://colab.research.google.com/github/CharleyDL/Aissyr/blob/Model/model/model_xception/model_Xception_INITIAL_22GLYPHS-2.ipynb">
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
-</a> |
+| IA MODEL | Descriptin                                                                                                                  | Colab                                                                                                                                                                                                           |
+| -------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| xCxF     | Based on xCxF architecture from this [scientific paper](https://iopscience.iop.org/article/10.1088/1742-6596/1235/1/012063) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/CharleyDL/Aissyr/blob/Model/model/model_xCxF/model_xCxF_INITIAL_22Glyphs.ipynb)           |
+| Glyphnet | Based on Glyphnet architecture from this [scientific paper](https://ieeexplore.ieee.org/document/9528382)                   | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/CharleyDL/Aissyr/blob/Model/model/model_glyphnet/model_glyphnet_INITIAL_22GLYPHS.ipynb)   |
+| Xception | Based on Keras Xception                                                                                                     | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/CharleyDL/Aissyr/blob/Model/model/model_xception/model_Xception_INITIAL_22GLYPHS-2.ipynb) |
 
 <br />
 <br />
