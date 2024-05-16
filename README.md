@@ -42,7 +42,7 @@
 
 <!-- ABOUT THE PROJECT -->
 
-## About The Project
+## 📚 - About The Project
 
 <br/>
 
@@ -65,9 +65,9 @@
   </p>
 </blockquote>
 
-<div style="text-align: center; font-size: 24px; margin: 80px;">
-  <b><span style='color: #DEA15B;'>EMPOWER</span></b> ASSYRIAN CUNEIFORM RESEARCH WITH YOUR 
-  <b><span style='color: #DEA15B;'>NEW AI TOOLKIT COMPANION</span></b>
+<div style="text-align: center; font-size: 24px; margin: 60px;">
+  <b style='color: #DEA15B;'>EMPOWER</b> ASSYRIAN CUNEIFORM RESEARCH WITH YOUR 
+  <b style='color: #DEA15B;'>NEW AI TOOLKIT COMPANION</b>
 </div>
 
 <img src="asset/preview_aissyr.jpg" 
@@ -78,21 +78,16 @@
 <br/>
 <br/>
 
-<p style="text-align: center; margin-left: auto; margin-right: auto;">
-  <em>AIssyr Web App is dedicated to researchers to work on the Assyrian 
-  cuneiforms writing system, providing a toolbox for detecting and labeling 
-  images.</em>
+<p style="text-align: center; margin-left: auto; margin-right: 60px;">
+  <em>
+    AIssyr Web App is dedicated to researchers to work on the Assyrian 
+    cuneiforms writing system, providing a toolbox for detecting and labeling images.
+  </em>
 </p>
 
 <br/>
 
-## Current Features
-
-<!-- - [x] Login and Sign up
-
-- Glyph Detection from an image with a manual bounding box (22 Glyphs)
-- Tool to label glyphs
-- Archive consultation -->
+## 🧰 - Current Features
 
 - [x] Login and Sign up on App
 - [x] Glyph Classification IA Model (_currently 22 Glyphs recognition_)
@@ -107,7 +102,7 @@
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Built With
+## 🛠️ - Built With
 
 <p align="center">
     <img src="https://img.shields.io/badge/Python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54" alt="Python">
@@ -126,7 +121,7 @@
 
 <!-- GETTING STARTED -->
 
-## Getting Started
+## 🏁 - Getting Started
 
 ### Repository Content
 
