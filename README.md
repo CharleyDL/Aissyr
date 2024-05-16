@@ -71,8 +71,7 @@
 
 <br/>
 
-<p style="text-align: center; font-size: 24px; 
-          margin-left: 80px; margin-right: 80px;">
+<p style="text-align: center; font-size: 24px; margin-left: 80px; margin-right: 80px;">
   <b style='color: #DEA15B;'>EMPOWER</b> ASSYRIAN CUNEIFORM RESEARCH WITH YOUR 
   <b style='color: #DEA15B;'>NEW AI TOOLKIT COMPANION</b>
 </p>
@@ -91,11 +90,9 @@
 <br/>
 
 <p style="text-align: center; margin-left: 80px; margin-right: 80px;">
-  <em>
-    AIssyr Web App is dedicated to researchers to work on the Assyrian 
-    cuneiforms writing system, providing a toolbox for detecting and labeling 
-    images.
-  </em>
+  <em>AIssyr Web App is dedicated to researchers to work on the Assyrian 
+  cuneiforms writing system, providing a toolbox for detecting and labeling 
+  images.</em>
 </p>
 
 <br/>
