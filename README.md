@@ -66,8 +66,8 @@
 </blockquote>
 
 <div style="text-align: center; font-size: 24px; margin: 60px;">
-  <b style='color: #DEA15B;'>EMPOWER</b> ASSYRIAN CUNEIFORM RESEARCH WITH YOUR 
-  <b style='color: #DEA15B;'>NEW AI TOOLKIT COMPANION</b>
+  <span><b style='color: #DEA15B;'>EMPOWER</b></spam> ASSYRIAN CUNEIFORM RESEARCH WITH YOUR 
+  <span><b style='color: #DEA15B;'>NEW AI TOOLKIT COMPANION</b></span>
 </div>
 
 <img src="asset/preview_aissyr.jpg" 
