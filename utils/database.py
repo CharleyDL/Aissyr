@@ -359,7 +359,7 @@ def get_demo_archive_labelisation() -> dict:
             JOIN annotation_ref ar ON sr.id_segment = ar.id_segment
             JOIN mzl_ref mr ON ar.mzl_number = mr.mzl_number
             WHERE tr.set_split = 'annotation'
-              AND tr.tablet_name IN ('P273716', 'P338346_l');
+              AND tr.tablet_name IN ('P273716', 'P338346');
         """)
 
         data = db.cursor.fetchall()
