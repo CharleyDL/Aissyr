@@ -157,7 +157,7 @@
   <summary>Local Installation</summary>
     <ol>
       <li>
-        Create a local Python Virtual Environment <em>(with venv or alt.)</em>
+        Create a local Python Virtual Environment <em>(with venv or alt.)</em><br/>
         <code>python -m venv .env</code><br/>
         <code>source .env/bin/activate</code><br/>
         <b>On Windows</b>, use <code>.env\Scripts\activate</code>
