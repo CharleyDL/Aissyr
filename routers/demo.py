@@ -25,7 +25,7 @@ router = APIRouter()
 
 async def demo_archive_classification():
     try:
-        result = db.get_demo_archive_classifications()
+        result = db.get_demo_archive_classification()
 
         if not result:
             raise HTTPException(

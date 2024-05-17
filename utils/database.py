@@ -140,7 +140,7 @@ def create_account(payload: dict) -> bool:
 
 ## -------------------------------- ARCHIVE --------------------------------- ##
 
-def get_archive_classifications() -> dict:
+def get_archive_classification() -> dict:
     """
     Retrieve archive classification data from the database.
 
@@ -265,7 +265,7 @@ def get_archive_labelisation() -> dict:
 ################################################################################
 ## ---------------------------------- DEMO ---------------------------------- ##
 
-def get_demo_archive_classifications() -> dict:
+def get_demo_archive_classification() -> dict:
     """
     Retrieve archive classification data from the database DEMO VERSION.
     JUST ONE ARTEFACTS : P273716
@@ -327,7 +327,7 @@ def get_demo_archive_classifications() -> dict:
     return classification_data_demo
 
 
-def get_archive_labelisation() -> dict:
+def get_demo_archive_labelisation() -> dict:
     """
     Retrieve archive labelisation data from the database DEMO VERSION.
     JUST TWO ARTEFACTS : P273716 and P338346.
