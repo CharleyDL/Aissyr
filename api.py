@@ -11,7 +11,7 @@ import uvicorn
 
 from fastapi import FastAPI
 
-from routers import account, archives, labelisation, prediction, resources
+from routers import account, archives, demo, labelisation, prediction, resources
 
 
 app = FastAPI(
@@ -31,6 +31,7 @@ async def root():
 
 app.include_router(account.router, prefix='/account', tags=['account'])
 app.include_router(archives.router, prefix='/archives', tags=['archives'])
+app.include_router(demo.router, prefix='/demo', tags=['demo'])
 app.include_router(labelisation.router, prefix='/labelisation', tags=['labelisation'])
 app.include_router(prediction.router, prefix='/prediction', tags=['prediction'])
 app.include_router(resources.router, prefix='/resources', tags=['resources'])

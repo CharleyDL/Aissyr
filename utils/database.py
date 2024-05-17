@@ -260,6 +260,140 @@ def get_archive_labelisation() -> dict:
     return labelisation_data
 
 
+
+
+################################################################################
+## ---------------------------------- DEMO ---------------------------------- ##
+
+def get_demo_archive_classifications() -> dict:
+    """
+    Retrieve archive classification data from the database DEMO VERSION.
+    JUST ONE ARTEFACTS : P273716
+
+    Returns:
+    -------
+        - dict: A dictionary containing the classification data.
+            Each key is an artefact name, and the corresponding value is a dictionary
+            with the artefact picture and a list of glyphs data.
+            Each glyph data contains:
+                - Bounding box coordinates.
+                - MZL number.
+                - Glyph name.
+                - Glyph phonetic.
+                - Confidence level.
+    """
+    with PgDatabase() as db:
+        db.cursor.execute(f"""
+        SELECT
+                ti.tablet_name AS artefact_name,
+                encode(ti.picture, 'base64') AS picture_base64,
+                ir.bbox AS bbox_glyph,
+                ir.mzl_number,
+                mr.glyph,
+                mr.glyph_name,
+                ir.confidence
+        FROM infrn_result ir
+        JOIN tablet_infrn ti ON ir.id_inference = ti.id_inference
+        JOIN mzl_ref mr ON ir.mzl_number = mr.mzl_number
+        WHERE ti.tablet_name = 'P273716';
+        """)
+
+        data = db.cursor.fetchall()
+        if data is None:
+            return None
+
+        classification_data_demo = {}
+        for row in data:
+            artefact_name = row[0]
+            picture = row[1]
+            bbox_glyph = literal_eval(row[2])
+            mzl_number = row[3]
+            glyph_name = row[4]
+            glyph_phonetic = row[5]
+            confidence = row[6]
+
+            if artefact_name not in classification_data_demo:
+                classification_data_demo[artefact_name] = {
+                    'picture': picture,
+                    'glyphs_data': []
+                }
+
+            classification_data_demo[artefact_name]['glyphs_data'].append([bbox_glyph, 
+                                                                           mzl_number, 
+                                                                           glyph_name, 
+                                                                           glyph_phonetic, 
+                                                                           confidence])
+
+    return classification_data_demo
+
+
+def get_archive_labelisation() -> dict:
+    """
+    Retrieve archive labelisation data from the database DEMO VERSION.
+    JUST TWO ARTEFACTS : P273716 and P338346.
+
+    Returns:
+    -------
+        - dict: A dictionary containing the labelisation data.
+            Each key is an artefact name, and the corresponding value is a dictionary
+            with the artefact picture and a list of glyphs data.
+            Each glyph data contains:
+                - Bounding box coordinates.
+                - MZL number.
+                - Glyph code.
+                - Glyph name.
+    """
+    with PgDatabase() as db:
+        db.cursor.execute(f"""
+            SELECT
+                    tr.tablet_name AS artefact_name,
+                    encode(tr.picture, 'base64') AS picture_base64,
+                    ar.relative_bbox AS bbox_glyph,
+                    mr.mzl_number,
+                    mr.glyph,
+                    mr.glyph_name
+            FROM segment_ref sr
+            JOIN tablet_ref tr ON sr.id_tablet = tr.id_tablet
+            JOIN view_ref vr ON sr.id_view = vr.id_view
+            JOIN collection_ref cr ON sr.id_collection = cr.id_collection
+            JOIN annotation_ref ar ON sr.id_segment = ar.id_segment
+            JOIN mzl_ref mr ON ar.mzl_number = mr.mzl_number
+            WHERE tr.set_split = 'annotation'
+              AND tr.tablet_name IN ('P273716', 'P338346_l');
+        """)
+
+        data = db.cursor.fetchall()
+        if data is None:
+            return None
+
+        labelisation_data_demo = {}
+        for row in data:
+            artefact_name = row[0]
+            picture = row[1]
+            bbox_glyph = literal_eval(row[2])
+            mzl_number = row[3]
+            glyph = row[4]
+            glyph_name = row[5]
+
+            if artefact_name not in labelisation_data_demo:
+                labelisation_data_demo[artefact_name] = {
+                    'picture': picture,
+                    'glyphs_data': []
+                }
+
+            labelisation_data_demo[artefact_name]['glyphs_data'].append([bbox_glyph, 
+                                                                         mzl_number, 
+                                                                         glyph, 
+                                                                         glyph_name])
+
+    return labelisation_data_demo
+
+## -------------------------------- END DEMO -------------------------------- ##
+################################################################################
+
+
+
+
 ## ------------------------------- RESOURCES -------------------------------- ##
 
 def select_all_glyphs() -> dict:
