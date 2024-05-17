@@ -181,7 +181,7 @@
       <br/>
       <li>Finish with AppStreamlit Branch</li>
       <br/>
-      <li>Now you can train one of our <a href="docs/install_guide/1_install_db.md">models</a> or create your own</li>
+      <li>Now you can train one of our <a href="https://github.com/CharleyDL/Aissyr/tree/Model">models</a> or create your own</li>
     </ol>
 </details>
 
