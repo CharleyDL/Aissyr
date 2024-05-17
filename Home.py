@@ -32,7 +32,20 @@ left_column, right_column = st.columns(2)
 with left_column:
     for i in range(8):
         fct.space()
-    # st.image('asset/logo_aissyr_L.png')
+
+    st.markdown(
+    """
+        <style>
+            [data-testid=stImage]{ 
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                max-width: 100%;
+                height: auto;
+            }
+        </style>
+        """, unsafe_allow_html=True
+    )
     st.image('asset/logo_landing.png')
 
 ## - Right Column
