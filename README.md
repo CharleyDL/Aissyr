@@ -167,7 +167,7 @@
       <li>
         Create a local Docker stack with 4 container for : Streamlit, 
         API (FastAPI), PostgreSQL, PGAdmin.<br/>
-        <b><em>You can use and complete the Docker Templace in Database
+        <b><em>You can use and complete the Docker Template in Database
         Branch (only PostgreSQL and PGadmin Containers)</em></b>
       </li>
       <br/>
