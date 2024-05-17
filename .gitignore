@@ -12,6 +12,8 @@ postgres_data/
 front/
 tests/
 model/
+streamlit_img_label/
+utils/
 
 # Config File with sensitive information
 .env
