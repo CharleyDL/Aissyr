@@ -463,7 +463,10 @@ def get_archives_classification() -> Dict[str, Any]:
             Each key is a category and the corresponding value is the information
             for that category.
     """
-    res = requests.get(url=f"{API_URL}/archives/classification/")
+    if st.session_state.f_name == 'DEMO':
+        res = requests.get(url=f"{API_URL}/demo/classification/")
+    else:
+        res = requests.get(url=f"{API_URL}/archives/classification/")
     # print(res.json())
 
     res_json = res.json()
@@ -482,7 +485,10 @@ def get_archives_labelisation() -> Dict[str, Any]:
             Each key is a category and the corresponding value is the information
             for that category.
     """
-    res = requests.get(url=f"{API_URL}/archives/labelisation/")
+    if st.session_state.f_name == 'DEMO':
+        res = requests.get(url=f"{API_URL}/demo/labelisation/")
+    else:
+        res = requests.get(url=f"{API_URL}/archives/labelisation/")
     # print(res.json())
 
     res_json = res.json()
