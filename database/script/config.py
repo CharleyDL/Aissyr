@@ -18,7 +18,7 @@ def get_db_config() -> dict:
     config = {
         ## -- Local Configuration -- ##
         # "host" : "localhost",
-        # "database" : "neo_aissyr",
+        # "database" : "aissyr",
         # "user" : "DIGMIR",
         # "password" : "m3s_!",
         # "port" : "5432"
